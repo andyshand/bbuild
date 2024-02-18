@@ -1,0 +1,209 @@
+{
+  "name": "@bbuild/ai-task",
+  "version": "0.0.1",
+  "dependencies": {
+    "@babel/core": "^7.21.3",
+    "@babel/plugin-syntax-jsx": "^7.18.6",
+    "@babel/plugin-syntax-typescript": "^7.20.0",
+    "@babel/preset-react": "^7.18.6",
+    "@lexical/code": "^0.11.1",
+    "@lexical/markdown": "^0.11.1",
+    "@lexical/react": "^0.11.1",
+    "@trpc/client": "^10.16.0",
+    "axios": "^1.3.4",
+    "commander": "^10.0.0",
+    "dockerode": "^3.3.4",
+    "execa": "^7.0.0",
+    "fs-extra": "^11.1.0",
+    "glob": "^8.1.0",
+    "ignore": "^5.2.4",
+    "json5": "^2.2.3",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.8",
+    "node-fetch": "^3.3.0",
+    "openai-gpt-token-counter": "^1.0.3",
+    "prompts": "^2.4.2",
+    "react-syntax-highlighter": "^15.5.0",
+    "remeda": "^1.9.4",
+    "rxjs": "^7.8.0",
+    "tar-fs": "^2.1.1",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/dockerode": "^3.3.14",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^18.14.4",
+    "@types/prompts": "^2.4.2",
+    "@types/tar-fs": "^2.0.1",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ActionT": {
+      "import": "./ActionT.js",
+      "require": "./dist/cjs/ActionT.js"
+    },
+    "./Actionresult": {
+      "import": "./Actionresult.js",
+      "require": "./dist/cjs/Actionresult.js"
+    },
+    "./PromptObj": {
+      "import": "./PromptObj.js",
+      "require": "./dist/cjs/PromptObj.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./availableActions": {
+      "import": "./availableActions.js",
+      "require": "./dist/cjs/availableActions.js"
+    },
+    "./babel/*": {
+      "import": "./babel/*.js",
+      "require": "./dist/cjs/babel/*.js"
+    },
+    "./babel": {
+      "import": "./babel/index.js",
+      "require": "./dist/cjs/babel/index.js"
+    },
+    "./cli": {
+      "import": "./cli.js",
+      "require": "./dist/cjs/cli.js"
+    },
+    "./crazyshit": {
+      "import": "./crazyshit.js",
+      "require": "./dist/cjs/crazyshit.js"
+    },
+    "./framework/react/hooks/*": {
+      "import": "./framework/react/hooks/*.js",
+      "require": "./dist/cjs/framework/react/hooks/*.js"
+    },
+    "./framework/react/hooks": {
+      "import": "./framework/react/hooks/index.js",
+      "require": "./dist/cjs/framework/react/hooks/index.js"
+    },
+    "./framework/react/*": {
+      "import": "./framework/react/*.js",
+      "require": "./dist/cjs/framework/react/*.js"
+    },
+    "./framework/react": {
+      "import": "./framework/react/index.js",
+      "require": "./dist/cjs/framework/react/index.js"
+    },
+    "./framework/*": {
+      "import": "./framework/*.js",
+      "require": "./dist/cjs/framework/*.js"
+    },
+    "./framework": {
+      "import": "./framework/index.js",
+      "require": "./dist/cjs/framework/index.js"
+    },
+    "./fsOpts": {
+      "import": "./fsOpts.js",
+      "require": "./dist/cjs/fsOpts.js"
+    },
+    "./getCompletionNoStream": {
+      "import": "./getCompletionNoStream.js",
+      "require": "./dist/cjs/getCompletionNoStream.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./index2": {
+      "import": "./index2.js",
+      "require": "./dist/cjs/index2.js"
+    },
+    "./infoById": {
+      "import": "./infoById.js",
+      "require": "./dist/cjs/infoById.js"
+    },
+    "./interpreter/*": {
+      "import": "./interpreter/*.js",
+      "require": "./dist/cjs/interpreter/*.js"
+    },
+    "./interpreter": {
+      "import": "./interpreter/index.js",
+      "require": "./dist/cjs/interpreter/index.js"
+    },
+    "./jsonStore": {
+      "import": "./jsonStore.js",
+      "require": "./dist/cjs/jsonStore.js"
+    },
+    "./message": {
+      "import": "./message.js",
+      "require": "./dist/cjs/message.js"
+    },
+    "./new/*": {
+      "import": "./new/*.js",
+      "require": "./dist/cjs/new/*.js"
+    },
+    "./new": {
+      "import": "./new/index.js",
+      "require": "./dist/cjs/new/index.js"
+    },
+    "./openAi": {
+      "import": "./openAi.js",
+      "require": "./dist/cjs/openAi.js"
+    },
+    "./prompts/brain/*": {
+      "import": "./prompts/brain/*.js",
+      "require": "./dist/cjs/prompts/brain/*.js"
+    },
+    "./prompts/brain": {
+      "import": "./prompts/brain/index.js",
+      "require": "./dist/cjs/prompts/brain/index.js"
+    },
+    "./prompts/*": {
+      "import": "./prompts/*.js",
+      "require": "./dist/cjs/prompts/*.js"
+    },
+    "./prompts": {
+      "import": "./prompts/index.js",
+      "require": "./dist/cjs/prompts/index.js"
+    },
+    "./runPrompt": {
+      "import": "./runPrompt.js",
+      "require": "./dist/cjs/runPrompt.js"
+    },
+    "./runPromptObj": {
+      "import": "./runPromptObj.js",
+      "require": "./dist/cjs/runPromptObj.js"
+    },
+    "./splitPrompt": {
+      "import": "./splitPrompt.js",
+      "require": "./dist/cjs/splitPrompt.js"
+    },
+    "./splitSequence": {
+      "import": "./splitSequence.js",
+      "require": "./dist/cjs/splitSequence.js"
+    },
+    "./todo": {
+      "import": "./todo.js",
+      "require": "./dist/cjs/todo.js"
+    },
+    "./transform": {
+      "import": "./transform.js",
+      "require": "./dist/cjs/transform.js"
+    },
+    "./util/*": {
+      "import": "./util/*.js",
+      "require": "./dist/cjs/util/*.js"
+    },
+    "./util": {
+      "import": "./util/index.js",
+      "require": "./dist/cjs/util/index.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "bin": "dist/cjs/cli/index.js",
+  "index": "dist/cjs/index.js"
+}

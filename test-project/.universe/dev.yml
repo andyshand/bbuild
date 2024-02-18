@@ -1,0 +1,14 @@
+tasks:
+  - name: nextjs-app
+    cmd: npm run dev
+    cwd: apps/nextjs
+    env:
+      PORT: 3050
+  - name: fs-ts
+    cmd: yarn exec tsc -w
+    cwd: ./apps/file-server
+  - name: fs-ts
+    cmd: node ./dist/index.js
+    cwd: ./apps/file-server
+    env:
+      PORT: 2549

@@ -1,0 +1,48 @@
+{
+  "name": "@bbuild/machine",
+  "version": "0.0.1",
+  "dependencies": {
+    "@mtyk/util": "^0.1.47",
+    "remeda": "^1.6.1",
+    "type-fest": "^3.5.7"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./state/*": {
+      "import": "./state/*.js",
+      "require": "./dist/cjs/state/*.js"
+    },
+    "./state": {
+      "import": "./state/index.js",
+      "require": "./dist/cjs/state/index.js"
+    },
+    "./task/*": {
+      "import": "./task/*.js",
+      "require": "./dist/cjs/task/*.js"
+    },
+    "./task": {
+      "import": "./task/index.js",
+      "require": "./dist/cjs/task/index.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "index": "dist/cjs/index.js"
+}

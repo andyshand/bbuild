@@ -1,0 +1,57 @@
+{
+  "name": "@bbuild/context",
+  "version": "0.0.10",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ContextFormatter": {
+      "import": "./ContextFormatter.js",
+      "require": "./dist/cjs/ContextFormatter.js"
+    },
+    "./ContextProvider": {
+      "import": "./ContextProvider.js",
+      "require": "./dist/cjs/ContextProvider.js"
+    },
+    "./ContextProviderOptions": {
+      "import": "./ContextProviderOptions.js",
+      "require": "./dist/cjs/ContextProviderOptions.js"
+    },
+    "./ITokenizedMessage": {
+      "import": "./ITokenizedMessage.js",
+      "require": "./dist/cjs/ITokenizedMessage.js"
+    },
+    "./UniverseEntityContextItem": {
+      "import": "./UniverseEntityContextItem.js",
+      "require": "./dist/cjs/UniverseEntityContextItem.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./parseContext": {
+      "import": "./parseContext.js",
+      "require": "./dist/cjs/parseContext.js"
+    },
+    "./useRegisterContext": {
+      "import": "./useRegisterContext.js",
+      "require": "./dist/cjs/useRegisterContext.js"
+    }
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "dependencies": {
+    "react": "18.2.0"
+  },
+  "index": "dist/cjs/index.js"
+}

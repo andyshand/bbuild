@@ -1,0 +1,7 @@
+tasks:
+  # - name: watch-installer
+  #   cwd: installer
+  #   cmd: yarn exec tsc -w
+  - name: compiler-watch
+    cwd: mtyk/compiler
+    cmd: pnpm run watch

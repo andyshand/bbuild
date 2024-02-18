@@ -1,0 +1,63 @@
+{
+  "name": "@bbuild/llm",
+  "version": "0.0.1",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.4.4",
+    "gpt-tokenizer": "2.1.1",
+    "openai-gpt-token-counter": "^1.0.3"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ParseMessage": {
+      "import": "./ParseMessage.js",
+      "require": "./dist/cjs/ParseMessage.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./engines/*": {
+      "import": "./engines/*.js",
+      "require": "./dist/cjs/engines/*.js"
+    },
+    "./engines": {
+      "import": "./engines/index.js",
+      "require": "./dist/cjs/engines/index.js"
+    },
+    "./getZodCompletion": {
+      "import": "./getZodCompletion.js",
+      "require": "./dist/cjs/getZodCompletion.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./strategies/*": {
+      "import": "./strategies/*.js",
+      "require": "./dist/cjs/strategies/*.js"
+    },
+    "./strategies": {
+      "import": "./strategies/index.js",
+      "require": "./dist/cjs/strategies/index.js"
+    },
+    "./util/*": {
+      "import": "./util/*.js",
+      "require": "./dist/cjs/util/*.js"
+    },
+    "./util": {
+      "import": "./util/index.js",
+      "require": "./dist/cjs/util/index.js"
+    }
+  },
+  "index": "dist/cjs/index.js"
+}

@@ -1,0 +1,50 @@
+{
+  "name": "@bbuild/build",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./ui/core/components/*": {
+      "import": "./ui/core/components/*.js",
+      "require": "./dist/cjs/ui/core/components/*.js"
+    },
+    "./ui/core/components": {
+      "import": "./ui/core/components/index.js",
+      "require": "./dist/cjs/ui/core/components/index.js"
+    },
+    "./ui/core/*": {
+      "import": "./ui/core/*.js",
+      "require": "./dist/cjs/ui/core/*.js"
+    },
+    "./ui/core": {
+      "import": "./ui/core/index.js",
+      "require": "./dist/cjs/ui/core/index.js"
+    },
+    "./ui/*": {
+      "import": "./ui/*.js",
+      "require": "./dist/cjs/ui/*.js"
+    },
+    "./ui": {
+      "import": "./ui/index.js",
+      "require": "./dist/cjs/ui/index.js"
+    }
+  },
+  "index": "dist/cjs/index.js"
+}

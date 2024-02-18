@@ -1,0 +1,17 @@
+ai-chat
+context
+dash
+deps
+entities
+entities-client
+errors
+format-terminal
+llm
+misc
+open-ai
+react-ui
+rpc-ws
+schema
+transport
+types
+vm

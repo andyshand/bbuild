@@ -1,0 +1,43 @@
+{
+  "name": "@bbuild/task",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./spawnIt": {
+      "import": "./spawnIt.js",
+      "require": "./dist/cjs/spawnIt.js"
+    },
+    "./spawnToObservable": {
+      "import": "./spawnToObservable.js",
+      "require": "./dist/cjs/spawnToObservable.js"
+    },
+    "./taskStream": {
+      "import": "./taskStream.js",
+      "require": "./dist/cjs/taskStream.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "dependencies": {
+    "node-pty": "^0.10.1",
+    "rxjs": "^7.8.0"
+  },
+  "index": "dist/cjs/index.js"
+}

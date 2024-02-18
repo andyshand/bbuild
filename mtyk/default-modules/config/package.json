@@ -1,0 +1,56 @@
+{
+  "name": "@bbuild/config",
+  "version": "0.0.1",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./cli/*": {
+      "import": "./cli/*.js",
+      "require": "./dist/cjs/cli/*.js"
+    },
+    "./cli": {
+      "import": "./cli/index.js",
+      "require": "./dist/cjs/cli/index.js"
+    },
+    "./createHardConfigs": {
+      "import": "./createHardConfigs.js",
+      "require": "./dist/cjs/createHardConfigs.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./mergeConfigs": {
+      "import": "./mergeConfigs.js",
+      "require": "./dist/cjs/mergeConfigs.js"
+    },
+    "./postbuild": {
+      "import": "./postbuild.js",
+      "require": "./dist/cjs/postbuild.js"
+    },
+    "./tryLoadConfig": {
+      "import": "./tryLoadConfig.js",
+      "require": "./dist/cjs/tryLoadConfig.js"
+    }
+  },
+  "bin": "dist/cjs/cli.sh",
+  "dependencies": {
+    "@types/dotenv-flow": "^3.2.0",
+    "dotenv-flow": "^3.2.0",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "index": "dist/cjs/index.js"
+}

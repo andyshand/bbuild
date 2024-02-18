@@ -1,0 +1,90 @@
+{
+  "name": "@bbuild/entities-client",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/react": "^18.0.37",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./allManagers": {
+      "import": "./allManagers.js",
+      "require": "./dist/cjs/allManagers.js"
+    },
+    "./cacheMap": {
+      "import": "./cacheMap.js",
+      "require": "./dist/cjs/cacheMap.js"
+    },
+    "./createEntitiesClient": {
+      "import": "./createEntitiesClient.js",
+      "require": "./dist/cjs/createEntitiesClient.js"
+    },
+    "./getDiscoveredManagers": {
+      "import": "./getDiscoveredManagers.js",
+      "require": "./dist/cjs/getDiscoveredManagers.js"
+    },
+    "./getLatestValue": {
+      "import": "./getLatestValue.js",
+      "require": "./dist/cjs/getLatestValue.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./promiseWithTimeout": {
+      "import": "./promiseWithTimeout.js",
+      "require": "./dist/cjs/promiseWithTimeout.js"
+    },
+    "./selection/*": {
+      "import": "./selection/*.js",
+      "require": "./dist/cjs/selection/*.js"
+    },
+    "./selection": {
+      "import": "./selection/index.js",
+      "require": "./dist/cjs/selection/index.js"
+    },
+    "./store": {
+      "import": "./store.js",
+      "require": "./dist/cjs/store.js"
+    },
+    "./useObservable": {
+      "import": "./useObservable.js",
+      "require": "./dist/cjs/useObservable.js"
+    },
+    "./withEntityContext.tsx": {
+      "import": "./withEntityContext.jsx",
+      "require": "./dist/cjs/withEntityContext.jsx"
+    }
+  },
+  "peerDependencies": {
+    "@legendapp/state": "*",
+    "react": ">17.0.0",
+    "react-use": "^17.4.0",
+    "remeda": "^1.9.4",
+    "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "@legendapp/state": "1.11.3",
+    "@types/react": "^18.0.37",
+    "lodash": "^4.17.21",
+    "react": "18.2.0",
+    "react-use": "^17.4.0",
+    "remeda": "^1.9.4",
+    "rxjs": "^7.8.0",
+    "yjs": "^13.6.10",
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "index": "dist/cjs/index.js"
+}

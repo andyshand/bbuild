@@ -1,0 +1,69 @@
+{
+  "name": "@bbuild/rpc-ws",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/react": "*",
+    "@types/ws": "^8.5.4",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ClientPubSub": {
+      "import": "./ClientPubSub.js",
+      "require": "./dist/cjs/ClientPubSub.js"
+    },
+    "./ServerPubSub": {
+      "import": "./ServerPubSub.js",
+      "require": "./dist/cjs/ServerPubSub.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./central/*": {
+      "import": "./central/*.js",
+      "require": "./dist/cjs/central/*.js"
+    },
+    "./central": {
+      "import": "./central/index.js",
+      "require": "./dist/cjs/central/index.js"
+    },
+    "./client": {
+      "import": "./client.js",
+      "require": "./dist/cjs/client.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./react/*": {
+      "import": "./react/*.js",
+      "require": "./dist/cjs/react/*.js"
+    },
+    "./react": {
+      "import": "./react/index.js",
+      "require": "./dist/cjs/react/index.js"
+    },
+    "./server": {
+      "import": "./server.js",
+      "require": "./dist/cjs/server.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/config",
+  "dependencies": {
+    "@types/react": "*",
+    "@types/ws": "^8.5.4",
+    "isomorphic-ws": "^5.0.0",
+    "react": "18.2.0",
+    "react-query": "*",
+    "ws": "^8.13.0"
+  },
+  "index": "dist/cjs/index.js"
+}

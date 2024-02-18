@@ -1,0 +1,84 @@
+{
+  "name": "@bbuild/files",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "aws-sdk": "^2.1492.0",
+    "typescript": "4.9.5",
+    "uuid": "^9.0.1"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./actions/*": {
+      "import": "./actions/*.js",
+      "require": "./dist/cjs/actions/*.js"
+    },
+    "./actions": {
+      "import": "./actions/index.js",
+      "require": "./dist/cjs/actions/index.js"
+    },
+    "./client/*": {
+      "import": "./client/*.js",
+      "require": "./dist/cjs/client/*.js"
+    },
+    "./client": {
+      "import": "./client/index.js",
+      "require": "./dist/cjs/client/index.js"
+    },
+    "./config": {
+      "import": "./config.js",
+      "require": "./dist/cjs/config.js"
+    },
+    "./entities/*": {
+      "import": "./entities/*.js",
+      "require": "./dist/cjs/entities/*.js"
+    },
+    "./entities": {
+      "import": "./entities/index.js",
+      "require": "./dist/cjs/entities/index.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./models/*": {
+      "import": "./models/*.js",
+      "require": "./dist/cjs/models/*.js"
+    },
+    "./models": {
+      "import": "./models/index.js",
+      "require": "./dist/cjs/models/index.js"
+    },
+    "./registerR2": {
+      "import": "./registerR2.js",
+      "require": "./dist/cjs/registerR2.js"
+    },
+    "./rpc/*": {
+      "import": "./rpc/*.js",
+      "require": "./dist/cjs/rpc/*.js"
+    },
+    "./rpc": {
+      "import": "./rpc/index.js",
+      "require": "./dist/cjs/rpc/index.js"
+    },
+    "./server": {
+      "import": "./server.js",
+      "require": "./dist/cjs/server.js"
+    },
+    "./verifyMongo": {
+      "import": "./verifyMongo.js",
+      "require": "./dist/cjs/verifyMongo.js"
+    }
+  },
+  "index": "dist/cjs/index.js"
+}

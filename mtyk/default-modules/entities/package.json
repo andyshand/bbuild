@@ -1,0 +1,178 @@
+{
+  "name": "@bbuild/entities",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/reflect-metadata": "^0.1.0",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./BaseEntity": {
+      "import": "./BaseEntity.js",
+      "require": "./dist/cjs/BaseEntity.js"
+    },
+    "./BaseEntityManager": {
+      "import": "./BaseEntityManager.js",
+      "require": "./dist/cjs/BaseEntityManager.js"
+    },
+    "./DBEntityManager": {
+      "import": "./DBEntityManager.js",
+      "require": "./dist/cjs/DBEntityManager.js"
+    },
+    "./Entity": {
+      "import": "./Entity.js",
+      "require": "./dist/cjs/Entity.js"
+    },
+    "./EntityClient": {
+      "import": "./EntityClient.js",
+      "require": "./dist/cjs/EntityClient.js"
+    },
+    "./EntityConfig": {
+      "import": "./EntityConfig.js",
+      "require": "./dist/cjs/EntityConfig.js"
+    },
+    "./EntityField": {
+      "import": "./EntityField.js",
+      "require": "./dist/cjs/EntityField.js"
+    },
+    "./EntityFunction": {
+      "import": "./EntityFunction.js",
+      "require": "./dist/cjs/EntityFunction.js"
+    },
+    "./EntityRelation": {
+      "import": "./EntityRelation.js",
+      "require": "./dist/cjs/EntityRelation.js"
+    },
+    "./EntityTypable": {
+      "import": "./EntityTypable.js",
+      "require": "./dist/cjs/EntityTypable.js"
+    },
+    "./IEntityManager": {
+      "import": "./IEntityManager.js",
+      "require": "./dist/cjs/IEntityManager.js"
+    },
+    "./MemoryEntityManager": {
+      "import": "./MemoryEntityManager.js",
+      "require": "./dist/cjs/MemoryEntityManager.js"
+    },
+    "./MockEntityManager": {
+      "import": "./MockEntityManager.js",
+      "require": "./dist/cjs/MockEntityManager.js"
+    },
+    "./MongoEntityManager": {
+      "import": "./MongoEntityManager.js",
+      "require": "./dist/cjs/MongoEntityManager.js"
+    },
+    "./RPCEntityManager": {
+      "import": "./RPCEntityManager.js",
+      "require": "./dist/cjs/RPCEntityManager.js"
+    },
+    "./RemoteEntityManager": {
+      "import": "./RemoteEntityManager.js",
+      "require": "./dist/cjs/RemoteEntityManager.js"
+    },
+    "./Serialisable": {
+      "import": "./Serialisable.js",
+      "require": "./dist/cjs/Serialisable.js"
+    },
+    "./ServerOnly": {
+      "import": "./ServerOnly.js",
+      "require": "./dist/cjs/ServerOnly.js"
+    },
+    "./UnknownEntity": {
+      "import": "./UnknownEntity.js",
+      "require": "./dist/cjs/UnknownEntity.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./applyPatchToObject": {
+      "import": "./applyPatchToObject.js",
+      "require": "./dist/cjs/applyPatchToObject.js"
+    },
+    "./asyncLocalStorage": {
+      "import": "./asyncLocalStorage.js",
+      "require": "./dist/cjs/asyncLocalStorage.js"
+    },
+    "./entityType": {
+      "import": "./entityType.js",
+      "require": "./dist/cjs/entityType.js"
+    },
+    "./formatters": {
+      "import": "./formatters.js",
+      "require": "./dist/cjs/formatters.js"
+    },
+    "./getChangedFields": {
+      "import": "./getChangedFields.js",
+      "require": "./dist/cjs/getChangedFields.js"
+    },
+    "./getEntityTypeName": {
+      "import": "./getEntityTypeName.js",
+      "require": "./dist/cjs/getEntityTypeName.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./mergeEntityData": {
+      "import": "./mergeEntityData.js",
+      "require": "./dist/cjs/mergeEntityData.js"
+    },
+    "./mongo/*": {
+      "import": "./mongo/*.js",
+      "require": "./dist/cjs/mongo/*.js"
+    },
+    "./mongo": {
+      "import": "./mongo/index.js",
+      "require": "./dist/cjs/mongo/index.js"
+    },
+    "./saveDirtyEntities": {
+      "import": "./saveDirtyEntities.js",
+      "require": "./dist/cjs/saveDirtyEntities.js"
+    },
+    "./structs/*": {
+      "import": "./structs/*.js",
+      "require": "./dist/cjs/structs/*.js"
+    },
+    "./structs": {
+      "import": "./structs/index.js",
+      "require": "./dist/cjs/structs/index.js"
+    },
+    "./wrapRPCManager": {
+      "import": "./wrapRPCManager.js",
+      "require": "./dist/cjs/wrapRPCManager.js"
+    },
+    "./yjs/*": {
+      "import": "./yjs/*.js",
+      "require": "./dist/cjs/yjs/*.js"
+    },
+    "./yjs": {
+      "import": "./yjs/index.js",
+      "require": "./dist/cjs/yjs/index.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/config",
+  "dependencies": {
+    "@trpc/server": "^10.14.0",
+    "cors": "^2.8.5",
+    "immer": "^9.0.19",
+    "mongodb": "^5.1.0",
+    "reflect-metadata": "^0.1.13",
+    "remeda": "^1.12.0",
+    "rxjs": "^7.8.0",
+    "type-fest": "^3.5.7",
+    "uuid": "^8.3.2",
+    "ws": "^8.12.1",
+    "y-websocket": "^1.5.1",
+    "yjs": "^13.6.10"
+  },
+  "index": "dist/cjs/index.js"
+}

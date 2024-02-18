@@ -1,0 +1,41 @@
+{
+  "name": "@bbuild/share",
+  "version": "0.0.1",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./index.tsx": {
+      "import": "./index.jsx",
+      "require": "./dist/cjs/index.jsx"
+    },
+    "./makeShareBtn.tsx": {
+      "import": "./makeShareBtn.jsx",
+      "require": "./dist/cjs/makeShareBtn.jsx"
+    },
+    "./makeShareUrl.tsx": {
+      "import": "./makeShareUrl.jsx",
+      "require": "./dist/cjs/makeShareUrl.jsx"
+    },
+    "./makeWebappLink.tsx": {
+      "import": "./makeWebappLink.jsx",
+      "require": "./dist/cjs/makeWebappLink.jsx"
+    }
+  },
+  "dependencies": {
+    "react-icons": "^4.7.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "index": "dist/cjs/index.js"
+}

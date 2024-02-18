@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
+    "jsx": "preserve",
+    "target": "ESNext",
+    "preserveSymlinks": true,
+    "outDir": "dist",
+    "plugins": [],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "composite": true,
+    "paths": {
+      "modules/*": [
+        "./*/src"
+      ]
+    },
+    "allowJs": true,
+    "strict": false,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "reflection": true,
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
+}

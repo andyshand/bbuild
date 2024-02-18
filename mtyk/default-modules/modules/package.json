@@ -1,0 +1,1579 @@
+{
+  "name": "@mtyk/",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "index": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ai-chat/src/_actions/*": {
+      "import": "./ai-chat/src/_actions/*.js",
+      "require": "./dist/cjs/ai-chat/src/_actions/*.js"
+    },
+    "./ai-chat/src/_actions": {
+      "import": "./ai-chat/src/_actions/index.js",
+      "require": "./dist/cjs/ai-chat/src/_actions/index.js"
+    },
+    "./ai-chat/src/actions/config/*": {
+      "import": "./ai-chat/src/actions/config/*.js",
+      "require": "./dist/cjs/ai-chat/src/actions/config/*.js"
+    },
+    "./ai-chat/src/actions/config": {
+      "import": "./ai-chat/src/actions/config/index.js",
+      "require": "./dist/cjs/ai-chat/src/actions/config/index.js"
+    },
+    "./ai-chat/src/actions/runner/*": {
+      "import": "./ai-chat/src/actions/runner/*.js",
+      "require": "./dist/cjs/ai-chat/src/actions/runner/*.js"
+    },
+    "./ai-chat/src/actions/runner": {
+      "import": "./ai-chat/src/actions/runner/index.js",
+      "require": "./dist/cjs/ai-chat/src/actions/runner/index.js"
+    },
+    "./ai-chat/src/actions/*": {
+      "import": "./ai-chat/src/actions/*.js",
+      "require": "./dist/cjs/ai-chat/src/actions/*.js"
+    },
+    "./ai-chat/src/actions": {
+      "import": "./ai-chat/src/actions/index.js",
+      "require": "./dist/cjs/ai-chat/src/actions/index.js"
+    },
+    "./ai-chat/src/attachments/*": {
+      "import": "./ai-chat/src/attachments/*.js",
+      "require": "./dist/cjs/ai-chat/src/attachments/*.js"
+    },
+    "./ai-chat/src/attachments": {
+      "import": "./ai-chat/src/attachments/index.js",
+      "require": "./dist/cjs/ai-chat/src/attachments/index.js"
+    },
+    "./ai-chat/src/chat-context/*": {
+      "import": "./ai-chat/src/chat-context/*.js",
+      "require": "./dist/cjs/ai-chat/src/chat-context/*.js"
+    },
+    "./ai-chat/src/chat-context": {
+      "import": "./ai-chat/src/chat-context/index.js",
+      "require": "./dist/cjs/ai-chat/src/chat-context/index.js"
+    },
+    "./ai-chat/src/chat-task/*": {
+      "import": "./ai-chat/src/chat-task/*.js",
+      "require": "./dist/cjs/ai-chat/src/chat-task/*.js"
+    },
+    "./ai-chat/src/chat-task": {
+      "import": "./ai-chat/src/chat-task/index.js",
+      "require": "./dist/cjs/ai-chat/src/chat-task/index.js"
+    },
+    "./ai-chat/src/docker/*": {
+      "import": "./ai-chat/src/docker/*.js",
+      "require": "./dist/cjs/ai-chat/src/docker/*.js"
+    },
+    "./ai-chat/src/docker": {
+      "import": "./ai-chat/src/docker/index.js",
+      "require": "./dist/cjs/ai-chat/src/docker/index.js"
+    },
+    "./ai-chat/src/entities/chat/*": {
+      "import": "./ai-chat/src/entities/chat/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/chat/*.js"
+    },
+    "./ai-chat/src/entities/chat": {
+      "import": "./ai-chat/src/entities/chat/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/chat/index.js"
+    },
+    "./ai-chat/src/entities/schemas/*": {
+      "import": "./ai-chat/src/entities/schemas/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/schemas/*.js"
+    },
+    "./ai-chat/src/entities/schemas": {
+      "import": "./ai-chat/src/entities/schemas/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/schemas/index.js"
+    },
+    "./ai-chat/src/entities/workflow-step/actions/nodes/*": {
+      "import": "./ai-chat/src/entities/workflow-step/actions/nodes/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/actions/nodes/*.js"
+    },
+    "./ai-chat/src/entities/workflow-step/actions/nodes": {
+      "import": "./ai-chat/src/entities/workflow-step/actions/nodes/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/actions/nodes/index.js"
+    },
+    "./ai-chat/src/entities/workflow-step/actions/*": {
+      "import": "./ai-chat/src/entities/workflow-step/actions/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/actions/*.js"
+    },
+    "./ai-chat/src/entities/workflow-step/actions": {
+      "import": "./ai-chat/src/entities/workflow-step/actions/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/actions/index.js"
+    },
+    "./ai-chat/src/entities/workflow-step/*": {
+      "import": "./ai-chat/src/entities/workflow-step/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/*.js"
+    },
+    "./ai-chat/src/entities/workflow-step": {
+      "import": "./ai-chat/src/entities/workflow-step/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/workflow-step/index.js"
+    },
+    "./ai-chat/src/entities/*": {
+      "import": "./ai-chat/src/entities/*.js",
+      "require": "./dist/cjs/ai-chat/src/entities/*.js"
+    },
+    "./ai-chat/src/entities": {
+      "import": "./ai-chat/src/entities/index.js",
+      "require": "./dist/cjs/ai-chat/src/entities/index.js"
+    },
+    "./ai-chat/src/files/actions/*": {
+      "import": "./ai-chat/src/files/actions/*.js",
+      "require": "./dist/cjs/ai-chat/src/files/actions/*.js"
+    },
+    "./ai-chat/src/files/actions": {
+      "import": "./ai-chat/src/files/actions/index.js",
+      "require": "./dist/cjs/ai-chat/src/files/actions/index.js"
+    },
+    "./ai-chat/src/files/*": {
+      "import": "./ai-chat/src/files/*.js",
+      "require": "./dist/cjs/ai-chat/src/files/*.js"
+    },
+    "./ai-chat/src/files": {
+      "import": "./ai-chat/src/files/index.js",
+      "require": "./dist/cjs/ai-chat/src/files/index.js"
+    },
+    "./ai-chat/src/formattings/*": {
+      "import": "./ai-chat/src/formattings/*.js",
+      "require": "./dist/cjs/ai-chat/src/formattings/*.js"
+    },
+    "./ai-chat/src/formattings": {
+      "import": "./ai-chat/src/formattings/index.js",
+      "require": "./dist/cjs/ai-chat/src/formattings/index.js"
+    },
+    "./ai-chat/src/input-syntax/*": {
+      "import": "./ai-chat/src/input-syntax/*.js",
+      "require": "./dist/cjs/ai-chat/src/input-syntax/*.js"
+    },
+    "./ai-chat/src/input-syntax": {
+      "import": "./ai-chat/src/input-syntax/index.js",
+      "require": "./dist/cjs/ai-chat/src/input-syntax/index.js"
+    },
+    "./ai-chat/src/knowledge-helpers/*": {
+      "import": "./ai-chat/src/knowledge-helpers/*.js",
+      "require": "./dist/cjs/ai-chat/src/knowledge-helpers/*.js"
+    },
+    "./ai-chat/src/knowledge-helpers": {
+      "import": "./ai-chat/src/knowledge-helpers/index.js",
+      "require": "./dist/cjs/ai-chat/src/knowledge-helpers/index.js"
+    },
+    "./ai-chat/src/messages/*": {
+      "import": "./ai-chat/src/messages/*.js",
+      "require": "./dist/cjs/ai-chat/src/messages/*.js"
+    },
+    "./ai-chat/src/messages": {
+      "import": "./ai-chat/src/messages/index.js",
+      "require": "./dist/cjs/ai-chat/src/messages/index.js"
+    },
+    "./ai-chat/src/named-entities/*": {
+      "import": "./ai-chat/src/named-entities/*.js",
+      "require": "./dist/cjs/ai-chat/src/named-entities/*.js"
+    },
+    "./ai-chat/src/named-entities": {
+      "import": "./ai-chat/src/named-entities/index.js",
+      "require": "./dist/cjs/ai-chat/src/named-entities/index.js"
+    },
+    "./ai-chat/src/project/entities/*": {
+      "import": "./ai-chat/src/project/entities/*.js",
+      "require": "./dist/cjs/ai-chat/src/project/entities/*.js"
+    },
+    "./ai-chat/src/project/entities": {
+      "import": "./ai-chat/src/project/entities/index.js",
+      "require": "./dist/cjs/ai-chat/src/project/entities/index.js"
+    },
+    "./ai-chat/src/project/util/*": {
+      "import": "./ai-chat/src/project/util/*.js",
+      "require": "./dist/cjs/ai-chat/src/project/util/*.js"
+    },
+    "./ai-chat/src/project/util": {
+      "import": "./ai-chat/src/project/util/index.js",
+      "require": "./dist/cjs/ai-chat/src/project/util/index.js"
+    },
+    "./ai-chat/src/project/*": {
+      "import": "./ai-chat/src/project/*.js",
+      "require": "./dist/cjs/ai-chat/src/project/*.js"
+    },
+    "./ai-chat/src/project": {
+      "import": "./ai-chat/src/project/index.js",
+      "require": "./dist/cjs/ai-chat/src/project/index.js"
+    },
+    "./ai-chat/src/prompts/dc/*": {
+      "import": "./ai-chat/src/prompts/dc/*.js",
+      "require": "./dist/cjs/ai-chat/src/prompts/dc/*.js"
+    },
+    "./ai-chat/src/prompts/dc": {
+      "import": "./ai-chat/src/prompts/dc/index.js",
+      "require": "./dist/cjs/ai-chat/src/prompts/dc/index.js"
+    },
+    "./ai-chat/src/prompts/*": {
+      "import": "./ai-chat/src/prompts/*.js",
+      "require": "./dist/cjs/ai-chat/src/prompts/*.js"
+    },
+    "./ai-chat/src/prompts": {
+      "import": "./ai-chat/src/prompts/index.js",
+      "require": "./dist/cjs/ai-chat/src/prompts/index.js"
+    },
+    "./ai-chat/src/queue/messages/*": {
+      "import": "./ai-chat/src/queue/messages/*.js",
+      "require": "./dist/cjs/ai-chat/src/queue/messages/*.js"
+    },
+    "./ai-chat/src/queue/messages": {
+      "import": "./ai-chat/src/queue/messages/index.js",
+      "require": "./dist/cjs/ai-chat/src/queue/messages/index.js"
+    },
+    "./ai-chat/src/queue/*": {
+      "import": "./ai-chat/src/queue/*.js",
+      "require": "./dist/cjs/ai-chat/src/queue/*.js"
+    },
+    "./ai-chat/src/queue": {
+      "import": "./ai-chat/src/queue/index.js",
+      "require": "./dist/cjs/ai-chat/src/queue/index.js"
+    },
+    "./ai-chat/src/tabs/actions/*": {
+      "import": "./ai-chat/src/tabs/actions/*.js",
+      "require": "./dist/cjs/ai-chat/src/tabs/actions/*.js"
+    },
+    "./ai-chat/src/tabs/actions": {
+      "import": "./ai-chat/src/tabs/actions/index.js",
+      "require": "./dist/cjs/ai-chat/src/tabs/actions/index.js"
+    },
+    "./ai-chat/src/tabs/*": {
+      "import": "./ai-chat/src/tabs/*.js",
+      "require": "./dist/cjs/ai-chat/src/tabs/*.js"
+    },
+    "./ai-chat/src/tabs": {
+      "import": "./ai-chat/src/tabs/index.js",
+      "require": "./dist/cjs/ai-chat/src/tabs/index.js"
+    },
+    "./ai-chat/src/tools/*": {
+      "import": "./ai-chat/src/tools/*.js",
+      "require": "./dist/cjs/ai-chat/src/tools/*.js"
+    },
+    "./ai-chat/src/tools": {
+      "import": "./ai-chat/src/tools/index.js",
+      "require": "./dist/cjs/ai-chat/src/tools/index.js"
+    },
+    "./ai-chat/src/ui/chat/hooks/*": {
+      "import": "./ai-chat/src/ui/chat/hooks/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/chat/hooks/*.js"
+    },
+    "./ai-chat/src/ui/chat/hooks": {
+      "import": "./ai-chat/src/ui/chat/hooks/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/chat/hooks/index.js"
+    },
+    "./ai-chat/src/ui/chat/*": {
+      "import": "./ai-chat/src/ui/chat/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/chat/*.js"
+    },
+    "./ai-chat/src/ui/chat": {
+      "import": "./ai-chat/src/ui/chat/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/chat/index.js"
+    },
+    "./ai-chat/src/ui/config/*": {
+      "import": "./ai-chat/src/ui/config/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/config/*.js"
+    },
+    "./ai-chat/src/ui/config": {
+      "import": "./ai-chat/src/ui/config/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/config/index.js"
+    },
+    "./ai-chat/src/ui/core/*": {
+      "import": "./ai-chat/src/ui/core/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/core/*.js"
+    },
+    "./ai-chat/src/ui/core": {
+      "import": "./ai-chat/src/ui/core/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/core/index.js"
+    },
+    "./ai-chat/src/ui/creations/hooks/*": {
+      "import": "./ai-chat/src/ui/creations/hooks/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/creations/hooks/*.js"
+    },
+    "./ai-chat/src/ui/creations/hooks": {
+      "import": "./ai-chat/src/ui/creations/hooks/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/creations/hooks/index.js"
+    },
+    "./ai-chat/src/ui/creations/*": {
+      "import": "./ai-chat/src/ui/creations/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/creations/*.js"
+    },
+    "./ai-chat/src/ui/creations": {
+      "import": "./ai-chat/src/ui/creations/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/creations/index.js"
+    },
+    "./ai-chat/src/ui/engines/components/*": {
+      "import": "./ai-chat/src/ui/engines/components/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/components/*.js"
+    },
+    "./ai-chat/src/ui/engines/components": {
+      "import": "./ai-chat/src/ui/engines/components/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/components/index.js"
+    },
+    "./ai-chat/src/ui/engines/hooks/*": {
+      "import": "./ai-chat/src/ui/engines/hooks/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/hooks/*.js"
+    },
+    "./ai-chat/src/ui/engines/hooks": {
+      "import": "./ai-chat/src/ui/engines/hooks/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/hooks/index.js"
+    },
+    "./ai-chat/src/ui/engines/*": {
+      "import": "./ai-chat/src/ui/engines/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/*.js"
+    },
+    "./ai-chat/src/ui/engines": {
+      "import": "./ai-chat/src/ui/engines/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/engines/index.js"
+    },
+    "./ai-chat/src/ui/hooks/*": {
+      "import": "./ai-chat/src/ui/hooks/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/hooks/*.js"
+    },
+    "./ai-chat/src/ui/hooks": {
+      "import": "./ai-chat/src/ui/hooks/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/hooks/index.js"
+    },
+    "./ai-chat/src/ui/*": {
+      "import": "./ai-chat/src/ui/*.js",
+      "require": "./dist/cjs/ai-chat/src/ui/*.js"
+    },
+    "./ai-chat/src/ui": {
+      "import": "./ai-chat/src/ui/index.js",
+      "require": "./dist/cjs/ai-chat/src/ui/index.js"
+    },
+    "./ai-chat/src/*": {
+      "import": "./ai-chat/src/*.js",
+      "require": "./dist/cjs/ai-chat/src/*.js"
+    },
+    "./ai-chat/src": {
+      "import": "./ai-chat/src/index.js",
+      "require": "./dist/cjs/ai-chat/src/index.js"
+    },
+    "./ai-chat/*": {
+      "import": "./ai-chat/*.js",
+      "require": "./dist/cjs/ai-chat/*.js"
+    },
+    "./ai-chat": {
+      "import": "./ai-chat/index.js",
+      "require": "./dist/cjs/ai-chat/index.js"
+    },
+    "./ai-helper/src/sources/*": {
+      "import": "./ai-helper/src/sources/*.js",
+      "require": "./dist/cjs/ai-helper/src/sources/*.js"
+    },
+    "./ai-helper/src/sources": {
+      "import": "./ai-helper/src/sources/index.js",
+      "require": "./dist/cjs/ai-helper/src/sources/index.js"
+    },
+    "./ai-helper/src/*": {
+      "import": "./ai-helper/src/*.js",
+      "require": "./dist/cjs/ai-helper/src/*.js"
+    },
+    "./ai-helper/src": {
+      "import": "./ai-helper/src/index.js",
+      "require": "./dist/cjs/ai-helper/src/index.js"
+    },
+    "./ai-helper/*": {
+      "import": "./ai-helper/*.js",
+      "require": "./dist/cjs/ai-helper/*.js"
+    },
+    "./ai-helper": {
+      "import": "./ai-helper/index.js",
+      "require": "./dist/cjs/ai-helper/index.js"
+    },
+    "./ai-task/src/babel/*": {
+      "import": "./ai-task/src/babel/*.js",
+      "require": "./dist/cjs/ai-task/src/babel/*.js"
+    },
+    "./ai-task/src/babel": {
+      "import": "./ai-task/src/babel/index.js",
+      "require": "./dist/cjs/ai-task/src/babel/index.js"
+    },
+    "./ai-task/src/framework/react/hooks/*": {
+      "import": "./ai-task/src/framework/react/hooks/*.js",
+      "require": "./dist/cjs/ai-task/src/framework/react/hooks/*.js"
+    },
+    "./ai-task/src/framework/react/hooks": {
+      "import": "./ai-task/src/framework/react/hooks/index.js",
+      "require": "./dist/cjs/ai-task/src/framework/react/hooks/index.js"
+    },
+    "./ai-task/src/framework/react/*": {
+      "import": "./ai-task/src/framework/react/*.js",
+      "require": "./dist/cjs/ai-task/src/framework/react/*.js"
+    },
+    "./ai-task/src/framework/react": {
+      "import": "./ai-task/src/framework/react/index.js",
+      "require": "./dist/cjs/ai-task/src/framework/react/index.js"
+    },
+    "./ai-task/src/framework/*": {
+      "import": "./ai-task/src/framework/*.js",
+      "require": "./dist/cjs/ai-task/src/framework/*.js"
+    },
+    "./ai-task/src/framework": {
+      "import": "./ai-task/src/framework/index.js",
+      "require": "./dist/cjs/ai-task/src/framework/index.js"
+    },
+    "./ai-task/src/interpreter/*": {
+      "import": "./ai-task/src/interpreter/*.js",
+      "require": "./dist/cjs/ai-task/src/interpreter/*.js"
+    },
+    "./ai-task/src/interpreter": {
+      "import": "./ai-task/src/interpreter/index.js",
+      "require": "./dist/cjs/ai-task/src/interpreter/index.js"
+    },
+    "./ai-task/src/new/*": {
+      "import": "./ai-task/src/new/*.js",
+      "require": "./dist/cjs/ai-task/src/new/*.js"
+    },
+    "./ai-task/src/new": {
+      "import": "./ai-task/src/new/index.js",
+      "require": "./dist/cjs/ai-task/src/new/index.js"
+    },
+    "./ai-task/src/prompts/brain/*": {
+      "import": "./ai-task/src/prompts/brain/*.js",
+      "require": "./dist/cjs/ai-task/src/prompts/brain/*.js"
+    },
+    "./ai-task/src/prompts/brain": {
+      "import": "./ai-task/src/prompts/brain/index.js",
+      "require": "./dist/cjs/ai-task/src/prompts/brain/index.js"
+    },
+    "./ai-task/src/prompts/*": {
+      "import": "./ai-task/src/prompts/*.js",
+      "require": "./dist/cjs/ai-task/src/prompts/*.js"
+    },
+    "./ai-task/src/prompts": {
+      "import": "./ai-task/src/prompts/index.js",
+      "require": "./dist/cjs/ai-task/src/prompts/index.js"
+    },
+    "./ai-task/src/util/*": {
+      "import": "./ai-task/src/util/*.js",
+      "require": "./dist/cjs/ai-task/src/util/*.js"
+    },
+    "./ai-task/src/util": {
+      "import": "./ai-task/src/util/index.js",
+      "require": "./dist/cjs/ai-task/src/util/index.js"
+    },
+    "./ai-task/src/*": {
+      "import": "./ai-task/src/*.js",
+      "require": "./dist/cjs/ai-task/src/*.js"
+    },
+    "./ai-task/src": {
+      "import": "./ai-task/src/index.js",
+      "require": "./dist/cjs/ai-task/src/index.js"
+    },
+    "./ai-task/*": {
+      "import": "./ai-task/*.js",
+      "require": "./dist/cjs/ai-task/*.js"
+    },
+    "./ai-task": {
+      "import": "./ai-task/index.js",
+      "require": "./dist/cjs/ai-task/index.js"
+    },
+    "./async/src/*": {
+      "import": "./async/src/*.js",
+      "require": "./dist/cjs/async/src/*.js"
+    },
+    "./async/src": {
+      "import": "./async/src/index.js",
+      "require": "./dist/cjs/async/src/index.js"
+    },
+    "./async/*": {
+      "import": "./async/*.js",
+      "require": "./dist/cjs/async/*.js"
+    },
+    "./async": {
+      "import": "./async/index.js",
+      "require": "./dist/cjs/async/index.js"
+    },
+    "./build/src/ui/core/components/*": {
+      "import": "./build/src/ui/core/components/*.js",
+      "require": "./dist/cjs/build/src/ui/core/components/*.js"
+    },
+    "./build/src/ui/core/components": {
+      "import": "./build/src/ui/core/components/index.js",
+      "require": "./dist/cjs/build/src/ui/core/components/index.js"
+    },
+    "./build/src/ui/core/*": {
+      "import": "./build/src/ui/core/*.js",
+      "require": "./dist/cjs/build/src/ui/core/*.js"
+    },
+    "./build/src/ui/core": {
+      "import": "./build/src/ui/core/index.js",
+      "require": "./dist/cjs/build/src/ui/core/index.js"
+    },
+    "./build/src/ui/*": {
+      "import": "./build/src/ui/*.js",
+      "require": "./dist/cjs/build/src/ui/*.js"
+    },
+    "./build/src/ui": {
+      "import": "./build/src/ui/index.js",
+      "require": "./dist/cjs/build/src/ui/index.js"
+    },
+    "./build/src/*": {
+      "import": "./build/src/*.js",
+      "require": "./dist/cjs/build/src/*.js"
+    },
+    "./build/src": {
+      "import": "./build/src/index.js",
+      "require": "./dist/cjs/build/src/index.js"
+    },
+    "./build/*": {
+      "import": "./build/*.js",
+      "require": "./dist/cjs/build/*.js"
+    },
+    "./build": {
+      "import": "./build/index.js",
+      "require": "./dist/cjs/build/index.js"
+    },
+    "./code/src/actions/*": {
+      "import": "./code/src/actions/*.js",
+      "require": "./dist/cjs/code/src/actions/*.js"
+    },
+    "./code/src/actions": {
+      "import": "./code/src/actions/index.js",
+      "require": "./dist/cjs/code/src/actions/index.js"
+    },
+    "./code/src/*": {
+      "import": "./code/src/*.js",
+      "require": "./dist/cjs/code/src/*.js"
+    },
+    "./code/src": {
+      "import": "./code/src/index.js",
+      "require": "./dist/cjs/code/src/index.js"
+    },
+    "./code/*": {
+      "import": "./code/*.js",
+      "require": "./dist/cjs/code/*.js"
+    },
+    "./code": {
+      "import": "./code/index.js",
+      "require": "./dist/cjs/code/index.js"
+    },
+    "./commander/src/*": {
+      "import": "./commander/src/*.js",
+      "require": "./dist/cjs/commander/src/*.js"
+    },
+    "./commander/src": {
+      "import": "./commander/src/index.js",
+      "require": "./dist/cjs/commander/src/index.js"
+    },
+    "./commander/*": {
+      "import": "./commander/*.js",
+      "require": "./dist/cjs/commander/*.js"
+    },
+    "./commander": {
+      "import": "./commander/index.js",
+      "require": "./dist/cjs/commander/index.js"
+    },
+    "./commander-react/src/*": {
+      "import": "./commander-react/src/*.js",
+      "require": "./dist/cjs/commander-react/src/*.js"
+    },
+    "./commander-react/src": {
+      "import": "./commander-react/src/index.js",
+      "require": "./dist/cjs/commander-react/src/index.js"
+    },
+    "./commander-react/*": {
+      "import": "./commander-react/*.js",
+      "require": "./dist/cjs/commander-react/*.js"
+    },
+    "./commander-react": {
+      "import": "./commander-react/index.js",
+      "require": "./dist/cjs/commander-react/index.js"
+    },
+    "./config/cli/*": {
+      "import": "./config/cli/*.js",
+      "require": "./dist/cjs/config/cli/*.js"
+    },
+    "./config/cli": {
+      "import": "./config/cli/index.js",
+      "require": "./dist/cjs/config/cli/index.js"
+    },
+    "./config/src/cli/*": {
+      "import": "./config/src/cli/*.js",
+      "require": "./dist/cjs/config/src/cli/*.js"
+    },
+    "./config/src/cli": {
+      "import": "./config/src/cli/index.js",
+      "require": "./dist/cjs/config/src/cli/index.js"
+    },
+    "./config/src/*": {
+      "import": "./config/src/*.js",
+      "require": "./dist/cjs/config/src/*.js"
+    },
+    "./config/src": {
+      "import": "./config/src/index.js",
+      "require": "./dist/cjs/config/src/index.js"
+    },
+    "./config/*": {
+      "import": "./config/*.js",
+      "require": "./dist/cjs/config/*.js"
+    },
+    "./config": {
+      "import": "./config/index.js",
+      "require": "./dist/cjs/config/index.js"
+    },
+    "./context/src/*": {
+      "import": "./context/src/*.js",
+      "require": "./dist/cjs/context/src/*.js"
+    },
+    "./context/src": {
+      "import": "./context/src/index.js",
+      "require": "./dist/cjs/context/src/index.js"
+    },
+    "./context/*": {
+      "import": "./context/*.js",
+      "require": "./dist/cjs/context/*.js"
+    },
+    "./context": {
+      "import": "./context/index.js",
+      "require": "./dist/cjs/context/index.js"
+    },
+    "./context-gpt/src/*": {
+      "import": "./context-gpt/src/*.js",
+      "require": "./dist/cjs/context-gpt/src/*.js"
+    },
+    "./context-gpt/src": {
+      "import": "./context-gpt/src/index.js",
+      "require": "./dist/cjs/context-gpt/src/index.js"
+    },
+    "./context-gpt/*": {
+      "import": "./context-gpt/*.js",
+      "require": "./dist/cjs/context-gpt/*.js"
+    },
+    "./context-gpt": {
+      "import": "./context-gpt/index.js",
+      "require": "./dist/cjs/context-gpt/index.js"
+    },
+    "./core/src/*": {
+      "import": "./core/src/*.js",
+      "require": "./dist/cjs/core/src/*.js"
+    },
+    "./core/src": {
+      "import": "./core/src/index.js",
+      "require": "./dist/cjs/core/src/index.js"
+    },
+    "./core/*": {
+      "import": "./core/*.js",
+      "require": "./dist/cjs/core/*.js"
+    },
+    "./core": {
+      "import": "./core/index.js",
+      "require": "./dist/cjs/core/index.js"
+    },
+    "./dash/src/*": {
+      "import": "./dash/src/*.js",
+      "require": "./dist/cjs/dash/src/*.js"
+    },
+    "./dash/src": {
+      "import": "./dash/src/index.js",
+      "require": "./dist/cjs/dash/src/index.js"
+    },
+    "./dash/*": {
+      "import": "./dash/*.js",
+      "require": "./dist/cjs/dash/*.js"
+    },
+    "./dash": {
+      "import": "./dash/index.js",
+      "require": "./dist/cjs/dash/index.js"
+    },
+    "./deps/src/*": {
+      "import": "./deps/src/*.js",
+      "require": "./dist/cjs/deps/src/*.js"
+    },
+    "./deps/src": {
+      "import": "./deps/src/index.js",
+      "require": "./dist/cjs/deps/src/index.js"
+    },
+    "./deps/*": {
+      "import": "./deps/*.js",
+      "require": "./dist/cjs/deps/*.js"
+    },
+    "./deps": {
+      "import": "./deps/index.js",
+      "require": "./dist/cjs/deps/index.js"
+    },
+    "./deps-react/src/*": {
+      "import": "./deps-react/src/*.js",
+      "require": "./dist/cjs/deps-react/src/*.js"
+    },
+    "./deps-react/src": {
+      "import": "./deps-react/src/index.js",
+      "require": "./dist/cjs/deps-react/src/index.js"
+    },
+    "./deps-react/*": {
+      "import": "./deps-react/*.js",
+      "require": "./dist/cjs/deps-react/*.js"
+    },
+    "./deps-react": {
+      "import": "./deps-react/index.js",
+      "require": "./dist/cjs/deps-react/index.js"
+    },
+    "./entities/src/mongo/*": {
+      "import": "./entities/src/mongo/*.js",
+      "require": "./dist/cjs/entities/src/mongo/*.js"
+    },
+    "./entities/src/mongo": {
+      "import": "./entities/src/mongo/index.js",
+      "require": "./dist/cjs/entities/src/mongo/index.js"
+    },
+    "./entities/src/*": {
+      "import": "./entities/src/*.js",
+      "require": "./dist/cjs/entities/src/*.js"
+    },
+    "./entities/src": {
+      "import": "./entities/src/index.js",
+      "require": "./dist/cjs/entities/src/index.js"
+    },
+    "./entities/*": {
+      "import": "./entities/*.js",
+      "require": "./dist/cjs/entities/*.js"
+    },
+    "./entities": {
+      "import": "./entities/index.js",
+      "require": "./dist/cjs/entities/index.js"
+    },
+    "./entities-client/src/selection/*": {
+      "import": "./entities-client/src/selection/*.js",
+      "require": "./dist/cjs/entities-client/src/selection/*.js"
+    },
+    "./entities-client/src/selection": {
+      "import": "./entities-client/src/selection/index.js",
+      "require": "./dist/cjs/entities-client/src/selection/index.js"
+    },
+    "./entities-client/src/*": {
+      "import": "./entities-client/src/*.js",
+      "require": "./dist/cjs/entities-client/src/*.js"
+    },
+    "./entities-client/src": {
+      "import": "./entities-client/src/index.js",
+      "require": "./dist/cjs/entities-client/src/index.js"
+    },
+    "./entities-client/*": {
+      "import": "./entities-client/*.js",
+      "require": "./dist/cjs/entities-client/*.js"
+    },
+    "./entities-client": {
+      "import": "./entities-client/index.js",
+      "require": "./dist/cjs/entities-client/index.js"
+    },
+    "./entities-client-temp/src/*": {
+      "import": "./entities-client-temp/src/*.js",
+      "require": "./dist/cjs/entities-client-temp/src/*.js"
+    },
+    "./entities-client-temp/src": {
+      "import": "./entities-client-temp/src/index.js",
+      "require": "./dist/cjs/entities-client-temp/src/index.js"
+    },
+    "./entities-client-temp/*": {
+      "import": "./entities-client-temp/*.js",
+      "require": "./dist/cjs/entities-client-temp/*.js"
+    },
+    "./entities-client-temp": {
+      "import": "./entities-client-temp/index.js",
+      "require": "./dist/cjs/entities-client-temp/index.js"
+    },
+    "./errors/src/*": {
+      "import": "./errors/src/*.js",
+      "require": "./dist/cjs/errors/src/*.js"
+    },
+    "./errors/src": {
+      "import": "./errors/src/index.js",
+      "require": "./dist/cjs/errors/src/index.js"
+    },
+    "./errors/*": {
+      "import": "./errors/*.js",
+      "require": "./dist/cjs/errors/*.js"
+    },
+    "./errors": {
+      "import": "./errors/index.js",
+      "require": "./dist/cjs/errors/index.js"
+    },
+    "./fields/src/*": {
+      "import": "./fields/src/*.js",
+      "require": "./dist/cjs/fields/src/*.js"
+    },
+    "./fields/src": {
+      "import": "./fields/src/index.js",
+      "require": "./dist/cjs/fields/src/index.js"
+    },
+    "./fields/*": {
+      "import": "./fields/*.js",
+      "require": "./dist/cjs/fields/*.js"
+    },
+    "./fields": {
+      "import": "./fields/index.js",
+      "require": "./dist/cjs/fields/index.js"
+    },
+    "./file-parse/src/*": {
+      "import": "./file-parse/src/*.js",
+      "require": "./dist/cjs/file-parse/src/*.js"
+    },
+    "./file-parse/src": {
+      "import": "./file-parse/src/index.js",
+      "require": "./dist/cjs/file-parse/src/index.js"
+    },
+    "./file-parse/*": {
+      "import": "./file-parse/*.js",
+      "require": "./dist/cjs/file-parse/*.js"
+    },
+    "./file-parse": {
+      "import": "./file-parse/index.js",
+      "require": "./dist/cjs/file-parse/index.js"
+    },
+    "./format-terminal/src/*": {
+      "import": "./format-terminal/src/*.js",
+      "require": "./dist/cjs/format-terminal/src/*.js"
+    },
+    "./format-terminal/src": {
+      "import": "./format-terminal/src/index.js",
+      "require": "./dist/cjs/format-terminal/src/index.js"
+    },
+    "./format-terminal/*": {
+      "import": "./format-terminal/*.js",
+      "require": "./dist/cjs/format-terminal/*.js"
+    },
+    "./format-terminal": {
+      "import": "./format-terminal/index.js",
+      "require": "./dist/cjs/format-terminal/index.js"
+    },
+    "./json/src/*": {
+      "import": "./json/src/*.js",
+      "require": "./dist/cjs/json/src/*.js"
+    },
+    "./json/src": {
+      "import": "./json/src/index.js",
+      "require": "./dist/cjs/json/src/index.js"
+    },
+    "./json/*": {
+      "import": "./json/*.js",
+      "require": "./dist/cjs/json/*.js"
+    },
+    "./json": {
+      "import": "./json/index.js",
+      "require": "./dist/cjs/json/index.js"
+    },
+    "./llm/src/engines/*": {
+      "import": "./llm/src/engines/*.js",
+      "require": "./dist/cjs/llm/src/engines/*.js"
+    },
+    "./llm/src/engines": {
+      "import": "./llm/src/engines/index.js",
+      "require": "./dist/cjs/llm/src/engines/index.js"
+    },
+    "./llm/src/strategies/*": {
+      "import": "./llm/src/strategies/*.js",
+      "require": "./dist/cjs/llm/src/strategies/*.js"
+    },
+    "./llm/src/strategies": {
+      "import": "./llm/src/strategies/index.js",
+      "require": "./dist/cjs/llm/src/strategies/index.js"
+    },
+    "./llm/src/util/*": {
+      "import": "./llm/src/util/*.js",
+      "require": "./dist/cjs/llm/src/util/*.js"
+    },
+    "./llm/src/util": {
+      "import": "./llm/src/util/index.js",
+      "require": "./dist/cjs/llm/src/util/index.js"
+    },
+    "./llm/src/*": {
+      "import": "./llm/src/*.js",
+      "require": "./dist/cjs/llm/src/*.js"
+    },
+    "./llm/src": {
+      "import": "./llm/src/index.js",
+      "require": "./dist/cjs/llm/src/index.js"
+    },
+    "./llm/*": {
+      "import": "./llm/*.js",
+      "require": "./dist/cjs/llm/*.js"
+    },
+    "./llm": {
+      "import": "./llm/index.js",
+      "require": "./dist/cjs/llm/index.js"
+    },
+    "./log/src/*": {
+      "import": "./log/src/*.js",
+      "require": "./dist/cjs/log/src/*.js"
+    },
+    "./log/src": {
+      "import": "./log/src/index.js",
+      "require": "./dist/cjs/log/src/index.js"
+    },
+    "./log/*": {
+      "import": "./log/*.js",
+      "require": "./dist/cjs/log/*.js"
+    },
+    "./log": {
+      "import": "./log/index.js",
+      "require": "./dist/cjs/log/index.js"
+    },
+    "./machine/src/state/*": {
+      "import": "./machine/src/state/*.js",
+      "require": "./dist/cjs/machine/src/state/*.js"
+    },
+    "./machine/src/state": {
+      "import": "./machine/src/state/index.js",
+      "require": "./dist/cjs/machine/src/state/index.js"
+    },
+    "./machine/src/task/*": {
+      "import": "./machine/src/task/*.js",
+      "require": "./dist/cjs/machine/src/task/*.js"
+    },
+    "./machine/src/task": {
+      "import": "./machine/src/task/index.js",
+      "require": "./dist/cjs/machine/src/task/index.js"
+    },
+    "./machine/src/*": {
+      "import": "./machine/src/*.js",
+      "require": "./dist/cjs/machine/src/*.js"
+    },
+    "./machine/src": {
+      "import": "./machine/src/index.js",
+      "require": "./dist/cjs/machine/src/index.js"
+    },
+    "./machine/*": {
+      "import": "./machine/*.js",
+      "require": "./dist/cjs/machine/*.js"
+    },
+    "./machine": {
+      "import": "./machine/index.js",
+      "require": "./dist/cjs/machine/index.js"
+    },
+    "./machine2/src/*": {
+      "import": "./machine2/src/*.js",
+      "require": "./dist/cjs/machine2/src/*.js"
+    },
+    "./machine2/src": {
+      "import": "./machine2/src/index.js",
+      "require": "./dist/cjs/machine2/src/index.js"
+    },
+    "./machine2/*": {
+      "import": "./machine2/*.js",
+      "require": "./dist/cjs/machine2/*.js"
+    },
+    "./machine2": {
+      "import": "./machine2/index.js",
+      "require": "./dist/cjs/machine2/index.js"
+    },
+    "./machine2-react/src/*": {
+      "import": "./machine2-react/src/*.js",
+      "require": "./dist/cjs/machine2-react/src/*.js"
+    },
+    "./machine2-react/src": {
+      "import": "./machine2-react/src/index.js",
+      "require": "./dist/cjs/machine2-react/src/index.js"
+    },
+    "./machine2-react/*": {
+      "import": "./machine2-react/*.js",
+      "require": "./dist/cjs/machine2-react/*.js"
+    },
+    "./machine2-react": {
+      "import": "./machine2-react/index.js",
+      "require": "./dist/cjs/machine2-react/index.js"
+    },
+    "./misc/src/*": {
+      "import": "./misc/src/*.js",
+      "require": "./dist/cjs/misc/src/*.js"
+    },
+    "./misc/src": {
+      "import": "./misc/src/index.js",
+      "require": "./dist/cjs/misc/src/index.js"
+    },
+    "./misc/*": {
+      "import": "./misc/*.js",
+      "require": "./dist/cjs/misc/*.js"
+    },
+    "./misc": {
+      "import": "./misc/index.js",
+      "require": "./dist/cjs/misc/index.js"
+    },
+    "./modules/vm/src/*": {
+      "import": "./modules/vm/src/*.js",
+      "require": "./dist/cjs/modules/vm/src/*.js"
+    },
+    "./modules/vm/src": {
+      "import": "./modules/vm/src/index.js",
+      "require": "./dist/cjs/modules/vm/src/index.js"
+    },
+    "./modules/vm/*": {
+      "import": "./modules/vm/*.js",
+      "require": "./dist/cjs/modules/vm/*.js"
+    },
+    "./modules/vm": {
+      "import": "./modules/vm/index.js",
+      "require": "./dist/cjs/modules/vm/index.js"
+    },
+    "./modules/*": {
+      "import": "./modules/*.js",
+      "require": "./dist/cjs/modules/*.js"
+    },
+    "./modules": {
+      "import": "./modules/index.js",
+      "require": "./dist/cjs/modules/index.js"
+    },
+    "./node-modules/src/*": {
+      "import": "./node-modules/src/*.js",
+      "require": "./dist/cjs/node-modules/src/*.js"
+    },
+    "./node-modules/src": {
+      "import": "./node-modules/src/index.js",
+      "require": "./dist/cjs/node-modules/src/index.js"
+    },
+    "./node-modules/*": {
+      "import": "./node-modules/*.js",
+      "require": "./dist/cjs/node-modules/*.js"
+    },
+    "./node-modules": {
+      "import": "./node-modules/index.js",
+      "require": "./dist/cjs/node-modules/index.js"
+    },
+    "./open-ai/src/*": {
+      "import": "./open-ai/src/*.js",
+      "require": "./dist/cjs/open-ai/src/*.js"
+    },
+    "./open-ai/src": {
+      "import": "./open-ai/src/index.js",
+      "require": "./dist/cjs/open-ai/src/index.js"
+    },
+    "./open-ai/*": {
+      "import": "./open-ai/*.js",
+      "require": "./dist/cjs/open-ai/*.js"
+    },
+    "./open-ai": {
+      "import": "./open-ai/index.js",
+      "require": "./dist/cjs/open-ai/index.js"
+    },
+    "./react/elements/*": {
+      "import": "./react/elements/*.js",
+      "require": "./dist/cjs/react/elements/*.js"
+    },
+    "./react/elements": {
+      "import": "./react/elements/index.js",
+      "require": "./dist/cjs/react/elements/index.js"
+    },
+    "./react/hooks/*": {
+      "import": "./react/hooks/*.js",
+      "require": "./dist/cjs/react/hooks/*.js"
+    },
+    "./react/hooks": {
+      "import": "./react/hooks/index.js",
+      "require": "./dist/cjs/react/hooks/index.js"
+    },
+    "./react/package/elements/*": {
+      "import": "./react/package/elements/*.js",
+      "require": "./dist/cjs/react/package/elements/*.js"
+    },
+    "./react/package/elements": {
+      "import": "./react/package/elements/index.js",
+      "require": "./dist/cjs/react/package/elements/index.js"
+    },
+    "./react/package/hooks/*": {
+      "import": "./react/package/hooks/*.js",
+      "require": "./dist/cjs/react/package/hooks/*.js"
+    },
+    "./react/package/hooks": {
+      "import": "./react/package/hooks/index.js",
+      "require": "./dist/cjs/react/package/hooks/index.js"
+    },
+    "./react/package/*": {
+      "import": "./react/package/*.js",
+      "require": "./dist/cjs/react/package/*.js"
+    },
+    "./react/package": {
+      "import": "./react/package/index.js",
+      "require": "./dist/cjs/react/package/index.js"
+    },
+    "./react/src/elements/*": {
+      "import": "./react/src/elements/*.js",
+      "require": "./dist/cjs/react/src/elements/*.js"
+    },
+    "./react/src/elements": {
+      "import": "./react/src/elements/index.js",
+      "require": "./dist/cjs/react/src/elements/index.js"
+    },
+    "./react/src/hooks/*": {
+      "import": "./react/src/hooks/*.js",
+      "require": "./dist/cjs/react/src/hooks/*.js"
+    },
+    "./react/src/hooks": {
+      "import": "./react/src/hooks/index.js",
+      "require": "./dist/cjs/react/src/hooks/index.js"
+    },
+    "./react/src/*": {
+      "import": "./react/src/*.js",
+      "require": "./dist/cjs/react/src/*.js"
+    },
+    "./react/src": {
+      "import": "./react/src/index.js",
+      "require": "./dist/cjs/react/src/index.js"
+    },
+    "./react/*": {
+      "import": "./react/*.js",
+      "require": "./dist/cjs/react/*.js"
+    },
+    "./react": {
+      "import": "./react/index.js",
+      "require": "./dist/cjs/react/index.js"
+    },
+    "./react-ui/src/actions/config/*": {
+      "import": "./react-ui/src/actions/config/*.js",
+      "require": "./dist/cjs/react-ui/src/actions/config/*.js"
+    },
+    "./react-ui/src/actions/config": {
+      "import": "./react-ui/src/actions/config/index.js",
+      "require": "./dist/cjs/react-ui/src/actions/config/index.js"
+    },
+    "./react-ui/src/actions/hooks/*": {
+      "import": "./react-ui/src/actions/hooks/*.js",
+      "require": "./dist/cjs/react-ui/src/actions/hooks/*.js"
+    },
+    "./react-ui/src/actions/hooks": {
+      "import": "./react-ui/src/actions/hooks/index.js",
+      "require": "./dist/cjs/react-ui/src/actions/hooks/index.js"
+    },
+    "./react-ui/src/actions/*": {
+      "import": "./react-ui/src/actions/*.js",
+      "require": "./dist/cjs/react-ui/src/actions/*.js"
+    },
+    "./react-ui/src/actions": {
+      "import": "./react-ui/src/actions/index.js",
+      "require": "./dist/cjs/react-ui/src/actions/index.js"
+    },
+    "./react-ui/src/dev/components/Devtools/*": {
+      "import": "./react-ui/src/dev/components/Devtools/*.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/Devtools/*.js"
+    },
+    "./react-ui/src/dev/components/Devtools": {
+      "import": "./react-ui/src/dev/components/Devtools/index.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/Devtools/index.js"
+    },
+    "./react-ui/src/dev/components/InlineCommand/*": {
+      "import": "./react-ui/src/dev/components/InlineCommand/*.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/InlineCommand/*.js"
+    },
+    "./react-ui/src/dev/components/InlineCommand": {
+      "import": "./react-ui/src/dev/components/InlineCommand/index.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/InlineCommand/index.js"
+    },
+    "./react-ui/src/dev/components/*": {
+      "import": "./react-ui/src/dev/components/*.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/*.js"
+    },
+    "./react-ui/src/dev/components": {
+      "import": "./react-ui/src/dev/components/index.js",
+      "require": "./dist/cjs/react-ui/src/dev/components/index.js"
+    },
+    "./react-ui/src/dev/hooks/*": {
+      "import": "./react-ui/src/dev/hooks/*.js",
+      "require": "./dist/cjs/react-ui/src/dev/hooks/*.js"
+    },
+    "./react-ui/src/dev/hooks": {
+      "import": "./react-ui/src/dev/hooks/index.js",
+      "require": "./dist/cjs/react-ui/src/dev/hooks/index.js"
+    },
+    "./react-ui/src/dev/*": {
+      "import": "./react-ui/src/dev/*.js",
+      "require": "./dist/cjs/react-ui/src/dev/*.js"
+    },
+    "./react-ui/src/dev": {
+      "import": "./react-ui/src/dev/index.js",
+      "require": "./dist/cjs/react-ui/src/dev/index.js"
+    },
+    "./react-ui/src/forms/components/*": {
+      "import": "./react-ui/src/forms/components/*.js",
+      "require": "./dist/cjs/react-ui/src/forms/components/*.js"
+    },
+    "./react-ui/src/forms/components": {
+      "import": "./react-ui/src/forms/components/index.js",
+      "require": "./dist/cjs/react-ui/src/forms/components/index.js"
+    },
+    "./react-ui/src/forms/*": {
+      "import": "./react-ui/src/forms/*.js",
+      "require": "./dist/cjs/react-ui/src/forms/*.js"
+    },
+    "./react-ui/src/forms": {
+      "import": "./react-ui/src/forms/index.js",
+      "require": "./dist/cjs/react-ui/src/forms/index.js"
+    },
+    "./react-ui/src/selection/entities/*": {
+      "import": "./react-ui/src/selection/entities/*.js",
+      "require": "./dist/cjs/react-ui/src/selection/entities/*.js"
+    },
+    "./react-ui/src/selection/entities": {
+      "import": "./react-ui/src/selection/entities/index.js",
+      "require": "./dist/cjs/react-ui/src/selection/entities/index.js"
+    },
+    "./react-ui/src/selection/hooks/*": {
+      "import": "./react-ui/src/selection/hooks/*.js",
+      "require": "./dist/cjs/react-ui/src/selection/hooks/*.js"
+    },
+    "./react-ui/src/selection/hooks": {
+      "import": "./react-ui/src/selection/hooks/index.js",
+      "require": "./dist/cjs/react-ui/src/selection/hooks/index.js"
+    },
+    "./react-ui/src/selection/*": {
+      "import": "./react-ui/src/selection/*.js",
+      "require": "./dist/cjs/react-ui/src/selection/*.js"
+    },
+    "./react-ui/src/selection": {
+      "import": "./react-ui/src/selection/index.js",
+      "require": "./dist/cjs/react-ui/src/selection/index.js"
+    },
+    "./react-ui/src/*": {
+      "import": "./react-ui/src/*.js",
+      "require": "./dist/cjs/react-ui/src/*.js"
+    },
+    "./react-ui/src": {
+      "import": "./react-ui/src/index.js",
+      "require": "./dist/cjs/react-ui/src/index.js"
+    },
+    "./react-ui/*": {
+      "import": "./react-ui/*.js",
+      "require": "./dist/cjs/react-ui/*.js"
+    },
+    "./react-ui": {
+      "import": "./react-ui/index.js",
+      "require": "./dist/cjs/react-ui/index.js"
+    },
+    "./rpc-ws/src/central/*": {
+      "import": "./rpc-ws/src/central/*.js",
+      "require": "./dist/cjs/rpc-ws/src/central/*.js"
+    },
+    "./rpc-ws/src/central": {
+      "import": "./rpc-ws/src/central/index.js",
+      "require": "./dist/cjs/rpc-ws/src/central/index.js"
+    },
+    "./rpc-ws/src/react/*": {
+      "import": "./rpc-ws/src/react/*.js",
+      "require": "./dist/cjs/rpc-ws/src/react/*.js"
+    },
+    "./rpc-ws/src/react": {
+      "import": "./rpc-ws/src/react/index.js",
+      "require": "./dist/cjs/rpc-ws/src/react/index.js"
+    },
+    "./rpc-ws/src/*": {
+      "import": "./rpc-ws/src/*.js",
+      "require": "./dist/cjs/rpc-ws/src/*.js"
+    },
+    "./rpc-ws/src": {
+      "import": "./rpc-ws/src/index.js",
+      "require": "./dist/cjs/rpc-ws/src/index.js"
+    },
+    "./rpc-ws/*": {
+      "import": "./rpc-ws/*.js",
+      "require": "./dist/cjs/rpc-ws/*.js"
+    },
+    "./rpc-ws": {
+      "import": "./rpc-ws/index.js",
+      "require": "./dist/cjs/rpc-ws/index.js"
+    },
+    "./rxjs-reducer/src/*": {
+      "import": "./rxjs-reducer/src/*.js",
+      "require": "./dist/cjs/rxjs-reducer/src/*.js"
+    },
+    "./rxjs-reducer/src": {
+      "import": "./rxjs-reducer/src/index.js",
+      "require": "./dist/cjs/rxjs-reducer/src/index.js"
+    },
+    "./rxjs-reducer/*": {
+      "import": "./rxjs-reducer/*.js",
+      "require": "./dist/cjs/rxjs-reducer/*.js"
+    },
+    "./rxjs-reducer": {
+      "import": "./rxjs-reducer/index.js",
+      "require": "./dist/cjs/rxjs-reducer/index.js"
+    },
+    "./schema/src/*": {
+      "import": "./schema/src/*.js",
+      "require": "./dist/cjs/schema/src/*.js"
+    },
+    "./schema/src": {
+      "import": "./schema/src/index.js",
+      "require": "./dist/cjs/schema/src/index.js"
+    },
+    "./schema/*": {
+      "import": "./schema/*.js",
+      "require": "./dist/cjs/schema/*.js"
+    },
+    "./schema": {
+      "import": "./schema/index.js",
+      "require": "./dist/cjs/schema/index.js"
+    },
+    "./shapes/package/*": {
+      "import": "./shapes/package/*.js",
+      "require": "./dist/cjs/shapes/package/*.js"
+    },
+    "./shapes/package": {
+      "import": "./shapes/package/index.js",
+      "require": "./dist/cjs/shapes/package/index.js"
+    },
+    "./shapes/src/*": {
+      "import": "./shapes/src/*.js",
+      "require": "./dist/cjs/shapes/src/*.js"
+    },
+    "./shapes/src": {
+      "import": "./shapes/src/index.js",
+      "require": "./dist/cjs/shapes/src/index.js"
+    },
+    "./shapes/*": {
+      "import": "./shapes/*.js",
+      "require": "./dist/cjs/shapes/*.js"
+    },
+    "./shapes": {
+      "import": "./shapes/index.js",
+      "require": "./dist/cjs/shapes/index.js"
+    },
+    "./share/package/*": {
+      "import": "./share/package/*.js",
+      "require": "./dist/cjs/share/package/*.js"
+    },
+    "./share/package": {
+      "import": "./share/package/index.js",
+      "require": "./dist/cjs/share/package/index.js"
+    },
+    "./share/src/*": {
+      "import": "./share/src/*.js",
+      "require": "./dist/cjs/share/src/*.js"
+    },
+    "./share/src": {
+      "import": "./share/src/index.js",
+      "require": "./dist/cjs/share/src/index.js"
+    },
+    "./share/*": {
+      "import": "./share/*.js",
+      "require": "./dist/cjs/share/*.js"
+    },
+    "./share": {
+      "import": "./share/index.js",
+      "require": "./dist/cjs/share/index.js"
+    },
+    "./task/src/*": {
+      "import": "./task/src/*.js",
+      "require": "./dist/cjs/task/src/*.js"
+    },
+    "./task/src": {
+      "import": "./task/src/index.js",
+      "require": "./dist/cjs/task/src/index.js"
+    },
+    "./task/*": {
+      "import": "./task/*.js",
+      "require": "./dist/cjs/task/*.js"
+    },
+    "./task": {
+      "import": "./task/index.js",
+      "require": "./dist/cjs/task/index.js"
+    },
+    "./test/src/*": {
+      "import": "./test/src/*.js",
+      "require": "./dist/cjs/test/src/*.js"
+    },
+    "./test/src": {
+      "import": "./test/src/index.js",
+      "require": "./dist/cjs/test/src/index.js"
+    },
+    "./test/*": {
+      "import": "./test/*.js",
+      "require": "./dist/cjs/test/*.js"
+    },
+    "./test": {
+      "import": "./test/index.js",
+      "require": "./dist/cjs/test/index.js"
+    },
+    "./tiptap/src/*": {
+      "import": "./tiptap/src/*.js",
+      "require": "./dist/cjs/tiptap/src/*.js"
+    },
+    "./tiptap/src": {
+      "import": "./tiptap/src/index.js",
+      "require": "./dist/cjs/tiptap/src/index.js"
+    },
+    "./tiptap/*": {
+      "import": "./tiptap/*.js",
+      "require": "./dist/cjs/tiptap/*.js"
+    },
+    "./tiptap": {
+      "import": "./tiptap/index.js",
+      "require": "./dist/cjs/tiptap/index.js"
+    },
+    "./transport/src/*": {
+      "import": "./transport/src/*.js",
+      "require": "./dist/cjs/transport/src/*.js"
+    },
+    "./transport/src": {
+      "import": "./transport/src/index.js",
+      "require": "./dist/cjs/transport/src/index.js"
+    },
+    "./transport/*": {
+      "import": "./transport/*.js",
+      "require": "./dist/cjs/transport/*.js"
+    },
+    "./transport": {
+      "import": "./transport/index.js",
+      "require": "./dist/cjs/transport/index.js"
+    },
+    "./types/src/*": {
+      "import": "./types/src/*.js",
+      "require": "./dist/cjs/types/src/*.js"
+    },
+    "./types/src": {
+      "import": "./types/src/index.js",
+      "require": "./dist/cjs/types/src/index.js"
+    },
+    "./types/*": {
+      "import": "./types/*.js",
+      "require": "./dist/cjs/types/*.js"
+    },
+    "./types": {
+      "import": "./types/index.js",
+      "require": "./dist/cjs/types/index.js"
+    },
+    "./ui/aria/*": {
+      "import": "./ui/aria/*.js",
+      "require": "./dist/cjs/ui/aria/*.js"
+    },
+    "./ui/aria": {
+      "import": "./ui/aria/index.js",
+      "require": "./dist/cjs/ui/aria/index.js"
+    },
+    "./ui/buttons/*": {
+      "import": "./ui/buttons/*.js",
+      "require": "./dist/cjs/ui/buttons/*.js"
+    },
+    "./ui/buttons": {
+      "import": "./ui/buttons/index.js",
+      "require": "./dist/cjs/ui/buttons/index.js"
+    },
+    "./ui/hoc/*": {
+      "import": "./ui/hoc/*.js",
+      "require": "./dist/cjs/ui/hoc/*.js"
+    },
+    "./ui/hoc": {
+      "import": "./ui/hoc/index.js",
+      "require": "./dist/cjs/ui/hoc/index.js"
+    },
+    "./ui/hooks/*": {
+      "import": "./ui/hooks/*.js",
+      "require": "./dist/cjs/ui/hooks/*.js"
+    },
+    "./ui/hooks": {
+      "import": "./ui/hooks/index.js",
+      "require": "./dist/cjs/ui/hooks/index.js"
+    },
+    "./ui/package/aria/*": {
+      "import": "./ui/package/aria/*.js",
+      "require": "./dist/cjs/ui/package/aria/*.js"
+    },
+    "./ui/package/aria": {
+      "import": "./ui/package/aria/index.js",
+      "require": "./dist/cjs/ui/package/aria/index.js"
+    },
+    "./ui/package/buttons/*": {
+      "import": "./ui/package/buttons/*.js",
+      "require": "./dist/cjs/ui/package/buttons/*.js"
+    },
+    "./ui/package/buttons": {
+      "import": "./ui/package/buttons/index.js",
+      "require": "./dist/cjs/ui/package/buttons/index.js"
+    },
+    "./ui/package/hoc/*": {
+      "import": "./ui/package/hoc/*.js",
+      "require": "./dist/cjs/ui/package/hoc/*.js"
+    },
+    "./ui/package/hoc": {
+      "import": "./ui/package/hoc/index.js",
+      "require": "./dist/cjs/ui/package/hoc/index.js"
+    },
+    "./ui/package/hooks/*": {
+      "import": "./ui/package/hooks/*.js",
+      "require": "./dist/cjs/ui/package/hooks/*.js"
+    },
+    "./ui/package/hooks": {
+      "import": "./ui/package/hooks/index.js",
+      "require": "./dist/cjs/ui/package/hooks/index.js"
+    },
+    "./ui/package/*": {
+      "import": "./ui/package/*.js",
+      "require": "./dist/cjs/ui/package/*.js"
+    },
+    "./ui/package": {
+      "import": "./ui/package/index.js",
+      "require": "./dist/cjs/ui/package/index.js"
+    },
+    "./ui/src/aria/*": {
+      "import": "./ui/src/aria/*.js",
+      "require": "./dist/cjs/ui/src/aria/*.js"
+    },
+    "./ui/src/aria": {
+      "import": "./ui/src/aria/index.js",
+      "require": "./dist/cjs/ui/src/aria/index.js"
+    },
+    "./ui/src/buttons/*": {
+      "import": "./ui/src/buttons/*.js",
+      "require": "./dist/cjs/ui/src/buttons/*.js"
+    },
+    "./ui/src/buttons": {
+      "import": "./ui/src/buttons/index.js",
+      "require": "./dist/cjs/ui/src/buttons/index.js"
+    },
+    "./ui/src/hoc/*": {
+      "import": "./ui/src/hoc/*.js",
+      "require": "./dist/cjs/ui/src/hoc/*.js"
+    },
+    "./ui/src/hoc": {
+      "import": "./ui/src/hoc/index.js",
+      "require": "./dist/cjs/ui/src/hoc/index.js"
+    },
+    "./ui/src/hooks/*": {
+      "import": "./ui/src/hooks/*.js",
+      "require": "./dist/cjs/ui/src/hooks/*.js"
+    },
+    "./ui/src/hooks": {
+      "import": "./ui/src/hooks/index.js",
+      "require": "./dist/cjs/ui/src/hooks/index.js"
+    },
+    "./ui/src/*": {
+      "import": "./ui/src/*.js",
+      "require": "./dist/cjs/ui/src/*.js"
+    },
+    "./ui/src": {
+      "import": "./ui/src/index.js",
+      "require": "./dist/cjs/ui/src/index.js"
+    },
+    "./ui/*": {
+      "import": "./ui/*.js",
+      "require": "./dist/cjs/ui/*.js"
+    },
+    "./ui": {
+      "import": "./ui/index.js",
+      "require": "./dist/cjs/ui/index.js"
+    },
+    "./yml/src/*": {
+      "import": "./yml/src/*.js",
+      "require": "./dist/cjs/yml/src/*.js"
+    },
+    "./yml/src": {
+      "import": "./yml/src/index.js",
+      "require": "./dist/cjs/yml/src/index.js"
+    },
+    "./yml/*": {
+      "import": "./yml/*.js",
+      "require": "./dist/cjs/yml/*.js"
+    },
+    "./yml": {
+      "import": "./yml/index.js",
+      "require": "./dist/cjs/yml/index.js"
+    }
+  }
+}

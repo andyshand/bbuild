@@ -1,0 +1,435 @@
+{
+  "name": "@bbuild/ai-chat",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/markdown-it": "13.0.2",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./Deps": {
+      "import": "./Deps.js",
+      "require": "./dist/cjs/Deps.js"
+    },
+    "./EnhancedMessage": {
+      "import": "./EnhancedMessage.js",
+      "require": "./dist/cjs/EnhancedMessage.js"
+    },
+    "./Tool": {
+      "import": "./Tool.js",
+      "require": "./dist/cjs/Tool.js"
+    },
+    "./_actions/*": {
+      "import": "./_actions/*.js",
+      "require": "./dist/cjs/_actions/*.js"
+    },
+    "./_actions": {
+      "import": "./_actions/index.js",
+      "require": "./dist/cjs/_actions/index.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./actions/config/*": {
+      "import": "./actions/config/*.js",
+      "require": "./dist/cjs/actions/config/*.js"
+    },
+    "./actions/config": {
+      "import": "./actions/config/index.js",
+      "require": "./dist/cjs/actions/config/index.js"
+    },
+    "./actions/runner/*": {
+      "import": "./actions/runner/*.js",
+      "require": "./dist/cjs/actions/runner/*.js"
+    },
+    "./actions/runner": {
+      "import": "./actions/runner/index.js",
+      "require": "./dist/cjs/actions/runner/index.js"
+    },
+    "./actions/*": {
+      "import": "./actions/*.js",
+      "require": "./dist/cjs/actions/*.js"
+    },
+    "./actions": {
+      "import": "./actions/index.js",
+      "require": "./dist/cjs/actions/index.js"
+    },
+    "./attachments/*": {
+      "import": "./attachments/*.js",
+      "require": "./dist/cjs/attachments/*.js"
+    },
+    "./attachments": {
+      "import": "./attachments/index.js",
+      "require": "./dist/cjs/attachments/index.js"
+    },
+    "./chat-context/*": {
+      "import": "./chat-context/*.js",
+      "require": "./dist/cjs/chat-context/*.js"
+    },
+    "./chat-context": {
+      "import": "./chat-context/index.js",
+      "require": "./dist/cjs/chat-context/index.js"
+    },
+    "./chat-task/*": {
+      "import": "./chat-task/*.js",
+      "require": "./dist/cjs/chat-task/*.js"
+    },
+    "./chat-task": {
+      "import": "./chat-task/index.js",
+      "require": "./dist/cjs/chat-task/index.js"
+    },
+    "./docker/*": {
+      "import": "./docker/*.js",
+      "require": "./dist/cjs/docker/*.js"
+    },
+    "./docker": {
+      "import": "./docker/index.js",
+      "require": "./dist/cjs/docker/index.js"
+    },
+    "./entities/chat/*": {
+      "import": "./entities/chat/*.js",
+      "require": "./dist/cjs/entities/chat/*.js"
+    },
+    "./entities/chat": {
+      "import": "./entities/chat/index.js",
+      "require": "./dist/cjs/entities/chat/index.js"
+    },
+    "./entities/new-entities/*": {
+      "import": "./entities/new-entities/*.js",
+      "require": "./dist/cjs/entities/new-entities/*.js"
+    },
+    "./entities/new-entities": {
+      "import": "./entities/new-entities/index.js",
+      "require": "./dist/cjs/entities/new-entities/index.js"
+    },
+    "./entities/schemas/*": {
+      "import": "./entities/schemas/*.js",
+      "require": "./dist/cjs/entities/schemas/*.js"
+    },
+    "./entities/schemas": {
+      "import": "./entities/schemas/index.js",
+      "require": "./dist/cjs/entities/schemas/index.js"
+    },
+    "./entities/ui/*": {
+      "import": "./entities/ui/*.js",
+      "require": "./dist/cjs/entities/ui/*.js"
+    },
+    "./entities/ui": {
+      "import": "./entities/ui/index.js",
+      "require": "./dist/cjs/entities/ui/index.js"
+    },
+    "./entities/workflow-step/actions/nodes/*": {
+      "import": "./entities/workflow-step/actions/nodes/*.js",
+      "require": "./dist/cjs/entities/workflow-step/actions/nodes/*.js"
+    },
+    "./entities/workflow-step/actions/nodes": {
+      "import": "./entities/workflow-step/actions/nodes/index.js",
+      "require": "./dist/cjs/entities/workflow-step/actions/nodes/index.js"
+    },
+    "./entities/workflow-step/actions/*": {
+      "import": "./entities/workflow-step/actions/*.js",
+      "require": "./dist/cjs/entities/workflow-step/actions/*.js"
+    },
+    "./entities/workflow-step/actions": {
+      "import": "./entities/workflow-step/actions/index.js",
+      "require": "./dist/cjs/entities/workflow-step/actions/index.js"
+    },
+    "./entities/workflow-step/*": {
+      "import": "./entities/workflow-step/*.js",
+      "require": "./dist/cjs/entities/workflow-step/*.js"
+    },
+    "./entities/workflow-step": {
+      "import": "./entities/workflow-step/index.js",
+      "require": "./dist/cjs/entities/workflow-step/index.js"
+    },
+    "./entities/*": {
+      "import": "./entities/*.js",
+      "require": "./dist/cjs/entities/*.js"
+    },
+    "./entities": {
+      "import": "./entities/index.js",
+      "require": "./dist/cjs/entities/index.js"
+    },
+    "./files/actions/*": {
+      "import": "./files/actions/*.js",
+      "require": "./dist/cjs/files/actions/*.js"
+    },
+    "./files/actions": {
+      "import": "./files/actions/index.js",
+      "require": "./dist/cjs/files/actions/index.js"
+    },
+    "./files/*": {
+      "import": "./files/*.js",
+      "require": "./dist/cjs/files/*.js"
+    },
+    "./files": {
+      "import": "./files/index.js",
+      "require": "./dist/cjs/files/index.js"
+    },
+    "./formattings/*": {
+      "import": "./formattings/*.js",
+      "require": "./dist/cjs/formattings/*.js"
+    },
+    "./formattings": {
+      "import": "./formattings/index.js",
+      "require": "./dist/cjs/formattings/index.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./input-syntax/*": {
+      "import": "./input-syntax/*.js",
+      "require": "./dist/cjs/input-syntax/*.js"
+    },
+    "./input-syntax": {
+      "import": "./input-syntax/index.js",
+      "require": "./dist/cjs/input-syntax/index.js"
+    },
+    "./knowledge-helpers/*": {
+      "import": "./knowledge-helpers/*.js",
+      "require": "./dist/cjs/knowledge-helpers/*.js"
+    },
+    "./knowledge-helpers": {
+      "import": "./knowledge-helpers/index.js",
+      "require": "./dist/cjs/knowledge-helpers/index.js"
+    },
+    "./messages/*": {
+      "import": "./messages/*.js",
+      "require": "./dist/cjs/messages/*.js"
+    },
+    "./messages": {
+      "import": "./messages/index.js",
+      "require": "./dist/cjs/messages/index.js"
+    },
+    "./named-entities/*": {
+      "import": "./named-entities/*.js",
+      "require": "./dist/cjs/named-entities/*.js"
+    },
+    "./named-entities": {
+      "import": "./named-entities/index.js",
+      "require": "./dist/cjs/named-entities/index.js"
+    },
+    "./newId": {
+      "import": "./newId.js",
+      "require": "./dist/cjs/newId.js"
+    },
+    "./project/entities/*": {
+      "import": "./project/entities/*.js",
+      "require": "./dist/cjs/project/entities/*.js"
+    },
+    "./project/entities": {
+      "import": "./project/entities/index.js",
+      "require": "./dist/cjs/project/entities/index.js"
+    },
+    "./project/util/*": {
+      "import": "./project/util/*.js",
+      "require": "./dist/cjs/project/util/*.js"
+    },
+    "./project/util": {
+      "import": "./project/util/index.js",
+      "require": "./dist/cjs/project/util/index.js"
+    },
+    "./project/*": {
+      "import": "./project/*.js",
+      "require": "./dist/cjs/project/*.js"
+    },
+    "./project": {
+      "import": "./project/index.js",
+      "require": "./dist/cjs/project/index.js"
+    },
+    "./promptDump": {
+      "import": "./promptDump.js",
+      "require": "./dist/cjs/promptDump.js"
+    },
+    "./prompts/dc/*": {
+      "import": "./prompts/dc/*.js",
+      "require": "./dist/cjs/prompts/dc/*.js"
+    },
+    "./prompts/dc": {
+      "import": "./prompts/dc/index.js",
+      "require": "./dist/cjs/prompts/dc/index.js"
+    },
+    "./prompts/*": {
+      "import": "./prompts/*.js",
+      "require": "./dist/cjs/prompts/*.js"
+    },
+    "./prompts": {
+      "import": "./prompts/index.js",
+      "require": "./dist/cjs/prompts/index.js"
+    },
+    "./queue/messages/*": {
+      "import": "./queue/messages/*.js",
+      "require": "./dist/cjs/queue/messages/*.js"
+    },
+    "./queue/messages": {
+      "import": "./queue/messages/index.js",
+      "require": "./dist/cjs/queue/messages/index.js"
+    },
+    "./queue/*": {
+      "import": "./queue/*.js",
+      "require": "./dist/cjs/queue/*.js"
+    },
+    "./queue": {
+      "import": "./queue/index.js",
+      "require": "./dist/cjs/queue/index.js"
+    },
+    "./tabs/actions/*": {
+      "import": "./tabs/actions/*.js",
+      "require": "./dist/cjs/tabs/actions/*.js"
+    },
+    "./tabs/actions": {
+      "import": "./tabs/actions/index.js",
+      "require": "./dist/cjs/tabs/actions/index.js"
+    },
+    "./tabs/*": {
+      "import": "./tabs/*.js",
+      "require": "./dist/cjs/tabs/*.js"
+    },
+    "./tabs": {
+      "import": "./tabs/index.js",
+      "require": "./dist/cjs/tabs/index.js"
+    },
+    "./test-actions/*": {
+      "import": "./test-actions/*.js",
+      "require": "./dist/cjs/test-actions/*.js"
+    },
+    "./test-actions": {
+      "import": "./test-actions/index.js",
+      "require": "./dist/cjs/test-actions/index.js"
+    },
+    "./tools/*": {
+      "import": "./tools/*.js",
+      "require": "./dist/cjs/tools/*.js"
+    },
+    "./tools": {
+      "import": "./tools/index.js",
+      "require": "./dist/cjs/tools/index.js"
+    },
+    "./ui/chat/hooks/*": {
+      "import": "./ui/chat/hooks/*.js",
+      "require": "./dist/cjs/ui/chat/hooks/*.js"
+    },
+    "./ui/chat/hooks": {
+      "import": "./ui/chat/hooks/index.js",
+      "require": "./dist/cjs/ui/chat/hooks/index.js"
+    },
+    "./ui/chat/*": {
+      "import": "./ui/chat/*.js",
+      "require": "./dist/cjs/ui/chat/*.js"
+    },
+    "./ui/chat": {
+      "import": "./ui/chat/index.js",
+      "require": "./dist/cjs/ui/chat/index.js"
+    },
+    "./ui/config/*": {
+      "import": "./ui/config/*.js",
+      "require": "./dist/cjs/ui/config/*.js"
+    },
+    "./ui/config": {
+      "import": "./ui/config/index.js",
+      "require": "./dist/cjs/ui/config/index.js"
+    },
+    "./ui/core/*": {
+      "import": "./ui/core/*.js",
+      "require": "./dist/cjs/ui/core/*.js"
+    },
+    "./ui/core": {
+      "import": "./ui/core/index.js",
+      "require": "./dist/cjs/ui/core/index.js"
+    },
+    "./ui/creations/hooks/*": {
+      "import": "./ui/creations/hooks/*.js",
+      "require": "./dist/cjs/ui/creations/hooks/*.js"
+    },
+    "./ui/creations/hooks": {
+      "import": "./ui/creations/hooks/index.js",
+      "require": "./dist/cjs/ui/creations/hooks/index.js"
+    },
+    "./ui/creations/*": {
+      "import": "./ui/creations/*.js",
+      "require": "./dist/cjs/ui/creations/*.js"
+    },
+    "./ui/creations": {
+      "import": "./ui/creations/index.js",
+      "require": "./dist/cjs/ui/creations/index.js"
+    },
+    "./ui/engines/components/*": {
+      "import": "./ui/engines/components/*.js",
+      "require": "./dist/cjs/ui/engines/components/*.js"
+    },
+    "./ui/engines/components": {
+      "import": "./ui/engines/components/index.js",
+      "require": "./dist/cjs/ui/engines/components/index.js"
+    },
+    "./ui/engines/hooks/*": {
+      "import": "./ui/engines/hooks/*.js",
+      "require": "./dist/cjs/ui/engines/hooks/*.js"
+    },
+    "./ui/engines/hooks": {
+      "import": "./ui/engines/hooks/index.js",
+      "require": "./dist/cjs/ui/engines/hooks/index.js"
+    },
+    "./ui/engines/*": {
+      "import": "./ui/engines/*.js",
+      "require": "./dist/cjs/ui/engines/*.js"
+    },
+    "./ui/engines": {
+      "import": "./ui/engines/index.js",
+      "require": "./dist/cjs/ui/engines/index.js"
+    },
+    "./ui/hooks/*": {
+      "import": "./ui/hooks/*.js",
+      "require": "./dist/cjs/ui/hooks/*.js"
+    },
+    "./ui/hooks": {
+      "import": "./ui/hooks/index.js",
+      "require": "./dist/cjs/ui/hooks/index.js"
+    },
+    "./ui/*": {
+      "import": "./ui/*.js",
+      "require": "./dist/cjs/ui/*.js"
+    },
+    "./ui": {
+      "import": "./ui/index.js",
+      "require": "./dist/cjs/ui/index.js"
+    },
+    "./zodSchemaToTypeString": {
+      "import": "./zodSchemaToTypeString.js",
+      "require": "./dist/cjs/zodSchemaToTypeString.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.4.4",
+    "@monaco-editor/react": "^4.5.1",
+    "@types/markdown-it": "13.0.2",
+    "dockerode": "^3.3.5",
+    "fs-extra": "^11.1.1",
+    "git-repo-info": "^2.1.1",
+    "ignore": "^5.2.4",
+    "markdown-it": "13.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "4.10.1",
+    "reactflow": "*",
+    "string-argv": "^0.3.2",
+    "toposort": "^2.0.2",
+    "zod": "3.22.4",
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "5.3.2"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "index": "dist/cjs/index.js"
+}

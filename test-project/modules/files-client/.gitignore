@@ -1,0 +1,6 @@
+node_modules
+dist
+package
+tsconfig.json
+*.tsbuildinfo
+tsconfig.cjs.json

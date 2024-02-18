@@ -1,0 +1,30 @@
+{
+  "ts-node": {
+    "esm": true,
+    "files": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["ESNext", "DOM"],
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "target": "ESNext",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "node",
+    "preserveWatchOutput": true,
+    "module": "ESNext",
+    "preserveSymlinks": true, 
+    "removeComments": true,
+    "resolveJsonModule": true,
+
+    "incremental": true
+  },
+  "include": ["src"],
+  "references": []
+}

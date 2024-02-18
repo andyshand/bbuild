@@ -1,0 +1,77 @@
+{
+  "name": "@bbuild/vm",
+  "version": "0.0.1",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./AllowedPackage": {
+      "import": "./AllowedPackage.js",
+      "require": "./dist/cjs/AllowedPackage.js"
+    },
+    "./FileTree": {
+      "import": "./FileTree.js",
+      "require": "./dist/cjs/FileTree.js"
+    },
+    "./MTYKContainer": {
+      "import": "./MTYKContainer.js",
+      "require": "./dist/cjs/MTYKContainer.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./docker": {
+      "import": "./docker.js",
+      "require": "./dist/cjs/docker.js"
+    },
+    "./dockerode": {
+      "import": "./dockerode.js",
+      "require": "./dist/cjs/dockerode.js"
+    },
+    "./em": {
+      "import": "./em.js",
+      "require": "./dist/cjs/em.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./run": {
+      "import": "./run.js",
+      "require": "./dist/cjs/run.js"
+    },
+    "./server": {
+      "import": "./server.js",
+      "require": "./dist/cjs/server.js"
+    },
+    "./tests/*": {
+      "import": "./tests/*.js",
+      "require": "./dist/cjs/tests/*.js"
+    },
+    "./tests": {
+      "import": "./tests/index.js",
+      "require": "./dist/cjs/tests/index.js"
+    },
+    "./viteFiles": {
+      "import": "./viteFiles.js",
+      "require": "./dist/cjs/viteFiles.js"
+    },
+    "./writeFiles": {
+      "import": "./writeFiles.js",
+      "require": "./dist/cjs/writeFiles.js"
+    }
+  },
+  "dependencies": {
+    "dockerode": "3.3.5"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "index": "dist/cjs/index.js"
+}

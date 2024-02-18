@@ -1,0 +1,46 @@
+{
+  "name": "@bbuild/machine2",
+  "version": "0.0.1",
+  "dependencies": {
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./Opts": {
+      "import": "./Opts.js",
+      "require": "./dist/cjs/Opts.js"
+    },
+    "./StateMachineTransitions": {
+      "import": "./StateMachineTransitions.js",
+      "require": "./dist/cjs/StateMachineTransitions.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./createStateMachine": {
+      "import": "./createStateMachine.js",
+      "require": "./dist/cjs/createStateMachine.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./serialisation": {
+      "import": "./serialisation.js",
+      "require": "./dist/cjs/serialisation.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "index": "dist/cjs/index.js"
+}

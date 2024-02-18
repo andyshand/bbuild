@@ -1,0 +1,27 @@
+{
+  "name": "@mtyk/bbuild",
+  "version": "1.0.115",
+  "description": "",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "packageManager": "pnpm@8.6.12",
+  "dependencies": {
+    "@types/node": "^20.5.8",
+    "dockerode": "^3.3.5",
+    "js-yaml": "^4.1.0",
+    "node-gyp": "^9.4.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^3.3.19"
+  }
+}

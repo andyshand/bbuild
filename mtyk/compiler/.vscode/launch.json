@@ -1,0 +1,46 @@
+{
+  "configurations": [
+    {
+      "name": "Compiler Debug",
+      "program": "${workspaceFolder}/dist/esm/compiler/index.js",
+      "cwd": "${workspaceFolder}/assets/test-project",
+      
+      "request": "launch",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "type": "node",
+      "args": ["build"]
+    },
+    {
+      "name": "Compiler Debug Watch",
+      "program": "${workspaceFolder}/dist/compiler/index.js",
+      "cwd": "/Users/andrewshand/Github/nft-marketplace",
+      "request": "launch",
+      "outputCapture": "std",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "autoAttachChildProcesses": true,
+      "restart": true,
+      "type": "node",
+      "args": ["watch"]
+    },
+    {
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/dist/esm/api/index.js",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "type": "node",
+      "restart": true
+    },
+    {
+      "name": "Attach",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "type": "node"
+    }
+  ]
+}

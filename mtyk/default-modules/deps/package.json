@@ -1,0 +1,59 @@
+{
+  "name": "@bbuild/deps",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./TokenDepSpec": {
+      "import": "./TokenDepSpec.js",
+      "require": "./dist/cjs/TokenDepSpec.js"
+    },
+    "./createDepContext": {
+      "import": "./createDepContext.js",
+      "require": "./dist/cjs/createDepContext.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./interfaceDep": {
+      "import": "./interfaceDep.js",
+      "require": "./dist/cjs/interfaceDep.js"
+    },
+    "./packageDep": {
+      "import": "./packageDep.js",
+      "require": "./dist/cjs/packageDep.js"
+    },
+    "./provideDeps": {
+      "import": "./provideDeps.js",
+      "require": "./dist/cjs/provideDeps.js"
+    },
+    "./tokenDep": {
+      "import": "./tokenDep.js",
+      "require": "./dist/cjs/tokenDep.js"
+    },
+    "./typeDep": {
+      "import": "./typeDep.js",
+      "require": "./dist/cjs/typeDep.js"
+    },
+    "./zodDep": {
+      "import": "./zodDep.js",
+      "require": "./dist/cjs/zodDep.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "dependencies": {
+    "rxjs": "7.8.1",
+    "zod": "3.22.4"
+  },
+  "index": "dist/cjs/index.js"
+}

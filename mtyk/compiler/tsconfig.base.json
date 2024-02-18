@@ -1,0 +1,37 @@
+{
+  "reflection": true,
+  "ts-node": {
+    "esm": true,
+    "files": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["ESNext", "DOM"],
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "target": "ESNext",
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "node",
+    "preserveWatchOutput": true,
+    "module": "ESNext",
+    "preserveSymlinks": true,
+    "plugins": [
+  
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true }
+    ],
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "incremental": true
+  },
+  "include": ["src"],
+  "references": []
+}

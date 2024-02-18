@@ -1,0 +1,7 @@
+.env
+*.env
+env.yml
+*.env.yml
+.env.*
+
+node_modules

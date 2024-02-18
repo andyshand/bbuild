@@ -1,0 +1,138 @@
+import WS from 'isomorphic-ws'
+import { Observable, Observer, Subject, finalize, share } from 'rxjs'
+type ListenerMap = Map<string, Observer<any> & { hasCompleted: boolean }>
+
+export class RPCClient {
+  static clients = new Map<string, RPCClient>()
+  private url: string
+  private socket: WS
+  private listeners: ListenerMap
+  private requestCounter: number
+  private pendingCalls: { id: string; key: string; payload: any }[]
+  private isConnected: boolean
+
+  static getSingleton() {
+    return Array.from(RPCClient.clients.values()).filter(
+      (c) => !c.url.includes('9050')
+    )[0]
+  }
+
+  constructor(url: string = 'ws://localhost:9090') {
+    this.url = url
+    this.listeners = new Map<
+      string,
+      Observer<any> & { hasCompleted: boolean }
+    >()
+    this.requestCounter =
+      typeof window !== 'undefined'
+        ? parseInt(localStorage.getItem('requestCounter') || '0', 10)
+        : 0
+    this.pendingCalls = []
+    this.isConnected = false
+    this.connect()
+    RPCClient.clients.set(url, this)
+
+    return new Proxy(this, {
+      get: (target: RPCClient, key: string) => {
+        if (key in target) {
+          return target[key]
+        }
+        return (payload: any) => this.callFunction(key, payload)
+      },
+    })
+  }
+
+  private connect() {
+    this.socket = new WS(this.url)
+    this.socket.onopen = () => {
+      this.isConnected = true
+      this.sendPendingCalls()
+    }
+    this.socket.onmessage = (message) => {
+      try {
+        const data = JSON.parse(message.data.toString())
+        if (data) {
+          const listener = this.listeners.get(data?.id)
+          if (listener) {
+            if (data.error) {
+              throw new Error(data.error)
+            } else {
+              if (data.next || (data.complete && !listener.hasCompleted)) {
+                // Second condition ensure that observables always has some value, even if undefined.
+                // Without this, calls to firstValueFrom() will fail.
+                listener.next(data.next)
+              }
+              if (data.complete) {
+                listener.complete()
+              }
+            }
+          }
+        }
+      } catch (e) {
+        const error = new Error(
+          `Error while parsing message: ${message.data.toString()}`,
+          {
+            cause: e,
+          }
+        )
+        console.error(error)
+      }
+    }
+
+    this.socket.onclose = () => {
+      this.isConnected = false
+      this.listeners.forEach((listener) =>
+        listener.error(new Error('Socket closed'))
+      )
+      // Try to reconnect after a timeout
+      setTimeout(() => this.connect(), 1000)
+    }
+  }
+
+  private sendPendingCalls() {
+    while (this.pendingCalls.length > 0) {
+      const call = this.pendingCalls.shift()
+      this.socket.send(JSON.stringify(call))
+    }
+  }
+
+  callFunction(key: string, payload: any): Observable<any> {
+    // Create a subject to multicast the values to multiple subscribers
+    const subject = new Subject<any>()
+
+    // Use the `share` operator to create a shared Observable
+    const sharedObservable = subject.asObservable().pipe(share())
+
+    // Subscribe to the shared Observable to execute the inner logic
+    const subscription = sharedObservable.subscribe()
+
+    const id = (++this.requestCounter).toString()
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('requestCounter', this.requestCounter.toString())
+    }
+    this.listeners.set(id, {
+      next: (value) => subject.next(value),
+      error: (err) => subject.error(err),
+      complete: () => subject.complete(),
+      hasCompleted: false,
+    })
+
+    if (this.isConnected) {
+      this.socket.send(JSON.stringify({ id, key, payload }))
+    } else {
+      this.pendingCalls.push({ id, key, payload })
+    }
+
+    // Return the shared Observable
+    return sharedObservable.pipe(
+      // Unsubscribe and clean up when there are no more subscribers
+      finalize(() => {
+        this.listeners.delete(id)
+        this.socket.send(JSON.stringify({ id, unsubscribe: true }))
+        subscription.unsubscribe()
+      })
+    )
+  }
+}
+
+export default RPCClient

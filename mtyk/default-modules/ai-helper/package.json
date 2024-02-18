@@ -1,0 +1,63 @@
+{
+  "name": "@bbuild/ai-helper",
+  "version": "0.0.1",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json",
+    "./ContextManager": {
+      "import": "./ContextManager.js",
+      "require": "./dist/cjs/ContextManager.js"
+    },
+    "./DraftJSPlugin.tsx": {
+      "import": "./DraftJSPlugin.jsx",
+      "require": "./dist/cjs/DraftJSPlugin.jsx"
+    },
+    "./EntitySourcer": {
+      "import": "./EntitySourcer.js",
+      "require": "./dist/cjs/EntitySourcer.js"
+    },
+    "./HelperMachine": {
+      "import": "./HelperMachine.js",
+      "require": "./dist/cjs/HelperMachine.js"
+    },
+    "./Mongo": {
+      "import": "./Mongo.js",
+      "require": "./dist/cjs/Mongo.js"
+    },
+    "./_deps": {
+      "import": "./_deps.js",
+      "require": "./dist/cjs/_deps.js"
+    },
+    "./contextFromUrl": {
+      "import": "./contextFromUrl.js",
+      "require": "./dist/cjs/contextFromUrl.js"
+    },
+    "./index": {
+      "import": "./index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./sources/*": {
+      "import": "./sources/*.js",
+      "require": "./dist/cjs/sources/*.js"
+    },
+    "./sources": {
+      "import": "./sources/index.js",
+      "require": "./dist/cjs/sources/index.js"
+    }
+  },
+  "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "dependencies": {
+    "arktype": "^1.0.10-alpha",
+    "draft-js": "^0.11.7"
+  },
+  "index": "dist/cjs/index.js"
+}
