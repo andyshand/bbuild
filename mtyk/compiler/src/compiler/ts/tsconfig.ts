@@ -28,15 +28,16 @@ export async function createBaseTSConfigs(
   await fse.ensureDir(transformersPath);
 
   // Get location of actual script file relative to this, ESM compatible, don't use CJS
-  const transfoermsPath = path.join(__dirname, "transformers");
-  const files = await fse.readdir(transfoermsPath);
+  // const transfoermsPath = path.join(__dirname, "transformers");
+  // const files = await fse.readdir(transfoermsPath);
+  const files = [];
   let plugins = (existing.compilerOptions?.plugins ?? []).filter((e) => {
     // Remove any that are from bbuild, so we can start afresh. But keep any others
     return !e.transform.includes(".universe/build/transformers");
   });
 
   for (const filename of files) {
-    const filePath = path.join(transfoermsPath, filename);
+    const filePath = path.join(transformersPath, filename);
     const stat = await fse.stat(filePath);
     if (filePath.endsWith(".js")) {
       if (stat.isFile()) {

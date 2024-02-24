@@ -25,24 +25,24 @@ const MTYKAppWrapper = observer(function MTYKAppWrapper({
 }) {
   // If staging.designcloud.app, redirect to staging2.designcloud.app
   // if (location.hostname === 'staging.designcloud.app') {
-  useEffect(() => {
-    const doIt = async () => {
-      try {
-        const d = await fetch(
-          `/api/error?url=${encodeURIComponent(location.href)}`
-        )
-        const json = await d.json()
-        const { webapp } = json as any
+  // useEffect(() => {
+  //   const doIt = async () => {
+  //     try {
+  //       const d = await fetch(
+  //         `/api/error?url=${encodeURIComponent(location.href)}`
+  //       )
+  //       const json = await d.json()
+  //       const { webapp } = json as any
 
-        if (window.location.href !== webapp) {
-          window.location.href = webapp
-        }
-      } catch (e) {
-        /* no-op */
-      }
-    }
-    doIt()
-  }, [])
+  //       if (window.location.href !== webapp) {
+  //         window.location.href = webapp
+  //       }
+  //     } catch (e) {
+  //       /* no-op */
+  //     }
+  //   }
+  //   doIt()
+  // }, [])
 
   return (
     <>

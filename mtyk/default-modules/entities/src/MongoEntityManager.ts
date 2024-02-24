@@ -1,4 +1,4 @@
-import { assert, publicInvariant } from 'modules/errors/index'
+import { assert, invariant, publicInvariant } from 'modules/errors/index'
 import { Constructor } from 'modules/types'
 import { Collection, MongoClient, ObjectId, Binary } from 'mongodb'
 import 'reflect-metadata'
@@ -122,6 +122,7 @@ export class MongoEntityManager
     const result = await collection.insertOne(preparedData)
     const newDoc = await collection.findOne({ _id: result.insertedId })
 
+    invariant(newDoc, 'Failed to create entity')
     const id = newDoc._id.toString()
 
     const newEntity = this.createEntityInstance(entityType, {

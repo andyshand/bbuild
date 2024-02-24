@@ -14,7 +14,7 @@ export interface IEntityManager {
   create<T = any>(
     entityType: Constructor<T> | string,
     entity: Partial<T>
-  ): Promise<CreatedEntity<T>>
+  ): Promise<CreatedEntity<any>>
   read<T extends EntityType = any>(
     entityType: Constructor<T> | string,
     id

@@ -15,14 +15,6 @@ if (typeof window !== 'undefined') {
   w.devtoolsFormatters = formatters
 }
 
-let watchContext: any = null
-export function setWatchContext(ctx: any) {
-  watchContext = ctx
-}
-export function getWatchContext() {
-  return watchContext
-}
-
 export default abstract class Entity<Fields extends Record<string, any> = any> {
   static type = 'string'
   public yDoc: Y.Doc
@@ -223,12 +215,6 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
 
         const isEntityField = this.isEntityField(property as string)
         if (isEntityField) {
-          if (getWatchContext()) {
-            // If inside a watch context, track the property for reactivity
-            const { currentWatchers, initialPatches } = getWatchContext()
-            currentWatchers.current.add(property as string)
-          }
-
           const getter = Reflect.getMetadata(
             EntityFieldMetadata.ENTITY_FIELD_GETTER,
             this,
@@ -343,8 +329,6 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     }
   }
 
-  // Add a new property to store the current watchers
-  currentWatchers: Set<{ watchedProperties: Set<string> }> = new Set()
   getEntityFieldValues() {
     const fields = this.getEntityFields()
     const values = {

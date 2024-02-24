@@ -2,7 +2,11 @@ import { get } from 'modules/dash'
 import { colorize } from 'modules/format-terminal'
 import { ZodError } from 'zod'
 
-export function prettifyZodError(error: ZodError, input?: any, name?: string): string {
+export function prettifyZodError(
+  error: ZodError,
+  input?: any,
+  name?: string
+): string {
   let prettyError = ''
 
   // Check it's a zod error first
@@ -57,11 +61,15 @@ export function prettifyZodError(error: ZodError, input?: any, name?: string): s
     //   default:
     //     break
     // }
-    prettyError += `${colorize.red(`${issue.code} "${issue.message}"`)} ${colorize.blue(
-      '@' + (name ? name + '.' : '') + issue.path.join('.'),
+    prettyError += `${colorize.red(
+      `${issue.code} "${issue.message}"`
+    )} ${colorize.blue(
+      '@' + (name ? name + '.' : '') + issue.path.join('.')
     )} \n`
     if (input) {
-      prettyError += colorize.yellow(`Received: ${JSON.stringify(get(input, issue.path))}\n`)
+      prettyError += colorize.yellow(
+        `Received: ${JSON.stringify(get(input, issue.path))}\n`
+      )
     }
     // prettyError += '\n'
   })

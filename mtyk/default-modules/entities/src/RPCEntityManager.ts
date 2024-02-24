@@ -84,7 +84,7 @@ export class RPCEntityManager extends RemoteEntityManager {
   async create<T>(
     entityType: Constructor<T>,
     entity: any
-  ): Promise<CreatedEntity<T>> {
+  ): Promise<CreatedEntity<any>> {
     const result = (await this.obsToPromise(
       this.client.create({ args: [getEntityTypeName(entityType), entity] })
     )) as any
@@ -125,7 +125,7 @@ export class RPCEntityManager extends RemoteEntityManager {
         await syncPromise
         return entity
       } else {
-        const wsProvider = this.wsProviders.get(id)
+        const wsProvider = this.wsProviders.get(id)!
         if (wsProvider.synced) return this.instances.get(id)
 
         const syncPromise = new Promise<void>((resolve) => {
@@ -151,8 +151,10 @@ export class RPCEntityManager extends RemoteEntityManager {
       this.obsToPromise(this.client.delete({ args: [entityType, id] }))
       this.instances.delete(id)
       const wsProvider = this.wsProviders.get(id)
-      wsProvider.doc.destroy()
-      if (wsProvider) wsProvider.destroy()
+      if (wsProvider) {
+        wsProvider.doc.destroy()
+        wsProvider.destroy()
+      }
     } catch (e) {
       console.error(e)
     }
@@ -189,7 +191,7 @@ export class RPCEntityManager extends RemoteEntityManager {
           await syncPromise
           return entity
         } else {
-          const wsProvider = this.wsProviders.get(id)
+          const wsProvider = this.wsProviders.get(id)!
           if (wsProvider.synced) return this.instances.get(id)
 
           const syncPromise = new Promise<void>((resolve) => {

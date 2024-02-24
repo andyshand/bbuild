@@ -1,10 +1,10 @@
-import { beginBatch, endBatch } from '@legendapp/state'
+import { beginBatch, endBatch, opaqueObject } from '@legendapp/state'
 import { Entity, IEntityManager, entityType } from 'modules/entities'
-import { getEntityRelation } from 'modules/entities/EntityRelation'
 import { RPCEntityManager } from 'modules/entities/RPCEntityManager'
 import { UnknownEntity } from 'modules/entities/UnknownEntity'
 import { invariant } from 'modules/errors'
 import { pubSub } from 'modules/rpc-ws/central/client'
+import * as nano from 'nanoid'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import { ReplaySubject, Subject } from 'rxjs'
@@ -16,14 +16,13 @@ import { cacheMap } from './cacheMap'
 import { getLatestValue } from './getLatestValue'
 import entityDataObservable, { globalEntityDataObservable } from './store'
 
-let nextId = 0
-const useId = () => {
-  const ref = useRef(null)
-  if (ref.current === null) {
-    ref.current = ++nextId
-  }
-  return ref.current
+const useId = (obj) => {
+  const objKey = JSON.stringify(obj)
+  const ref = useRef(nano.nanoid())
+  return String(ref.current) + objKey
 }
+
+const getGlobalEntityKey = (entity) => `${entityType(entity.type)}:${entity.id}`
 
 export function createEntitiesClient<M extends IEntityManager[]>(
   extraMan: M[],
@@ -48,9 +47,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   const entitySubscriptions = new Map<string, EntitySubscriptionInfo>()
 
   const updateEntityKey = (type, id, key, data) => {
-    const entity = globalEntityDataObservable[id].peek()
+    const globalKey = getGlobalEntityKey({ id, type })
+    const entity = globalEntityDataObservable[globalKey].peek()
     if (entity) {
-      globalEntityDataObservable[id].assign({ [key]: data })
+      globalEntityDataObservable[globalKey].entity.assign({ [key]: data })
     }
     propagateChangesToAllHooks([{ id, type }])
   }
@@ -59,6 +59,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     const id = entity.id
     const key = id
     const subscriptionInfo = entitySubscriptions.get(key)
+    const globalKey = getGlobalEntityKey({
+      id,
+      type: entityType(entity as any),
+    })
     if (!subscriptionInfo || !subscriptionInfo.observerFunction) {
       const observerFunction = (event: Y.YMapEvent<any>) => {
         beginBatch()
@@ -82,11 +86,11 @@ export function createEntitiesClient<M extends IEntityManager[]>(
 
       // Update global obj with initial entity data
       const entityData = entity.yMap.toJSON()
-      globalEntityDataObservable[id].assign({
+      globalEntityDataObservable[globalKey].assign({
         entity: entityData,
         id,
         type: entityType(entity as any),
-        entityObj: entity,
+        entityObj: opaqueObject(entity),
       })
       propagateChangesToAllHooks([{ id, type: entityType(entity as any) }])
 
@@ -96,8 +100,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
         observerFunction: observerFunction,
         count: subscriptionInfo?.count || 1,
       })
-    } else {
-      const subscriptionInfo = entitySubscriptions.get(key)
+    } else if (subscriptionInfo) {
       subscriptionInfo.count += 1
       entitySubscriptions.set(key, subscriptionInfo)
     }
@@ -111,7 +114,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       subscriptionInfo.count -= 1
       entitySubscriptions.set(key, subscriptionInfo)
 
-      if (subscriptionInfo.count === 0 && subscriptionInfo.observerFunction) {
+      if (subscriptionInfo.count === 0 && !!subscriptionInfo.observerFunction) {
         removeSubscription(type, id)
       }
     }
@@ -244,28 +247,34 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   }
 
   const useLegendArr = (id: string) => {
-    if (!entityDataObservable[id].peek()) {
-      entityDataObservable[id].set([])
-    }
+    const gotten = entityDataObservable[id].get()
+    // if (!gotten) {
+    //   entityDataObservable[id].set([])
+    // }
 
-    return { array: entityDataObservable[id].get('shallow') }
-    // return { array: entityDataObservable[id].get() }
+    return { array: gotten ?? [] }
   }
 
   const propagateChangesToAllHooks = (
     arr: { id: string; type: string }[],
-    hookId?: string
+    createForHookId?: string
   ) => {
-    const repopulateId = (key: string) => {
-      const inIds = entityDataObservable[key].peek().map((e) => e.id)
-      entityDataObservable[key].set(
-        entityDataObservable[key]
-          .peek()
+    const repopulateId = (innerHookId: string) => {
+      // setTimeout(() => {
+      const obsArr = entityDataObservable[innerHookId].peek() ?? []
+      const inIds = obsArr.map((e) => e.id)
+
+      entityDataObservable[innerHookId].set(
+        obsArr
           .map((e) => {
             const inNewArr = arr.find((a) => a.id === e.id && a.type === e.type)
             if (inNewArr) {
               // Needs updating
-              const latestD = globalEntityDataObservable[inNewArr.id].peek()
+              const globalKey = getGlobalEntityKey({
+                id: inNewArr.id,
+                type: inNewArr.type,
+              })
+              const latestD = globalEntityDataObservable[globalKey].peek()
               return {
                 ...inNewArr,
                 entity: latestD.entity,
@@ -274,35 +283,56 @@ export function createEntitiesClient<M extends IEntityManager[]>(
             } else {
               return e
             }
-          }) // add new entities
+          })
           .concat(
-            arr
-              .filter(
-                (a) =>
-                  !inIds.includes(a.id) &&
-                  !!globalEntityDataObservable[a.id].peek()
-              )
-              .map((a) => ({
-                id: a.id,
-                type: a.type,
-                entity: globalEntityDataObservable[a.id].peek().entity,
-                entityObj: globalEntityDataObservable[a.id].peek().entityObj,
-              }))
+            !createForHookId
+              ? [] // Only add new entities if specified hookId, this is the initial "create" or "population" phase
+              : arr
+                  .filter((a) => {
+                    const globalKey = getGlobalEntityKey({
+                      id: a.id,
+                      type: a.type,
+                    })
+                    return (
+                      !inIds.includes(a.id) &&
+                      !!globalEntityDataObservable[globalKey].peek()
+                    )
+                  })
+                  .map((a) => {
+                    const globalKey = getGlobalEntityKey({
+                      id: a.id,
+                      type: a.type,
+                    })
+                    return {
+                      id: a.id,
+                      type: a.type,
+                      entity:
+                        globalEntityDataObservable[globalKey].peek().entity,
+                      entityObj:
+                        globalEntityDataObservable[globalKey].peek().entityObj,
+                    }
+                  })
           )
       )
+      // }, 500)
     }
 
-    if (hookId) {
-      return repopulateId(hookId)
+    if (createForHookId) {
+      return repopulateId(createForHookId)
     } else {
       // for all keys in entityDataObservable
-      for (const key in entityDataObservable.peek()) {
-        repopulateId(key)
+      for (const hookId in entityDataObservable.peek()) {
+        repopulateId(hookId)
       }
     }
   }
 
-  const wrapEntityArr = (entities: { id; entity; type; entityObj }[]) => {
+  let firstAccess: { [hookId: string]: { [entityId: string]: boolean } } = {}
+
+  const wrapEntityArr = (
+    entities: { id; entity; type; entityObj }[],
+    { hookId }
+  ) => {
     return entities.map((e) => {
       return new Proxy(e, {
         get(target, prop, receiver) {
@@ -328,7 +358,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   ): T[] => {
     const subscriptions = useRef<string[]>([])
     const tt = entityType(type)
-    const hookId = useId()
+    // const hookId = useId({ type, query })
+    const hookId = useId({})
     const allManagers = discoverManagers()
     const arr = useLegendArr(hookId)
 
@@ -354,6 +385,9 @@ export function createEntitiesClient<M extends IEntityManager[]>(
 
         // Subscribe to all entities
         for (const entity of allEntities) {
+          if (entityType(entity) !== tt) {
+            throw new Error('Entity type mismatch')
+          }
           addEntitySubscription(entity)
           // Make sure we keep track, so we can unsubscribe on unmount
           subscriptions.current = uniq([...subscriptions.current, entity.id])
@@ -377,7 +411,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       }
     }, [allManagers, tt, JSON.stringify(query), hookId])
 
-    return wrapEntityArr(arr.array) as any as T[]
+    if (arr.array.filter((e) => e.type === tt).length !== arr.array.length) {
+      throw new Error('Entity type mismatch')
+    }
+    return wrapEntityArr(arr.array, { hookId }) as any as T[]
   }
 
   /**

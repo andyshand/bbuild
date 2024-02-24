@@ -5,10 +5,14 @@ import { CreatedEntity, EntityType, IEntityManager } from './IEntityManager'
 import { UnknownEntity } from './UnknownEntity'
 import { entityTypesEqual } from './getEntityTypeName'
 import { Constructor } from 'type-fest'
+import { EntityTypable } from './EntityTypable'
 
 let nextId = 0
 
-export abstract class RemoteEntityManager extends BaseEntityManager implements IEntityManager {
+export abstract class RemoteEntityManager
+  extends BaseEntityManager
+  implements IEntityManager
+{
   instances: Map<string, Entity> = new Map()
   id: string = (++nextId).toString()
 
@@ -26,7 +30,10 @@ export abstract class RemoteEntityManager extends BaseEntityManager implements I
         instance = new EntityClass(this, data.id, data)
       }
     } else {
-      if ('revisionNumber' in data && data.revisionNumber > instance.revisionNumber) {
+      if (
+        'revisionNumber' in data &&
+        data.revisionNumber > instance.revisionNumber
+      ) {
         const { revisionNumber, ...updates } = data
         return instance.applyWatchUpdate(updates, revisionNumber)
       }
@@ -47,18 +54,23 @@ export abstract class RemoteEntityManager extends BaseEntityManager implements I
   // }
 
   abstract create<T extends EntityType = any>(
-    entityType: Constructor<T>,
-    entity: any,
+    entityType: EntityTypable,
+    entity: any
   ): Promise<CreatedEntity<T>>
   abstract read(entityType: string, id: string): Promise<any>
   abstract update(
     entityType: string,
     id: string,
     updates: any,
-    revisionNumber: number,
+    revisionNumber: number
   ): Promise<any>
   abstract delete(entityType: string, id: string): Promise<any>
   abstract find(entityType: string, query: any): Promise<any>
   abstract watch(entityType: string, options: { id: string }): Observable<any>
-  abstract call(entityType: string, id: string, method: string, args: any[]): Promise<any>
+  abstract call(
+    entityType: string,
+    id: string,
+    method: string,
+    args: any[]
+  ): Promise<any>
 }
