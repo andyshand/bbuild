@@ -21,13 +21,9 @@ export type DepProvider<T> = DepTokenProvider<any, any>
 export type DepTokenProvider<DT extends DepType, TT> = {
   token: DT
   value?: TT
-  provide?: (() => TT) | (() => Promise<TT>)
+  provide?: (() => TT) | (() => Promise<TT> | TT)
 }
-export type TokenDepSpec<
-  T extends string,
-  TT,
-  Optional extends boolean = boolean
-> = {
+export type TokenDepSpec<T extends string, TT, Optional extends boolean = boolean> = {
   token?: T
   specType: 'token'
   runtimeType?: any
@@ -61,8 +57,14 @@ export type MachineDepSpec<T> = {
   specType: 'machine'
 }
 
-export type DepType =
+type DepTypeBase =
   | TokenDepSpec<any, any>
   | InterfaceDepSpec<any>
   | MachineDepSpec<any>
   | PackageDepSpec<any, any>
+
+export type DepTypeWithPrivate = {
+  private?: boolean
+}
+
+export type DepType = DepTypeBase & DepTypeWithPrivate

@@ -1,21 +1,17 @@
-import chokidar from "chokidar";
 import * as fs from "fs";
 import fse from "fs-extra";
 import path from "path";
-import barrelify from "../barrelify";
 
-import { uniqBy, identity, isEqual } from "@/util/dash";
+import { identity, isEqual, uniqBy } from "@/util/dash";
 import { TsConfigJson } from "type-fest";
 import { getPackageOrg } from "../constants";
 import { getBuildContext } from "../context/buildContext";
-import { getModuleBuildContext } from "../context/packageBuildContext";
 import init from "../init";
 import { readJSON, writeJSON } from "../json";
 import { OneModuleConfig, OneModuleConfigSchema } from "../one/OneModuleConfig";
 import require from "../require";
 import { getRealPath } from "../symfs";
 import getModuleInfo from "./getModuleInfo";
-import { processModulesSequentiallyByName } from "./process";
 
 export async function initModule(module: {
   name: string;
@@ -96,7 +92,7 @@ export async function initModule(module: {
     module.name !== "types" &&
     module.name !== "schema" &&
     module.name !== "format-terminal" &&
-    module.name !== "dash" && 
+    module.name !== "dash" &&
     module.name !== "profile"
   ) {
     const depsTs = `import { globalDepContext, keyDep } from 'modules/deps'
@@ -259,24 +255,6 @@ tsconfig.*.json
     if (!fs.existsSync(indexPath) && !fs.existsSync(indexPath + "x")) {
       fs.writeFileSync(indexPath, `export default null`);
     }
-  }
-
-  if (getBuildContext().isWatchMode) {
-    // Watch to see if we need to barrelify anything
-    const watcher = chokidar.watch(`${realPath}/src/**/*`);
-
-    watcher.on("all", (event, path) => {
-      processModulesSequentiallyByName(
-        getModuleBuildContext(realPath),
-        module.name,
-        async () => {
-          await barrelify(`${realPath}/src`);
-        }
-      );
-    });
-  } else {
-    // Barrelify
-    await barrelify(`${realPath}/src`);
   }
 
   // Get imports

@@ -1,25 +1,23 @@
 import assert from "@/util/assert";
-import { debounce } from "@/util/dash";
 import execa from "execa";
 import { getBinLocation } from "../bin";
+import { removeGlobAsync } from "../file/glob";
 import { ModulesWatcher } from "../module/ModulesWatcher";
+import { findModules } from "../module/findModules";
+import getModuleInfo from "../module/getModuleInfo";
 import watchModulesToPackage from "../module/watchModulesToPackage";
+import { projectPath } from "../path";
 import { spawnStoppableProcess } from "../process/spawn";
 import { cjs, esm, prebuild } from "./prebuild";
-import { removeGlobAsync } from "../file/glob";
-import { projectPath } from "../path";
-import { Subject } from "rxjs";
-import { getBuildContext } from "../context/buildContext";
-import getModuleInfo from "../module/getModuleInfo";
-import { readJSON } from "../json";
-import path from "path";
-import { initModule } from "../module/initModule";
-import { findModules } from "../module/findModules";
 
-export async function watch(): Promise<void> {
-  let isFirstRun = true;
-  const modulesChangeSubject = new Subject();
-
+/**
+ * Resolves once initial watch/compilation step has completed, then continues to run indefinitely
+ */
+export async function watch({
+  onNeedsPrebuild,
+}: {
+  onNeedsPrebuild: () => Promise<void>;
+}): Promise<void> {
   const tsc = getBinLocation("tsc");
   assert(
     !!tsc,
@@ -41,146 +39,130 @@ export async function watch(): Promise<void> {
     return spawnStoppableProcess(tsc, args, { label });
   };
   await removeGlobAsync(projectPath("./node-modules/@bbuild"));
-  let esmSpawn = spawnCompilationProcess(true);
-  let cjsSpawn = spawnCompilationProcess(false);
 
-  const stop = async () => {
-    esmSpawn.stop();
-    cjsSpawn.stop();
+  let watchState: {
+    esmSpawn: ReturnType<typeof spawnStoppableProcess> | null;
+    cjsSpawn: ReturnType<typeof spawnStoppableProcess> | null;
+    moduleWatcher: ModulesWatcher;
+    waitingForInitialSuccess: boolean;
+    initialRun: boolean;
+    watcherHandle: Awaited<ReturnType<typeof watchModulesToPackage>> | null;
+    restarting: boolean;
+    moduleRebuild: Record<string, { hash: string }>;
+  } = {
+    esmSpawn: null,
+    cjsSpawn: null,
+    moduleWatcher: new ModulesWatcher(),
+    waitingForInitialSuccess: true,
+    initialRun: true,
+    watcherHandle: null,
+    restarting: false,
+    moduleRebuild: {},
   };
 
-  let moduleWatcher = new ModulesWatcher();
+  /**
+   * Restarts the package watcher if it's not already restarting.
+   */
+  const restartPackageWatcher = async () => {
+    if (watchState.restarting) {
+      return;
+    }
+    watchState.restarting = true;
+    if (watchState.watcherHandle) {
+      watchState.watcherHandle.restart();
+    } else {
+      // Initialise the watcher handle
+      watchState.watcherHandle = await watchModulesToPackage();
+    }
+    watchState.restarting = false;
+  };
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    /**
+     * Handles data event from tsc process
+     * @param {Buffer} data - Data received from tsc process
+     */
     const onData = async (data) => {
+      if (!watchState.waitingForInitialSuccess) {
+        return;
+      }
+
       const message = data.toString();
-      const regex = /Found (\d+) error/;
-      if (regex.test(message)) {
-        const numberOfErrors = message.match(regex)[1];
-        if (parseInt(numberOfErrors) > 0 && isFirstRun) {
-          try {
-            const watcher = await watchModulesToPackage(modulesChangeSubject);
-            watcher.stop();
-            console.log(
-              "Some modules are built. Fix errors and await for another compiling cycle..."
-            );
-          } catch (err) {
-            console.log(
-              "Some modules are built. Fix errors and await for another compiling cycle..."
-            );
-          }
-        }
-
-        if (message.includes("Found 0 errors. Watching for file changes.")) {
-          if (!isFirstRun) {
-            console.log("Modules changed. Rebuilding...");
-            modulesChangeSubject.next(null);
-            return;
-          }
-
-          try {
-            await watchModulesToPackage(modulesChangeSubject);
-            if (getBuildContext().isWatchMode) {
-              console.log("All modules are built. Starting dev environment...");
-              isFirstRun = false;
-            } else {
-              console.log("All modules are built.");
-            }
-
-            resolve();
-          } catch (err) {
-            throw err;
-          }
-        }
+      if (message.includes("Found 0 errors. Watching for file changes.")) {
+        watchState.waitingForInitialSuccess = false;
+        restartPackageWatcher();
+        resolve();
       }
     };
 
-    cjsSpawn.proc.stdout.on("data", onData);
-
-    const ignoredModules = new Set();
-
-    moduleWatcher.on("changed", async (event) => {
-      if ((event || "").includes("src")) {
-        try {
-          const modules = findModules();
-          let currentCjsTsConfig = null;
-          const module = (event || "").split("/").pop();
-          const modulePath = projectPath("modules/" + module);
-          const info = await getModuleInfo(module, modulePath);
-          const uniqueRequiredOneModules = [
-            ...new Set(info.requiredOneModules),
-          ];
-
-          currentCjsTsConfig = await readJSON(
-            path.join(modulePath, "tsconfig.cjs.json")
-          );
-
-          if (currentCjsTsConfig && currentCjsTsConfig.references) {
-            // Checking if the number of modules is the same
-            const sameNumberOfModules =
-              uniqueRequiredOneModules.length ===
-              currentCjsTsConfig.references.length;
-
-            const missingModules = uniqueRequiredOneModules.reduce(
-              (accumulator, requiredModule) => {
-                const isPresent = currentCjsTsConfig.references.some(
-                  (reference) => reference.path.includes(requiredModule)
-                );
-
-                if (!isPresent) {
-                  accumulator.push(requiredModule);
-                }
-
-                return accumulator;
-              },
-              []
-            );
-
-            if (sameNumberOfModules && missingModules.length === 0) {
-              return;
-            }
-
-            if (
-              missingModules.length > 0 &&
-              missingModules.filter((m2) => !modules.some((m) => m2 === m.name))
-                .length > 0
-            ) {
-              console.log(
-                "Some required modules are missing in references and aren't in modules folder."
-              );
-              moduleWatcher.muteEvent("changed");
-              await stop();
-              await prebuild();
-              esmSpawn = spawnCompilationProcess(true);
-              cjsSpawn = spawnCompilationProcess(false);
-              cjsSpawn.proc.stdout.on("data", onData);
-              moduleWatcher.unmuteEvent("changed");
-              return;
-            }
-            ignoredModules.add(module);
-            console.log("Some required modules are missing in references.");
-            await stop();
-            await initModule({ name: module, path: modulePath });
-            esmSpawn = spawnCompilationProcess(true);
-            cjsSpawn = spawnCompilationProcess(false);
-            cjsSpawn.proc.stdout.on("data", onData);
-
-            setTimeout(() => {
-              ignoredModules.delete(module);
-            }, 500);
-            return;
-          }
-          return;
-        } catch (err) {
-          console.log(err);
-        }
+    /**
+     * Starts the TypeScript compilation process
+     */
+    const startTSC = async () => {
+      if (watchState.esmSpawn || watchState.cjsSpawn) {
+        watchState.cjsSpawn.stop();
+        watchState.esmSpawn.stop();
       }
-      if (!ignoredModules.has(event)) {
-        stop();
-        esmSpawn = spawnCompilationProcess(true);
-        cjsSpawn = spawnCompilationProcess(false);
-        cjsSpawn.proc.stdout.on("data", onData);
+      if (!watchState.initialRun) {
+        prebuild();
+      }
+      watchState.esmSpawn = spawnCompilationProcess(true);
+      watchState.cjsSpawn = spawnCompilationProcess(false);
+      watchState.cjsSpawn.proc.stdout.on("data", onData);
+      watchState.initialRun = false;
+    };
+
+    /**
+     * Populates initial information for modules
+     */
+    const createModuleHash = (info) =>
+      JSON.stringify({
+        requiredOneModules: info.requiredOneModules,
+        allDeps: info.allDeps ?? {},
+      });
+
+    const populateInitialInfo = async () => {
+      for (const modulee of findModules()) {
+        const modulePath = projectPath("modules/" + modulee.name);
+        const info = await getModuleInfo(modulee.name, modulePath);
+
+        watchState.moduleRebuild[modulee.name] = {
+          hash: createModuleHash(info),
+        };
+      }
+    };
+
+    /**
+     * Checks if a module requires a new prebuild based on changes
+     * @param {string} moduleName - Name of the module to check
+     */
+    const checkModuleRequiresNewPrebuildd = async (moduleName: string) => {
+      const modulePath = projectPath("modules/" + moduleName);
+      const info = await getModuleInfo(moduleName, modulePath);
+
+      const currentHash = createModuleHash(info);
+
+      if (
+        watchState.moduleRebuild[moduleName].hash &&
+        watchState.moduleRebuild[moduleName].hash !== currentHash
+      ) {
+        watchState.moduleRebuild[moduleName].hash = currentHash;
+        console.log("Rebuilding due to module change: ", moduleName);
+        watchState.watcherHandle.pause();
+        await onNeedsPrebuild();
+        watchState.watcherHandle.restart();
+        return;
+      }
+    };
+
+    await populateInitialInfo();
+    watchState.moduleWatcher.on("changed", async (event) => {
+      if ((event || "").includes("src")) {
+        const module = (event || "").split("/").pop();
+        checkModuleRequiresNewPrebuildd(module);
       }
     });
+
+    startTSC();
   });
 }

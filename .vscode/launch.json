@@ -16,7 +16,7 @@
     {
       "name": "Compiler Debug Dev (Andy)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
-      "cwd": "/Users/andrewshand/Documents/Github/design-cloud-github",
+      "cwd": "/Users/andrewshand/Documents/Github/discord-thing",
       "request": "launch",
       "runtimeArgs": ["--experimental-specifier-resolution=node"],
       "skipFiles": ["<node_internals>/**"],

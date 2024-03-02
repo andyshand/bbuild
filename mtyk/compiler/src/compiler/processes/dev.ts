@@ -6,6 +6,7 @@ import InfisicalClient from "infisical-node";
 import { lastValueFrom, merge, tap } from "rxjs";
 import { parse } from "yaml";
 import { readJSON } from "../json";
+import { Logger } from "../logging";
 import { getTaskStream } from "../task";
 
 export interface DevJSON {
@@ -152,7 +153,7 @@ export default async function dev(
     }
   });
 
-  await lastValueFrom(
+  const promisee = lastValueFrom(
     merge(
       ...tasks.map((t) => {
         return t.stream.obs.pipe(
@@ -160,10 +161,19 @@ export default async function dev(
             if ((focused && focused !== t.task.name) || t.task.quiet) {
               return;
             }
-            console.log(data);
+            const task = t.task.name ?? t.task.cmd;
+            Logger.root.group(task).log(...data);
           })
         );
       })
     )
   );
+
+  return {
+    stop: () => {
+      for (const task of tasks) {
+        task.stream.getLatestSpawnedChild()?.kill("SIGTERM");
+      }
+    },
+  };
 }

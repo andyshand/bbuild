@@ -10,12 +10,16 @@ export default function findFileImports(filePath: string) {
   // Match typescipt only 'import type' syntax
   const typeImportRegex =
     /import\s+type\s+{?[\s\w,]+}?[\s\w,]+from\s+['"]([^'"]+)['"]/g;
+  // Match 'export { default as x } from "module"' syntax
+  const exportDefaultRegex =
+    /export\s+{\s*default\s+as\s+\w+\s*}\s+from\s+['"]([^'"]+)['"]/g;
 
   // Find all captured groups for both regex
   const imports = flattenDeep([
     ...[...fileContents.matchAll(importRegex)].map((m) => m[1]),
     ...[...fileContents.matchAll(simpleImportRegex)].map((m) => m[1]),
     ...[...fileContents.matchAll(typeImportRegex)].map((m) => m[1]),
+    ...[...fileContents.matchAll(exportDefaultRegex)].map((m) => m[1]),
   ]);
 
   return imports

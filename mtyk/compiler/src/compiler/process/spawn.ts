@@ -1,8 +1,7 @@
+import execa, { ExecaChildProcess } from "execa";
+import { Logger } from "../logging";
 import { DevJSON } from "../processes/dev";
 import require from "../require";
-import { getColorForTag } from "../task";
-import { formatConsole } from "./spawnToObservable";
-import execa, { ExecaChildProcess } from "execa";
 
 export function spawnProcess<PTY extends boolean>(
   cmd: string,
@@ -49,28 +48,13 @@ export function spawnProcess<PTY extends boolean>(
 
   childProcess.on("exit", (exitCode, signal) => {
     console.log(
-      formatConsole(
-        [
-          `[${new Date().toISOString()}] Task "${name}" exited with code ${exitCode} and signal ${signal}`,
-        ],
-        getColorForTag(name),
-        name,
-        cmd
-      ).join("\n")
+      `Task "${name}" exited with code ${exitCode} and signal ${signal}`
     );
   });
   childProcess
     .then(() => {})
     .catch((error) => {
-      if (error.signal === "SIGTERM") return;
-      console.log(
-        formatConsole(
-          [`[${new Date().toISOString()}] ${error.message}}`],
-          getColorForTag(name),
-          name,
-          cmd
-        ).join("\n")
-      );
+      console.error(error);
     });
 
   return childProcess;
@@ -99,16 +83,9 @@ export function spawnStoppableProcess(
     maxBuffer: 104857600,
     ...execaOptions,
   });
-
+  const logger = Logger.root.group(label);
   subprocess.all?.on("data", (data) => {
-    console.log(
-      formatConsole(
-        data.toString()?.split("\n"),
-        getColorForTag(label),
-        label,
-        cmd
-      ).join("\n")
-    );
+    logger.log(data.toString());
   });
 
   subprocess
@@ -116,28 +93,10 @@ export function spawnStoppableProcess(
       onFinish?.();
     })
     .catch((error) => {
-      // console.log(error.message);
+      logger.error(error);
       if (error.signal === "SIGTERM") {
-        console.log(
-          formatConsole(
-            [
-              `[${new Date().toISOString()}] Task "${label}" exited with code ${
-                error.code
-              } with signal ${error.signal}`,
-            ],
-            getColorForTag(label),
-            label,
-            cmd
-          ).join("\n")
-        );
-      } else {
-        console.log(
-          formatConsole(
-            [`[${new Date().toISOString()}] ${error.message}}`],
-            getColorForTag(label),
-            label,
-            cmd
-          ).join("\n")
+        logger.log(
+          `Task "${label}" exited with code ${error.code} and signal ${error.signal}`
         );
       }
     });

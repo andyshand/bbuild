@@ -1,9 +1,11 @@
+import { getNativeDependencies } from "@/compiler/native-dependency";
 import { projectPath } from "@/compiler/path";
+import deleteDirectoryWithRetry from "@/util/deleteDirectoryWithRetry";
 import { debug } from "@/util/log";
 import fse, { copy, remove } from "fs-extra";
 import _ from "lodash";
 import path from "path";
-import { hasCacheChanged } from "../cache";
+import barrelify from "../barrelify";
 import { getPackageOrg } from "../constants";
 import { getBuildContext } from "../context/buildContext";
 import { PackageBuildContext } from "../context/packageBuildContext";
@@ -12,8 +14,6 @@ import { copyChangedFilesOnly } from "../file/copyChangedFilesOnly";
 import { readJSON } from "../json";
 import makeExports from "../package/exports";
 import getModuleInfo from "./getModuleInfo";
-import { getNativeDependencies } from "@/compiler/native-dependency";
-import deleteDirectoryWithRetry from "@/util/deleteDirectoryWithRetry";
 
 export default async function makeModulePackage(
   context: PackageBuildContext,
@@ -24,24 +24,13 @@ export default async function makeModulePackage(
   const moduleFolder = projectPath("modules", name);
   const makePath = (p: string) => path.join(moduleFolder, p);
 
+  await barrelify(`${moduleFolder}/src`);
+
   // Ensure src folder exists, otherwise we will confuse top-level source files
   // wiht output files
   const srcFolder = path.join(moduleFolder, "src");
   if (!fse.existsSync(srcFolder)) {
     throw new Error(`No src folder found in ${moduleFolder}`);
-  }
-
-  if (
-    !hasCacheChanged(
-      makePath("dist") + "/**/*",
-      {
-        ignore: ["**/*.tsbuildinfo", "**/touch.js", "*.map"],
-      },
-      makePath("dist") + "initialtest"
-    )
-  ) {
-    // console.log(`No changes to ${name}`)
-    return;
   }
 
   debug(`Making package for ${fullPackageName}`);

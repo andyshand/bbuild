@@ -12,17 +12,23 @@ export class RPCClient {
   private isConnected: boolean
 
   static getSingleton() {
-    return Array.from(RPCClient.clients.values()).filter(
-      (c) => !c.url.includes('9050')
-    )[0]
+    return Array.from(RPCClient.clients.values()).filter((c) => !c.url.includes('9050'))[0]
+  }
+
+  setToken(token: string) {
+    localStorage.setItem('auth_token', token)
+  }
+
+  getToken() {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token')
+    }
+    return null
   }
 
   constructor(url: string = 'ws://localhost:9090') {
     this.url = url
-    this.listeners = new Map<
-      string,
-      Observer<any> & { hasCompleted: boolean }
-    >()
+    this.listeners = new Map<string, Observer<any> & { hasCompleted: boolean }>()
     this.requestCounter =
       typeof window !== 'undefined'
         ? parseInt(localStorage.getItem('requestCounter') || '0', 10)
@@ -37,7 +43,7 @@ export class RPCClient {
         if (key in target) {
           return target[key]
         }
-        return (payload: any) => this.callFunction(key, payload)
+        return (payload: any) => this.callFunction(key, this.addAuthToPayload(payload))
       },
     })
   }
@@ -69,21 +75,16 @@ export class RPCClient {
           }
         }
       } catch (e) {
-        const error = new Error(
-          `Error while parsing message: ${message.data.toString()}`,
-          {
-            cause: e,
-          }
-        )
+        const error = new Error(`Error while parsing message: ${message.data.toString()}`, {
+          cause: e,
+        })
         console.error(error)
       }
     }
 
     this.socket.onclose = () => {
       this.isConnected = false
-      this.listeners.forEach((listener) =>
-        listener.error(new Error('Socket closed'))
-      )
+      this.listeners.forEach((listener) => listener.error(new Error('Socket closed')))
       // Try to reconnect after a timeout
       setTimeout(() => this.connect(), 1000)
     }
@@ -93,6 +94,18 @@ export class RPCClient {
     while (this.pendingCalls.length > 0) {
       const call = this.pendingCalls.shift()
       this.socket.send(JSON.stringify(call))
+    }
+  }
+
+  addAuthToPayload(payload: any) {
+    if (!payload || typeof payload !== 'object') {
+      return payload
+    }
+    return {
+      ...payload,
+      auth: {
+        token: this.getToken(),
+      },
     }
   }
 
@@ -117,6 +130,8 @@ export class RPCClient {
       hasCompleted: false,
     })
 
+    payload = this.addAuthToPayload(payload)
+
     if (this.isConnected) {
       this.socket.send(JSON.stringify({ id, key, payload }))
     } else {
@@ -132,6 +147,17 @@ export class RPCClient {
         subscription.unsubscribe()
       })
     )
+  }
+
+  callPromise(key: string, payload: any): Promise<any> {
+    const obs = this.callFunction(key, payload)
+    return new Promise((resolve, reject) => {
+      obs.subscribe({
+        next: (value) => resolve(value),
+        error: (err) => reject(err),
+        complete: () => {},
+      })
+    })
   }
 }
 

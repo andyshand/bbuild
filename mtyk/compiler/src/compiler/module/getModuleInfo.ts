@@ -3,11 +3,12 @@ import fs from "fs";
 import glob from "glob";
 import isBuiltinModule from "is-builtin-module";
 import _ from "lodash";
+import uniq from "lodash/uniq";
 import path from "path";
 import { COLORS } from "../constants";
 import findFileImports from "../file/findFileImports";
 import { readJSON, writeJSON } from "../json";
-import { safePackages } from "./safePackages";
+import { badPackages, safePackages } from "./safePackages";
 export interface BaseModuleInfo {
   name: string;
   path: string;
@@ -17,6 +18,7 @@ interface ModuleInfo {
   info?: {
     requiredOneModules: string[];
     hasReact: boolean;
+    allDeps?: Record<string, string>;
   } & BaseModuleInfo;
   watcher: chokidar.FSWatcher;
 }
@@ -79,6 +81,7 @@ export default async function getModuleInfo(
     .uniq()
     .value();
 
+  let allDeps = {};
   if (fs.existsSync(path.join(modulePath, "package.json"))) {
     const packageJSON = await readJSON(path.join(modulePath, "package.json"));
     const safe = safePackages;
@@ -102,6 +105,10 @@ export default async function getModuleInfo(
         if (safe[dep] && allDeps[dep] !== safe[dep]) {
           allDeps[dep] = safe[dep];
           isPackageJsonUpdated = true;
+        } else if (badPackages[dep]) {
+          console.warn(
+            `The dependency ${COLORS.yellow}${dep}${COLORS.reset} is discouraged: ${COLORS.yellow}${badPackages[dep].warning}${COLORS.reset}`
+          );
         } else {
           notAdded.push(dep);
         }
@@ -138,7 +145,8 @@ export default async function getModuleInfo(
   moduleInfoCache[moduleName].info = {
     name: moduleName,
     path: modulePath,
-    requiredOneModules: onlyOneModules,
+    allDeps,
+    requiredOneModules: uniq(onlyOneModules).sort(), // make sure in same order each time, don't confuse json.stringify
     hasReact,
   };
   return moduleInfoCache[moduleName].info;

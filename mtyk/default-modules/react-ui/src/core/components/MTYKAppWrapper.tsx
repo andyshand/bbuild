@@ -1,10 +1,10 @@
 import { observer } from '@legendapp/state/react'
-import { ComponentProps, createElement, useEffect } from 'react'
-import CommandMenuProvider from '../../dev/components/CommandMenuProvider'
-import reactUIState$ from '../observables/reactUIState$'
+import { ComponentProps, createElement } from 'react'
 import { ContextMenuProvider } from '../../context-menu/components/ContextMenuProvider'
-import { ToastProvider } from '../../toasts/components/ToastProvider'
+import CommandMenuProvider from '../../dev/components/CommandMenuProvider'
 import WhatsNew from '../../misc/components/WhatsNew'
+import { ToastProvider } from '../../toasts/components/ToastProvider'
+import reactUIState$ from '../observables/reactUIState$'
 
 const ModalRenderer = observer(function ModalRenderer(props: {}) {
   const { component, props: props2 } = reactUIState$.modal.get()

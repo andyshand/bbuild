@@ -1,13 +1,27 @@
 import * as fs from "fs";
+import glob from "glob";
 import _ from "lodash";
 import * as path from "path";
 import { parse } from "yaml";
 import { z } from "zod";
 import { hasCacheChanged } from "./cache";
 
-function toCamelCase(str: string, startCapital = false) {
-  const out = _.startCase(str).replace(/\s(.)/g, (_, c) => c.toUpperCase());
-  return startCapital ? out : out[0].toLowerCase() + out.slice(1);
+function toCamelCase(
+  str: string,
+  casing: "camel" | "pascal" | "kebab" | "snake"
+) {
+  switch (casing) {
+    case "camel":
+      return _.camelCase(str);
+    case "pascal":
+      return _.startCase(str).replace(/\s(.)/g, (_, c) => c.toUpperCase());
+    case "kebab":
+      return _.kebabCase(str);
+    case "snake":
+      return _.snakeCase(str);
+    default:
+      return _.camelCase(str); // default to camelCase if no match
+  }
 }
 
 function removeExtension(filename: string) {
@@ -16,7 +30,14 @@ function removeExtension(filename: string) {
 const barrelConf = z.object({
   include: z.array(z.string()).optional(),
   exclude: z.array(z.string()).optional().default([]),
+  /**
+   * @deprecated prefer `casing` instead
+   */
   startCase: z.boolean().optional().default(false),
+  casing: z
+    .enum(["camel", "pascal", "kebab", "snake"])
+    .optional()
+    .default("camel"),
   all: z.boolean().optional().default(false),
   extensions: z
     .array(z.string())
@@ -74,7 +95,7 @@ function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
     if (fs.statSync(fullPath).isDirectory()) {
       continue;
     } else {
-      const exportName = toCamelCase(removeExtension(file), config.startCase);
+      const exportName = toCamelCase(removeExtension(file), config.casing);
       barreled.push(exportName);
       if (config.array) {
         indexContent += `import ${exportName} from './${removeExtension(
@@ -95,6 +116,15 @@ function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
 }
 
 export default async function barrelify(srcFolder: string) {
+  const hasBarrelSomewhereDeep =
+    glob.sync("**/.barrel.yml", {
+      cwd: srcFolder,
+    }).length > 0;
+
+  if (!hasBarrelSomewhereDeep) {
+    return;
+  }
+
   async function iterateDir(dir: string) {
     const files = fs.readdirSync(dir);
     const barrelConfig = files.find((file) => file === ".barrel.yml");

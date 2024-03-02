@@ -21,11 +21,11 @@ export class PackageBuildContext {
   }
 }
 
-export function getModuleBuildContext(modulePath: string) {
-  if (!(modulePath in contexts)) {
-    const context = new PackageBuildContext(modulePath);
-    contexts[modulePath] = context;
+export function getModuleBuildContext(moduleName: string) {
+  if (!(moduleName in contexts)) {
+    const context = new PackageBuildContext(moduleName);
+    contexts[moduleName] = context;
     return context;
   }
-  return contexts[modulePath];
+  return contexts[moduleName];
 }

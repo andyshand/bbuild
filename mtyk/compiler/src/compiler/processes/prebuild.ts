@@ -108,7 +108,7 @@ yarnPath: .yarn/releases/yarn-4.0.0.cjs`;
     workspaces: ["modules/*", "apps/*"],
     hoistingLimits: "dependencies",
     name: config.name,
-    devDependencies: pick(safePackages, ['typescript', '@biomejs/biome']),
+    devDependencies: pick(safePackages, ["typescript"]),
     resolutions: {
       "@bbuild/client-modules": "file:./built-modules/client-modules",
       "@bbuild/server-modules": "file:./built-modules/server-modules",
@@ -120,7 +120,10 @@ yarnPath: .yarn/releases/yarn-4.0.0.cjs`;
     ? await fse.readJSON(packageJSONPath)
     : initialJSON;
 
-  const updateJSON = mergePackageJSON({ target: existingOrNewPackageJSON, source: sourceJSON });
+  const updateJSON = mergePackageJSON({
+    target: existingOrNewPackageJSON,
+    source: sourceJSON,
+  });
 
   // If for some wacky reason dist/*.tsbuildinfo exist, and they're directories, delete them
   const distDir = projectPath("dist");
@@ -212,47 +215,55 @@ yarnPath: .yarn/releases/yarn-4.0.0.cjs`;
   // Init .vscode/extensions.json
   const extensionsJSONPath = projectPath(".vscode/extensions.json");
   const extensionsJSON: { recommendations: string[] } = {
-      "recommendations": ["biomejs.biome"]
+    recommendations: ["biomejs.biome"],
   };
   await writeJSON(extensionsJSONPath, extensionsJSON);
 
-
-  // TODO Init .vscode/settings.json  
-
+  // TODO Init .vscode/settings.json
+  // TODO revert back to prettier, biome vscode extension just as buggy...
   // Init biome.json
-  const biomeJSONPath = projectPath("biome.json");
-  const biomeJSON = {
-    "formatter": {
-      "enabled": true,
-      "indentStyle": "space",
-      "lineWidth": 95,
-      "indentWidth": 2,
-      "formatWithErrors": true
-    },
-    "linter": {
-      "enabled": false
-    },
-    "organizeImports": {
-      "enabled": true
-    },
-    "javascript": {
-      "formatter": {
-        "semicolons": "asNeeded",
-        "quoteStyle": "single",
-        "trailingComma": "all",
-        "arrowParentheses": "always"
-      }
-    },
-    "$schema": "https://biomejs.dev/schemas/1.2.2/schema.json"
-  }
-  await writeJSON(biomeJSONPath, biomeJSON);
+  // const biomeJSONPath = projectPath("biome.json");
+  // const biomeJSON = {
+  //   "formatter": {
+  //     "enabled": true,
+  //     "indentStyle": "space",
+  //     "lineWidth": 95,
+  //     "indentWidth": 2,
+  //     "formatWithErrors": true
+  //   },
+  //   "linter": {
+  //     "enabled": false
+  //   },
+  //   "organizeImports": {
+  //     "enabled": true
+  //   },
+  //   "javascript": {
+  //     "formatter": {
+  //       "semicolons": "asNeeded",
+  //       "quoteStyle": "single",
+  //       "trailingComma": "all",
+  //       "arrowParentheses": "always"
+  //     }
+  //   },
+  //   "$schema": "https://biomejs.dev/schemas/1.2.2/schema.json"
+  // }
+  // await writeJSON(biomeJSONPath, biomeJSON);
+
+  const prettierRCYarml = `
+trailingComma: 'es5'
+tabWidth: 2
+semi: false
+singleQuote: true
+printWidth: 95
+`;
+  await fse.writeFile(projectPath(".prettierrc.yml"), prettierRCYarml);
 
   // Delete rome.json if present
   const romeJSONPath = projectPath("rome.json");
   if (await fse.pathExists(romeJSONPath)) {
     await fse.remove(romeJSONPath);
   }
-  
+
   await bash`cd ${projectPath()} && yarn`;
   console.log("prebuild finished");
 }

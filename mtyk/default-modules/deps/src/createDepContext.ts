@@ -4,12 +4,12 @@ import { DepProvider, DepType, GetProvidedDeps } from './TokenDepSpec'
 
 export type ProviderMiddleware = (
   dep: DepType,
-  isSync: boolean,
+  isSync: boolean
 ) => any | Promise<any> | undefined
 
 export const createDepContext = (
   middlewares?: ProviderMiddleware[],
-  middlewaresSync?: ProviderMiddleware[],
+  middlewaresSync?: ProviderMiddleware[]
 ) => {
   let providers: DepProvider<any>[] = []
   const providerMiddlewares = middlewares || []
@@ -18,7 +18,7 @@ export const createDepContext = (
   const getDeps = <T extends Record<string, DepType>>(
     deps: T,
     extra: Partial<GetProvidedDeps<T>> = {},
-    isSync: boolean,
+    isSync: boolean
   ): GetProvidedDeps<T> | Promise<GetProvidedDeps<T>> => {
     const output: any = {}
 
@@ -45,19 +45,33 @@ export const createDepContext = (
       if (!match) {
         if (!dep.optional) {
           throw new Error(
-            `No provider found for token: ${dep.token} key: ${key} (type: ${dep.specType})`,
+            `No provider found for token: ${dep.token} key: ${key} (type: ${dep.specType})`
           )
         }
       } else {
+        if (match.provide && typeof match.provide !== 'function') {
+          return match.provide
+        }
         return match.provide?.() ?? match.value
       }
+    }
+
+    const canAddFromExtra = (dep: DepType, key: string) => {
+      if (dep.private) {
+        return false
+      }
+      if (key in extra) {
+        return true
+      }
+
+      return false
     }
 
     const processDeps = async () => {
       for (const key in deps) {
         const dep = deps[key]
 
-        if (key in extra) {
+        if (canAddFromExtra(dep, key)) {
           output[key] = extra[key]
         } else {
           const middlewareResult = await getDepFromMiddlewares(dep)
@@ -88,7 +102,7 @@ export const createDepContext = (
               result.success || (dep.optional && typeof output[key] === 'undefined'),
               `Validation failed for key: ${key}: ${
                 result.error ? prettifyZodError(result.error, output[key]) : 'Unknown error'
-              }`,
+              }`
             )
             if (result.success) {
               output[key] = result.data
@@ -103,7 +117,7 @@ export const createDepContext = (
               ),
               `Type mismatch for dep ${key}: expected ${
                 dep.runtimeType
-              } but got ${typeof output[key]}`,
+              } but got ${typeof output[key]}`
             )
           }
         }
@@ -113,7 +127,7 @@ export const createDepContext = (
     const processSyncDeps = () => {
       for (const key in deps) {
         const dep = deps[key]
-        if (key in extra) {
+        if (canAddFromExtra(dep, key)) {
           output[key] = extra[key]
           continue
         }
@@ -134,13 +148,13 @@ export const createDepContext = (
     providers,
     provideDeps: async <T extends Record<string, DepType>>(
       deps: T,
-      extra: Partial<GetProvidedDeps<T>> = {},
+      extra: Partial<GetProvidedDeps<T>> = {}
     ): Promise<GetProvidedDeps<T>> => {
       return getDeps(deps, extra, false) as Promise<GetProvidedDeps<T>>
     },
     provideDepsSync: <T extends Record<string, DepType>>(
       deps: T,
-      extra: Partial<GetProvidedDeps<T>> = {},
+      extra: Partial<GetProvidedDeps<T>> = {}
     ): GetProvidedDeps<T> => {
       return getDeps(deps, extra, true) as GetProvidedDeps<T>
     },
@@ -166,6 +180,32 @@ export const createDepContext = (
   return { ...api, provide: api.provideDeps, provideSync: api.provideDepsSync }
 }
 
+// export function createDepContext2<D extends Record<string, DepType>>(
+//   providers: D,
+//   middlewares?: ProviderMiddleware[],
+//   middlewaresSync?: ProviderMiddleware[]
+// ): DepContext2<D> {
+//   const ctx = createDepContext(middlewares, middlewaresSync)
+//   ctx.providers = Object.entries(providers).map(([token, value]) => ({ token, value }))
+//   return {
+//     ...ctx,
+//     resolve: async <K extends keyof D>(key: K) => {
+//       const provider = ctx.providers.find((p) => p.token === key)
+//       if (!provider) {
+//         throw new Error(`Provider for key "${String(key)}" not found`)
+//       }
+//       return ctx.provideDeps({ [key]: provider.value }) as Promise<D[K]>
+//     },
+//     resolveSync: <K extends keyof D>(key: K) => {
+//       const provider = ctx.providers.find((p) => p.token === key)
+//       if (!provider) {
+//         throw new Error(`Provider for key "${String(key)}" not found`)
+//       }
+//       return ctx.provideDepsSync({ [key]: provider.value }) as D[K]
+//     },
+//   }
+// }
+
 export type DepContext = {
   /**
    * @deprecated
@@ -184,6 +224,21 @@ export type DepContext = {
   addMiddleware: (middleware: ProviderMiddleware, isSync: boolean) => void
 }
 
+// export type DepContext2<D extends Record<string, DepType>> = DepContext & {
+//   resolve: <K extends keyof D>(key: K) => Promise<D[K]>
+//   resolveSync: <K extends keyof D>(key: K) => D[K]
+// }
+
 const globalObject = typeof global !== 'undefined' ? global : window
-export const globalDepContext: DepContext =
-  (globalObject.__depContext as DepContext) || (globalObject.__depContext = createDepContext())
+if (typeof globalObject !== 'undefined') {
+  // Check  global context hasn't already been created, if so, warn
+  if (globalObject.__depContext) {
+    console.warn(
+      'Global dep context already exists, have you imported two different versions of deps?'
+    )
+  } else {
+    globalObject.__depContext = createDepContext()
+  }
+}
+
+export const globalDepContext: DepContext = globalObject.__depContext as DepContext

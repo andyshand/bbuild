@@ -37,6 +37,7 @@ export class Logger {
 
   private printMessage(args: string[], level: number) {
     const asciiHeader = (name: string) => `|${"-".repeat(2 * level)} ${name}`;
+
     if (this.name !== Logger.lastLogGroup) {
       if (Logger.lastLogGroup !== null) {
         // originalConsoleLog(
@@ -46,6 +47,7 @@ export class Logger {
       // originalConsoleLog(`${" ".repeat(level * 2)}${asciiHeader(this.name)}`);
       Logger.lastLogGroup = this.name;
     }
+
     if (this.name === "root") {
       originalConsoleLog(
         ...formatConsole(args, getColorForTag("bbuild"), "bbuild", "bbuild")
@@ -60,12 +62,17 @@ export class Logger {
   public log(...args: string[]) {
     this.printMessage(args, this.level);
   }
+  public error(...args: string[]) {
+    this.printMessage(args, this.level);
+  }
+  private children: Map<string, Logger> = new Map();
 
-  public group(name: string) {
-    if (this.name === "root") {
-      return new Logger(name, this.level + 1);
+  public group(name: string): Logger {
+    const fullName = this.name === "root" ? name : `${this.name}/${name}`;
+    if (!this.children.has(fullName)) {
+      this.children.set(fullName, new Logger(fullName, this.level + 1));
     }
-    return new Logger(`${this.name}/${name}`, this.level + 1);
+    return this.children.get(fullName) as Logger;
   }
 
   public static withLogGroup(

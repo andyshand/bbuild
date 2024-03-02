@@ -1,3 +1,7 @@
+import { ChildProcess } from "child_process";
+import { ExecaChildProcess } from "execa";
+import fs from "fs";
+import path from "path";
 import { EMPTY, merge, Observable, of, Subject } from "rxjs";
 import {
   catchError,
@@ -6,18 +10,14 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
-import { DevConfig, DevJSON } from "./processes/dev";
+import getUniverseConfig from "./config/universe";
+import { watchFiles } from "./file/watchFiles";
+import getModuleInfo from "./module/getModuleInfo";
 import { projectPath } from "./path";
 import { spawnProcess } from "./process/spawn";
 import { spawnToObservable } from "./process/spawnToObservable";
-import path from "path";
-import fs from "fs";
-import getUniverseConfig from "./config/universe";
-import { watchFiles } from "./file/watchFiles";
-import { ChildProcess } from "child_process";
-import { ExecaChildProcess } from "execa";
+import { DevConfig, DevJSON } from "./processes/dev";
 import processFilesForBbuildImports from "./watch/findAllBbuildImports";
-import getModuleInfo from "./module/getModuleInfo";
 
 export async function getTaskStream(
   task: DevJSON["tasks"][0],
@@ -44,6 +44,7 @@ export async function getTaskStream(
   let observables = [watchFilesObservable1, restartTrigger];
 
   const lastArg = args[args.length - 1];
+  console.log({ lastArg, hello: 2 });
 
   if (lastArg?.endsWith(".js")) {
     const modulesToWatchSet = new Set(

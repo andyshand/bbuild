@@ -1,6 +1,6 @@
-import { PackageBuildContext } from '../context/packageBuildContext'
+import { PackageBuildContext } from "../context/packageBuildContext";
 
-const runningStatusByName: Record<string, 'making' | 'requested'> = {};
+const runningStatusByName: Record<string, "making" | "requested"> = {};
 
 export async function processModulesSequentiallyByName(
   context: PackageBuildContext,
@@ -8,18 +8,18 @@ export async function processModulesSequentiallyByName(
   cb: () => Promise<void>
 ) {
   if (name in runningStatusByName) {
-    runningStatusByName[name] = 'requested'
+    runningStatusByName[name] = "requested";
     // context.setMessage(`Requested to make ${name} but already making it`)
-    return
+    return;
   }
 
-  runningStatusByName[name] = 'making'
+  runningStatusByName[name] = "making";
 
-  await cb()
-  const wasRequested = runningStatusByName[name] === 'requested'
-  delete runningStatusByName[name]
+  await cb();
+  const wasRequested = runningStatusByName[name] === "requested";
+  delete runningStatusByName[name];
   if (wasRequested) {
-    context.setMessage(`Requested again one at a time ${name}`)
-    await processModulesSequentiallyByName(context, name, cb)
+    context.setMessage(`Requested again one at a time ${name}`);
+    await processModulesSequentiallyByName(context, name, cb);
   }
 }

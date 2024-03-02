@@ -1,11 +1,11 @@
 import fse from "fs-extra";
 import glob from "glob";
 import path from "path";
+import { promisify } from "util";
 import { hasCacheChanged } from "../cache";
 import { getPackageOrg } from "../constants";
 import { modifyAndWrite } from "./addSourceRootToMaps";
 import { slowFilehash as filesEqual } from "./hash";
-import { promisify } from "util";
 
 const globAsync = promisify(glob);
 

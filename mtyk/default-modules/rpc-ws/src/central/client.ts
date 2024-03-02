@@ -1,9 +1,9 @@
-import ClientPubSub from "../ClientPubSub"
-import Client from "../client"
+import ClientPubSub from '../ClientPubSub'
+import RPCClient from '../client'
 
-const client = new Client("ws://localhost:9050")
+const client = new RPCClient('ws://localhost:9050')
 const pubSub = new ClientPubSub(client)
 
 export default client
 
-export { pubSub, client }
+export { client, pubSub }

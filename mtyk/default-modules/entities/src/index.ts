@@ -6,20 +6,22 @@ export { default as Entity } from './Entity'
 export { default as EntityField } from './EntityField'
 export { default as EntityFunction } from './EntityFunction'
 export { default as EntityRelation } from './EntityRelation'
+
 export type { EntityTypable } from './EntityTypable'
-export type { IEntityManager } from './IEntityManager'
+
 export { Serialisable, serializableMetadataKey } from './Serialisable'
 export { entityType } from './entityType'
+export { entityTypesEqual, getEntityTypeName } from './getEntityTypeName'
+
+// Entity managers
+export type { IEntityManager } from './IEntityManager'
 export { MemoryEntityManager } from './MemoryEntityManager'
-export { getEntityTypeName, entityTypesEqual } from './getEntityTypeName'
+export { RPCEntityManager } from './RPCEntityManager'
+export { RemoteEntityManager } from './RemoteEntityManager'
 
 export const upsert =
   (entityManager: IEntityManager) =>
-  async <T extends Entity>(
-    entityType: string,
-    query: any,
-    data = query
-  ): Promise<T> => {
+  async <T extends Entity>(entityType: string, query: any, data = query): Promise<T> => {
     const [existing] = await entityManager.find(entityType, query)
     if (existing) {
       return entityManager.update(

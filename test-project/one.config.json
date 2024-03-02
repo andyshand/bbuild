@@ -1,6 +1,7 @@
 {
   "name": "test-project",
   "modules": [
-    "files-client", "files"
+    "files-client",
+    "files"
   ]
 }

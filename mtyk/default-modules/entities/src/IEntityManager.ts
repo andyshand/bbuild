@@ -8,23 +8,19 @@ export type IEntityManagerFindOpts = {
 
 export type EntityType = Record<string, any>
 export type CreatedEntity<T extends EntityType = any> = T & { id: string }
+export type Id = string
 
 export interface IEntityManager {
   yDoc: any
   create<T = any>(
     entityType: Constructor<T> | string,
     entity: Partial<T>
-  ): Promise<CreatedEntity<any>>
+  ): Promise<CreatedEntity<T>>
   read<T extends EntityType = any>(
     entityType: Constructor<T> | string,
-    id
+    id: Id
   ): Promise<CreatedEntity<T>>
-  update(
-    entityType,
-    id,
-    updates,
-    revisionNumber?: number
-  ): Promise<CreatedEntity>
+  update(entityType, id, updates, revisionNumber?: number): Promise<CreatedEntity>
   delete(entityType, id): Promise<any>
   find<T extends EntityType = any>(
     entityType: Constructor<T> | string,

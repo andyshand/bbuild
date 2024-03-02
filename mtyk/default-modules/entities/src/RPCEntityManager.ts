@@ -1,14 +1,14 @@
 import RPCClient from 'modules/rpc-ws/client'
 import { getPortForName } from 'modules/transport'
-import { Observable, Subject, firstValueFrom, share } from 'rxjs'
 import { Constructor } from 'modules/types'
-import Entity from './Entity'
-import { RemoteEntityManager } from './RemoteEntityManager'
-import { getEntityTypeName } from './getEntityTypeName'
-import { UnknownEntity } from './UnknownEntity'
-import { initializeYjsSyncProvider } from './yjs/wsProvider'
+import { Observable, Subject, firstValueFrom, share } from 'rxjs'
 import { WebsocketProvider } from 'y-websocket'
+import Entity from './Entity'
 import { CreatedEntity } from './IEntityManager'
+import { RemoteEntityManager } from './RemoteEntityManager'
+import { UnknownEntity } from './UnknownEntity'
+import { getEntityTypeName } from './getEntityTypeName'
+import { initializeYjsSyncProvider } from './yjs/wsProvider'
 
 export class RPCEntityManager extends RemoteEntityManager {
   client: any
@@ -16,10 +16,7 @@ export class RPCEntityManager extends RemoteEntityManager {
   private wsProviders = new Map<string, WebsocketProvider>()
   public invalidateSubject: Subject<any>
 
-  constructor(
-    protected entities: Constructor<Entity>[],
-    protected name: string
-  ) {
+  constructor(protected entities: Constructor<Entity>[], protected name: string) {
     super(entities)
     const port = getPortForName(name)
     this.client = new RPCClient(`ws://localhost:${port}`)
@@ -57,12 +54,7 @@ export class RPCEntityManager extends RemoteEntityManager {
     return instance
   }
 
-  call(
-    entityType: string,
-    id: string,
-    method: string,
-    args: any[]
-  ): Promise<any> {
+  call(entityType: string, id: string, method: string, args: any[]): Promise<any> {
     // The idea is that calls are executed remotely, so no need for an implementation here
     throw new Error('Method not implemented.')
   }
@@ -81,10 +73,7 @@ export class RPCEntityManager extends RemoteEntityManager {
     return result
   }
 
-  async create<T>(
-    entityType: Constructor<T>,
-    entity: any
-  ): Promise<CreatedEntity<any>> {
+  async create<T>(entityType: Constructor<T>, entity: any): Promise<CreatedEntity<any>> {
     const result = (await this.obsToPromise(
       this.client.create({ args: [getEntityTypeName(entityType), entity] })
     )) as any
@@ -165,9 +154,7 @@ export class RPCEntityManager extends RemoteEntityManager {
       this.client.findIds({ args: [entityType, query] })
     )) as [{ _id: string }]
 
-    const newIds = ids
-      .filter((e) => !this.instances.has(e._id))
-      .map((e) => e._id)
+    const newIds = ids.filter((e) => !this.instances.has(e._id)).map((e) => e._id)
 
     if (newIds.length) {
       ;(await this.obsToPromise(

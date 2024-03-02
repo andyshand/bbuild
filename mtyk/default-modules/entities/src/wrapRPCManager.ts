@@ -4,6 +4,7 @@ import { getPortForName } from 'modules/transport/index'
 // import asyncLocalStorage from './asyncLocalStorage';
 import { Observable, map } from 'rxjs'
 
+import { publicInvariant } from 'modules/errors/index'
 import Entity from './Entity'
 import { IEntityManager } from './IEntityManager'
 import { getEntityTypeName } from './getEntityTypeName'
@@ -23,9 +24,46 @@ const serialiseResult = (value: any) => {
   }
 }
 
+function callAuthed(
+  method: string,
+  args: any[],
+  userId: string | null,
+  manager: IEntityManager
+) {
+  if (method === 'find') {
+    let [entityType, query, opts] = args as Parameters<IEntityManager['find']>
+
+    if (query.id === 'me') {
+      query = { id: userId }
+    } else {
+      query['$or'] = [{ owner: userId }, { collaborators: userId }]
+    }
+
+    return manager.find(entityType, query, opts)
+  } else if (method === 'read') {
+    // Get the doc first, then check if the user is allowed to read it
+    let [entityType, id] = args as Parameters<IEntityManager['read']>
+    if (id === 'me') {
+      id = userId
+    }
+    return manager.read(entityType, id).then((doc) => {
+      if (doc.owner === userId || (doc.collaborators ?? []).includes(userId)) {
+        return doc
+      }
+      throw new Error('Not authorised to read this doc')
+    })
+  }
+  return manager[method](...args)
+}
+
 export default function createManagerRPCServer(
   manager: IEntityManager,
-  name: string
+  name: string,
+  {
+    fetchUserIdFromAuthToken,
+  }: {
+    fetchUserIdFromAuthToken?: (authToken: string) => Promise<string | null>
+  } = {}
 ) {
   const port = getPortForName(name)
   console.log(`Starting RPC server for ${name} on port ${port}`)
@@ -48,16 +86,22 @@ export default function createManagerRPCServer(
       console.log(`Adding ${key} to RPC server`)
       fns[key] = async (payload: any) => {
         return new Promise(async (resolve, reject) => {
-          // asyncLocalStorage.run(new Map(), async () => {
-          // const store = asyncLocalStorage.getStore()
-          // Set any required store values here
-
           try {
-            const result = await fn.call(manager, ...payload.args)
-            // debugger
+            let result
 
-            // TODO Now we need to serialise result
-            // console.log({ result })
+            if (fetchUserIdFromAuthToken) {
+              debugger
+              publicInvariant(payload.auth?.token, 'Auth token is required for this operation')
+
+              // Fetch the user id associated with the auth_token
+              const userIdOrNull = await fetchUserIdFromAuthToken(payload.auth.token)
+
+              // Modify the arguments to include the user id in owner or collaborators
+              result = await callAuthed(key, payload.args, userIdOrNull, manager)
+            } else {
+              result = await fn.call(manager, ...payload.args)
+            }
+
             if (Array.isArray(result)) {
               const res = result.map(serialiseResult)
               return resolve(res)
@@ -68,8 +112,6 @@ export default function createManagerRPCServer(
             console.error(e)
             reject(e)
           }
-          // });
-          // });
         })
       }
     }

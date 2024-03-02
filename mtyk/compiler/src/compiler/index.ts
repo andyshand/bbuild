@@ -2,7 +2,9 @@ declare const GIT_COMMIT_HASH: string; // added by git-transformer
 import { execSync } from "child_process";
 import * as commander from "commander";
 import fs from "fs";
+import debounce from "lodash/debounce";
 import path from "path";
+import { exit } from "process";
 import { BuildContext, setupBuildContext } from "./context/buildContext";
 import "./logging/index";
 import { loadOneConfig } from "./one/loadOneConfig";
@@ -10,7 +12,6 @@ import { clean } from "./processes/clean";
 import dev from "./processes/dev";
 import { prebuild } from "./processes/prebuild";
 import { watch } from "./processes/watch";
-import { exit } from "process";
 const isAlex = fs.existsSync("/home/alex");
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -114,8 +115,31 @@ const main = async () => {
         })
       );
       await prebuild();
-      await watch();
-      await dev(opts);
+
+      let devHandle: Awaited<ReturnType<typeof dev>> | null = null;
+      let alreadyPrebuildingAgain = false;
+
+      await watch({
+        onNeedsPrebuild: debounce(async () => {
+          if (alreadyPrebuildingAgain) {
+            return;
+          }
+          try {
+            alreadyPrebuildingAgain = true;
+            if (devHandle) {
+              devHandle.stop();
+            }
+            await prebuild();
+            devHandle = await dev(opts);
+            alreadyPrebuildingAgain = false;
+          } catch (e) {
+            console.error(e);
+            process.exit(1);
+          }
+        }, 500),
+      });
+
+      devHandle = await dev(opts);
     });
 
   // Parse the command line arguments

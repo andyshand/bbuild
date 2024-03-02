@@ -1,45 +1,43 @@
+import AsyncLock from "async-lock";
+import debounce from "lodash/debounce";
 import watch from "node-watch";
 import path from "path";
-import {
-  getModuleBuildContext,
-  PackageBuildContext,
-} from "../context/packageBuildContext";
-import { Logger } from "../logging";
+import { getModuleBuildContext } from "../context/packageBuildContext";
 import { findModules } from "./findModules";
 import makeModulePackage from "./makeModulePackage";
-import { delay, Subject } from "rxjs";
 
-export default async function watchModulesToPackage(
-  modulesChangeSubject: Subject<unknown>
-) {
-  const changedModules = new Map<string, string>();
-
-  const makeModuleInWatch = async function (
-    context: PackageBuildContext,
-    moduleName: string
-  ) {
-    await makeModulePackage(context, moduleName).catch((err) => {
-      watchers.forEach((watcher) => watcher.close());
-      console.error(`Error occurred making module ${moduleName}`);
-      throw err;
-    });
-  };
+export default async function watchModulesToPackage() {
+  let paused = false;
   let moduleBuildPromises = [];
   let watchers = [];
-  async function doIt() {
+
+  let builders = new Map<string, () => void>();
+  const debouncedBuilderWithAsyncLock = (moduleName: string) => {
+    let lock = new AsyncLock(moduleName);
+    return debounce(async () => {
+      await lock.acquire(moduleName, async () => {
+        const moduleBuildContext = getModuleBuildContext(moduleName);
+        await makeModulePackage(moduleBuildContext, moduleName);
+      });
+    }, 500);
+  };
+
+  async function initWatchersAndMakeInitialPackages() {
     const modules = findModules();
-    modules.forEach((module) => {
+    for (const module of modules) {
       const moduleDistPath = path.join(module.path, "dist");
       const moduleName = module.name;
-      const modulePath = module.path;
+      if (!builders.has(moduleName)) {
+        builders.set(moduleName, debouncedBuilderWithAsyncLock(moduleName));
+      }
+      const builder = builders.get(moduleName);
 
-      moduleBuildPromises.push(
-        makeModuleInWatch(getModuleBuildContext(modulePath), moduleName)
-      );
+      moduleBuildPromises.push(builder());
 
-      const handleFileChange = (filePath, event) => {
-        if (!changedModules.has(moduleName))
-          changedModules.set(moduleName, modulePath);
+      const handleFileChange = (e, filename) => {
+        if (paused) return;
+        console.log(`File ${filename} changed`);
+        builder();
       };
 
       // Watch the 'dist' directory of each module
@@ -49,37 +47,27 @@ export default async function watchModulesToPackage(
         handleFileChange
       );
       watchers.push(watcher);
-    });
+    }
   }
 
-  const subscription = modulesChangeSubject
-    .pipe(
-      delay(500) // Delay each emission by 500ms
-    )
-    .subscribe(async () => {
-      console.log(`Changed Modules: ${Array.from(changedModules.keys())}`);
+  // Initialise first time round
+  await initWatchersAndMakeInitialPackages();
 
-      for (const [moduleName, modulePath] of changedModules) {
-        Logger.withLogGroup(`watchModulesToPackage`, async () => {
-          await makeModuleInWatch(
-            getModuleBuildContext(modulePath),
-            moduleName
-          );
-        });
-      }
-
-      changedModules.clear();
-    });
-
-  await doIt();
+  // Wait for initial build of all modules
   await Promise.all(moduleBuildPromises);
+
   return {
-    stop: () => {
-      subscription.unsubscribe();
+    restart: () => {
+      paused = false;
       // Close each watcher
       watchers.forEach((watcher) => watcher.close());
       watchers = [];
       moduleBuildPromises = [];
+
+      initWatchersAndMakeInitialPackages();
+    },
+    pause: () => {
+      paused = true;
     },
   };
 }

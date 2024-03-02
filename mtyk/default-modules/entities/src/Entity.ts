@@ -28,6 +28,9 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   @EntityField()
   owner?: string
 
+  @EntityField({ defaultValue: [] })
+  collaborators: { id: string; role: string }[] = []
+
   // If we use EntityField decorator here, for some reason this breaks.
   // So we hardcode them as entity fields by concating their names further down below
   createdAt: Date = new Date()
@@ -96,17 +99,9 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     this[field] = { ...this[field], ...value }
   }
 
-  updateArray(
-    field: string,
-    index: number | ((item: any) => boolean),
-    value: any
-  ) {
+  updateArray(field: string, index: number | ((item: any) => boolean), value: any) {
     if (typeof index === 'number') {
-      this[field] = [
-        ...this[field].slice(0, index),
-        value,
-        ...this[field].slice(index + 1),
-      ]
+      this[field] = [...this[field].slice(0, index), value, ...this[field].slice(index + 1)]
     } else {
       const itemIndex = this[field].findIndex(index)
       if (itemIndex !== -1) {
@@ -193,12 +188,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
         if ('isRPC' in this.manager && isEntityFunction) {
           const rpc = this.manager as RPCEntityManager
           // Executes the method remotely
-          return rpc.executeRemote(
-            entityType,
-            this.id,
-            methodName,
-            argumentsList
-          )
+          return rpc.executeRemote(entityType, this.id, methodName, argumentsList)
         } else if (isEntityFunction) {
           return this.wrapPersistingUpdates(
             (target as any as Function).bind(thisArg, ...argumentsList)
@@ -232,8 +222,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
         if (typeof value === 'function') {
           // If the method is a remote method, execute it remotely
           const isEntityFn =
-            Reflect.getMetadata('entityFunction', this, property as string) !==
-            undefined
+            Reflect.getMetadata('entityFunction', this, property as string) !== undefined
           if (isEntityFn) {
             if ('isRPC' in this.manager) {
               const man = this.manager as RPCEntityManager
@@ -299,6 +288,8 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     return Reflect.getMetadata('entityFunction', this, name) !== undefined
   }
 
+  static staticFields = ['createdAt', 'updatedAt', 'owner', 'collaborators']
+
   getEntityFields() {
     const properties = uniq([...Object.getOwnPropertyNames(this)])
     return properties
@@ -308,7 +299,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
           Reflect.getMetadata('entityRelation', this, prop) !== undefined
         )
       })
-      .concat(['createdAt', 'updatedAt'])
+      .concat(Entity.staticFields)
   }
 
   // Add a new property to store the subscribers
@@ -362,9 +353,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
       this[field as any] = [...fn(arr.map((a) => ({ ...a })))]
       return
     } else {
-      throw new Error(
-        'Cannot edit array field on non-writable property ' + field
-      )
+      throw new Error('Cannot edit array field on non-writable property ' + field)
     }
   }
 
@@ -373,17 +362,11 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     fields: any,
     manager: IEntityManager = new MockEntityManager()
   ) {
-    const entity = new classs(
-      manager,
-      Math.random().toString(36).substring(7),
-      fields
-    )
+    const entity = new classs(manager, Math.random().toString(36).substring(7), fields)
     return entity
   }
 
-  async getRelation<T extends Entity>(
-    relationName: string
-  ): Promise<Entity | null> {
+  async getRelation<T extends Entity>(relationName: string): Promise<Entity | null> {
     const relation = Reflect.getMetadata('entityRelation', this, relationName)
     if (!relation) {
       throw new Error(`No relation found for ${relationName}`)

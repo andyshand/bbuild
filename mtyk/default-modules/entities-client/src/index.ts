@@ -5,7 +5,7 @@ import { UnknownEntity } from 'modules/entities/UnknownEntity'
 import { invariant } from 'modules/errors'
 import { pubSub } from 'modules/rpc-ws/central/client'
 import * as nano from 'nanoid'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import { ReplaySubject, Subject } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -69,12 +69,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
         event.changes.keys.forEach((change, key) => {
           if (change.action === 'add' || change.action === 'update') {
             // entityDataObservable[id][key].set(entity.yMap.get(key))
-            updateEntityKey(
-              entityType(entity as any),
-              id,
-              key,
-              entity.yMap.get(key)
-            )
+            updateEntityKey(entityType(entity as any), id, key, entity.yMap.get(key))
           }
           if (change.action === 'delete') {
             // entityDataObservable[id][key].delete()
@@ -115,63 +110,59 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       entitySubscriptions.set(key, subscriptionInfo)
 
       if (subscriptionInfo.count === 0 && !!subscriptionInfo.observerFunction) {
-        removeSubscription(type, id)
+        negateSubscription(type, id)
       }
     }
   }
 
-  function removeSubscription(type: string, id: string) {
-    // const key = id
-    // const subscriptionInfo = entitySubscriptions.get(key)
-    // if (subscriptionInfo && subscriptionInfo.observerFunction) {
-    //   let checkCount = 0
-    //   const maxCheckCount = 3
-    //   const checkInterval = 300
-    //   const intervalId = setInterval(() => {
-    //     checkCount++
-    //     const currentSubscriptionInfo = entitySubscriptions.get(key)
-    //     if (currentSubscriptionInfo.count === 0) {
-    //       if (checkCount >= maxCheckCount) {
-    //         removeSubscriptionForce(type, id)
-    //         clearInterval(intervalId)
-    //       }
-    //     } else {
-    //       clearInterval(intervalId)
-    //     }
-    //   }, checkInterval)
-    // }
+  function negateSubscription(type: string, id: string) {
+    const key = id
+    const subscriptionInfo = entitySubscriptions.get(key)
+    if (subscriptionInfo && subscriptionInfo.observerFunction) {
+      let checkCount = 0
+      const maxCheckCount = 3
+      const checkInterval = 300
+      const intervalId = setInterval(() => {
+        checkCount++
+        const currentSubscriptionInfo = entitySubscriptions.get(key)
+        if (currentSubscriptionInfo.count === 0) {
+          if (checkCount >= maxCheckCount) {
+            removeSubscriptionForce(type, id)
+            clearInterval(intervalId)
+          }
+        } else {
+          clearInterval(intervalId)
+        }
+      }, checkInterval)
+    }
   }
 
   async function removeSubscriptionForce(type: string, id: string) {
-    // const key = id
-    // const subscriptionInfo = entitySubscriptions.get(key)
-    // if (subscriptionInfo && subscriptionInfo.observerFunction) {
-    //   console.log(`$${id} unsubscribed`)
-    //   const managers = [...(await getLatestValue(subject)), ...extraMan]
-    //   const tt = entityType(type)
-    //   for (const manager of managers) {
-    //     try {
-    //       const entity = await manager.read(tt, id)
-    //       if (entity.yMap)
-    //         entity.yMap.unobserve(subscriptionInfo.observerFunction)
-    //       entitySubscriptions.delete(key)
-    //       const legendObject = Object.keys(entityDataObservable[id])
-    //       beginBatch()
-    //       for (const field of legendObject) {
-    //         entityDataObservable[id][field].delete()
-    //       }
-    //       endBatch()
-    //     } catch (e) {
-    //       console.error(e)
-    //     }
-    //   }
-    // }
+    const key = id
+    const subscriptionInfo = entitySubscriptions.get(key)
+    if (subscriptionInfo && subscriptionInfo.observerFunction) {
+      console.log(`$${id} unsubscribed`)
+      const managers = [...(await getLatestValue(subject)), ...extraMan]
+      const tt = entityType(type)
+      for (const manager of managers) {
+        try {
+          const entity = await manager.read(tt, id)
+          if (entity.yMap) entity.yMap.unobserve(subscriptionInfo.observerFunction)
+          entitySubscriptions.delete(key)
+          const legendObject = Object.keys(entityDataObservable[id])
+          beginBatch()
+          for (const field of legendObject) {
+            entityDataObservable[id][field].delete()
+          }
+          endBatch()
+        } catch (e) {
+          console.error(e)
+        }
+      }
+    }
   }
 
-  function invalidate<T extends Entity<any>>(
-    type: Constructor<T> | string,
-    id?: string
-  ) {
+  function invalidate<T extends Entity<any>>(type: Constructor<T> | string, id?: string) {
     const tt = entityType(type)
     invalidateSubject.next({ type: tt, id })
   }
@@ -190,9 +181,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
               if (allManagers.length === newManagers.length) {
                 if (
                   allManagers.every((managerA) => {
-                    return newManagers.some(
-                      (managerB) => managerA.id === managerB.id
-                    )
+                    return newManagers.some((managerB) => managerA.id === managerB.id)
                   })
                 )
                   return
@@ -225,33 +214,13 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  function getNestedProperty(obj: any, propPath: string) {
-    const keys = propPath.split('.')
-    let result = obj
-    for (const key of keys) {
-      if (result && key in result) {
-        result = result[key]
-      } else {
-        return undefined
-      }
-    }
-    return result
+  const useEntity = <T extends Entity<any>>(type: Constructor<T> | string, id: string) => {
+    const { data, ...rest } = useEntities(type, { id })
+    return { data: data[0] as T | null, ...rest }
   }
 
-  const useEntity = <T extends Entity<any>>(
-    type: Constructor<T> | string,
-    id: string
-  ) => {
-    const entities = useEntities(type, { _id: id })
-    return entities?.[0]
-  }
-
-  const useLegendArr = (id: string) => {
-    const gotten = entityDataObservable[id].get()
-    // if (!gotten) {
-    //   entityDataObservable[id].set([])
-    // }
-
+  const useLegendArr = (hookId: string) => {
+    const gotten = entityDataObservable[hookId].get()
     return { array: gotten ?? [] }
   }
 
@@ -276,6 +245,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
               })
               const latestD = globalEntityDataObservable[globalKey].peek()
               return {
+                ...e,
                 ...inNewArr,
                 entity: latestD.entity,
                 entityObj: latestD.entityObj,
@@ -294,8 +264,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
                       type: a.type,
                     })
                     return (
-                      !inIds.includes(a.id) &&
-                      !!globalEntityDataObservable[globalKey].peek()
+                      !inIds.includes(a.id) && !!globalEntityDataObservable[globalKey].peek()
                     )
                   })
                   .map((a) => {
@@ -306,10 +275,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
                     return {
                       id: a.id,
                       type: a.type,
-                      entity:
-                        globalEntityDataObservable[globalKey].peek().entity,
-                      entityObj:
-                        globalEntityDataObservable[globalKey].peek().entityObj,
+                      entity: globalEntityDataObservable[globalKey].peek().entity,
+                      entityObj: globalEntityDataObservable[globalKey].peek().entityObj,
                     }
                   })
           )
@@ -327,12 +294,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  let firstAccess: { [hookId: string]: { [entityId: string]: boolean } } = {}
-
-  const wrapEntityArr = (
-    entities: { id; entity; type; entityObj }[],
-    { hookId }
-  ) => {
+  const wrapEntityArr = (entities: { id; entity; type; entityObj }[], { hookId }) => {
     return entities.map((e) => {
       return new Proxy(e, {
         get(target, prop, receiver) {
@@ -345,7 +307,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
             return e.entityObj[prop].bind(e.entityObj)
           }
 
-          return e.entity[prop]
+          // Use reflect.apply to call the function with the correct context
+          return Reflect.get(e.entity, prop, receiver)
         },
       })
     })
@@ -355,7 +318,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     type: Constructor<T> | string,
     query: any,
     opts?: { noWatch?: boolean }
-  ): T[] => {
+  ): { data: T[] } => {
     const subscriptions = useRef<string[]>([])
     const tt = entityType(type)
     // const hookId = useId({ type, query })
@@ -414,38 +377,19 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     if (arr.array.filter((e) => e.type === tt).length !== arr.array.length) {
       throw new Error('Entity type mismatch')
     }
-    return wrapEntityArr(arr.array, { hookId }) as any as T[]
+    return { data: wrapEntityArr(arr.array, { hookId }) as any as T[] }
   }
 
-  /**
-   * @deprecated This hook is deprecated and will be removed in future releases. Use useEntity instead.
-   */
-  const useStableEntity = <T extends Entity>(
-    type: Constructor<T> | string,
-    id: string
-  ) => {
-    const ret = useEntity(type, id)
-    const getEntity = useCallback(() => {
-      return ret
-    }, [ret])
-    return [ret, { getEntity }] as const
-  }
-
-  const useEntityRelation = <T extends Entity>(
-    entity: T,
-    relation: keyof T & string
-  ): T[] => {
-    const type =
-      (entity ? entity.getRelationInfo(relation) : UnknownEntity) ??
-      UnknownEntity
+  const useEntityRelation = <T extends Entity>(entity: T, relation: keyof T & string) => {
+    const type = (entity ? entity.getRelationInfo(relation) : UnknownEntity) ?? UnknownEntity
     invariant(
       type !== UnknownEntity || !entity,
       `Unknown entity type for relation ${relation}. Are you missing an @EntityRelation decorator?`
     )
     const query = !entity
-      ? { _id: { $in: [] } }
+      ? { id: { $in: [] } }
       : {
-          _id: {
+          id: {
             $in: Array.isArray(entity[relation])
               ? entity[relation]
               : entity[relation]
@@ -454,13 +398,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
           },
         }
 
-    return useEntities(type as any, query) as T[]
+    return useEntities(type as any, query)
   }
 
-  const createEntity = async <T extends Entity>(
-    type: Constructor<T> | string,
-    data: any
-  ) => {
+  const createEntity = async <T extends Entity>(type: Constructor<T> | string, data: any) => {
     const managers = [...(await getLatestValue(subject)), ...extraMan] as any
     let entity: T | undefined = undefined
     const tt = entityType(type)
@@ -478,10 +419,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     return entity
   }
 
-  const deleteEntity = async <T extends Entity>(
-    type: Constructor<T> | string,
-    id: string
-  ) => {
+  const deleteEntity = async <T extends Entity>(type: Constructor<T> | string, id: string) => {
     const managers = [...(await getLatestValue(subject)), ...extraMan]
     const tt = entityType(type)
     for (const manager of managers) {
@@ -494,34 +432,14 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  const updateEntity = async <T extends Entity>(
-    type: Constructor<T> | string,
-    id: string,
-    data: any,
-    revisionNumber?: number
-  ) => {
-    const managers = [...(await getLatestValue(subject)), ...extraMan]
-    for (const manager of managers) {
-      try {
-        await manager.update(entityType(type), id, data)
-        entityDataObservable[id].assign({ ...data })
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  }
-
   return {
     useEntity,
     invalidate,
-    useStableEntity,
     useEntities,
     createEntity,
     deleteEntity,
-    updateEntity,
     useEntityRelation,
     _getManagers: () => getLatestValue(subject),
-    query: (type, query) =>
-      queryFromAllManagers(getLatestValue(subject), type, query),
+    query: (type, query) => queryFromAllManagers(getLatestValue(subject), type, query),
   }
 }

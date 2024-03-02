@@ -1,6 +1,6 @@
+import chalk from "chalk";
 import { spawn } from "child_process";
 import { Logger } from "./logging";
-import chalk from "chalk";
 
 export async function exec(
   command: string,
@@ -21,12 +21,7 @@ export async function exec(
           stdio: "pipe",
         });
         child.stdout?.on("data", (data) => {
-          data
-            .toString()
-            .split("\n")
-            .forEach((line) => {
-              console.log(line);
-            });
+          console.log(data.toString());
         });
         child.on("error", reject);
         child.on("exit", resolve);

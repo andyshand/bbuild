@@ -17,6 +17,10 @@
       "import": "./TokenDepSpec.js",
       "require": "./dist/cjs/TokenDepSpec.js"
     },
+    "./baseDep": {
+      "import": "./baseDep.js",
+      "require": "./dist/cjs/baseDep.js"
+    },
     "./createDepContext": {
       "import": "./createDepContext.js",
       "require": "./dist/cjs/createDepContext.js"
@@ -32,6 +36,10 @@
     "./packageDep": {
       "import": "./packageDep.js",
       "require": "./dist/cjs/packageDep.js"
+    },
+    "./private": {
+      "import": "./private.js",
+      "require": "./dist/cjs/private.js"
     },
     "./provideDeps": {
       "import": "./provideDeps.js",
