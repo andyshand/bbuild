@@ -1,19 +1,35 @@
-import { assert, invariant, publicInvariant } from 'modules/errors/index'
+import { invariant, publicInvariant } from 'modules/errors/index'
 import { Constructor } from 'modules/types'
-import { Collection, MongoClient, ObjectId, Binary } from 'mongodb'
+import { Collection, MongoClient, ObjectId } from 'mongodb'
 import 'reflect-metadata'
 import { clone } from 'remeda'
 import { Observable, Subject } from 'rxjs'
+import { WebsocketProvider } from 'y-websocket'
 import { DbEntityManager } from './DBEntityManager'
 import Entity from './Entity'
 import { EntityTypable } from './EntityTypable'
 import { IEntityManager, IEntityManagerFindOpts } from './IEntityManager'
 import { getEntityTypeName } from './getEntityTypeName'
 import { ChangeStreamBatcher } from './mongo/ChangeStreamBatcher'
-
-import { initializeYjsSyncProvider } from './yjs/wsProvider'
 import { Queue } from './structs'
-import { WebsocketProvider } from 'y-websocket'
+import { initializeYjsSyncProvider } from './yjs/wsProvider'
+
+async function runYJSServer() {
+  const { $, execa } = await eval('import("execa")')
+  // Resolve bin path for y-websocket
+  const yWebsocket = require.resolve('y-websocket')
+  const path = yWebsocket.split('/node_modules')[0]
+
+  try {
+    await execa(process.execPath, [`${path}/node_modules/y-websocket/bin/server.js`], {
+      cwd: path,
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+setTimeout(runYJSServer, 1000)
 
 interface UpdateData {
   type: EntityTypable
@@ -21,10 +37,7 @@ interface UpdateData {
   updates: any
 }
 
-export class MongoEntityManager
-  extends DbEntityManager
-  implements IEntityManager
-{
+export class MongoEntityManager extends DbEntityManager implements IEntityManager {
   private client: MongoClient
   private collections: Map<string, Collection> = new Map()
   id: string = Math.random().toString(36)
@@ -35,11 +48,7 @@ export class MongoEntityManager
 
   batcher: ChangeStreamBatcher
 
-  constructor(
-    private uri: string,
-    private dbName: string,
-    entities: Constructor<Entity>[]
-  ) {
+  constructor(private uri: string, private dbName: string, entities: Constructor<Entity>[]) {
     super(entities)
     this.batcher = new ChangeStreamBatcher(this)
     this.connect()
@@ -61,9 +70,7 @@ export class MongoEntityManager
     temporaryClient.close()
 
     console.log(`MongoDB replica set name: ${isMasterResult.setName ?? 'N/A'}`)
-    return isMasterResult.setName
-      ? new MongoClient(this.uri)
-      : new MongoClient(this.uri)
+    return isMasterResult.setName ? new MongoClient(this.uri) : new MongoClient(this.uri)
   }
 
   async connect() {
@@ -72,9 +79,7 @@ export class MongoEntityManager
     const connection = await this.getDbConnection()
     this.client = await connection.connect()
 
-    console.log(
-      `Connected to MongoDB at ${this.uri}/${this.dbName} (em ${this.id})`
-    )
+    console.log(`Connected to MongoDB at ${this.uri}/${this.dbName} (em ${this.id})`)
   }
   async disconnect() {
     this.assertClientReady()
@@ -181,11 +186,7 @@ export class MongoEntityManager
     return newEntity
   }
 
-  public async update(
-    type: EntityTypable,
-    id: string,
-    updates: any
-  ): Promise<any> {
+  public async update(type: EntityTypable, id: string, updates: any): Promise<any> {
     this.assertClientReady()
 
     this.enqueueUpdate(type, id, updates)
@@ -268,33 +269,31 @@ export class MongoEntityManager
     }
   }
 
-  async find(
-    type: EntityTypable,
-    qq: any,
-    opts?: IEntityManagerFindOpts
-  ): Promise<any> {
+  async find(type: EntityTypable, qq: any, opts?: IEntityManagerFindOpts): Promise<any> {
     this.assertClientReady()
     const { limit, skip } = opts ?? {}
 
     const entityType = getEntityTypeName(type)
     const ids = await this.findIds(type, qq)
 
-    return Promise.all(
-      ids.map((id) => this.read(entityType, id._id.toString()))
-    )
+    return Promise.all(ids.map((id) => this.read(entityType, id.id.toString())))
   }
 
-  async findIds(type: EntityTypable, qq: any): Promise<any> {
+  async findIds(
+    type: EntityTypable,
+    qq: any
+  ): Promise<
+    {
+      id: string
+    }[]
+  > {
     this.assertClientReady()
 
     const query = clone(qq)
     if ('_id' in query) {
       // Convert strings to ObjectIds, quick fix
       if (typeof query._id === 'object' && query && '$in' in query._id) {
-        publicInvariant(
-          Array.isArray(query._id.$in),
-          'query._id.$in must be an array'
-        )
+        publicInvariant(Array.isArray(query._id.$in), 'query._id.$in must be an array')
         query._id.$in = query._id.$in.map((id) => new ObjectId(id))
       } else {
         if (Array.isArray(query._id)) {
@@ -307,7 +306,9 @@ export class MongoEntityManager
 
     const entityType = getEntityTypeName(type)
     const collection = this.getCollection(entityType)
-    return await collection.find(query, { projection: { _id: 1 } }).toArray()
+    return (await collection.find(query, { projection: { _id: 1 } }).toArray()).map((e) => ({
+      id: e._id.toString(),
+    }))
   }
 
   async readIds(type: EntityTypable, ids: string[]): Promise<any> {
@@ -324,10 +325,7 @@ export class MongoEntityManager
   watch(type: EntityTypable, opts: { id: string }): Observable<any> {
     this.assertClientReady()
     const entityType = getEntityTypeName(type)
-    const changeStreamObs = this.batcher.getMongoDBChangeStream(
-      entityType,
-      opts
-    )
+    const changeStreamObs = this.batcher.getMongoDBChangeStream(entityType, opts)
     return changeStreamObs
   }
 

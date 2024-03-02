@@ -163,6 +163,7 @@
   "dependencies": {
     "@trpc/server": "^10.14.0",
     "cors": "^2.8.5",
+    "execa": "8.0.1",
     "immer": "^9.0.19",
     "mongodb": "^5.1.0",
     "reflect-metadata": "^0.1.13",

@@ -62,7 +62,7 @@ export async function getTaskStream(
   }
 
   const obs = merge(...observables).pipe(
-    debounceTime(250),
+    debounceTime(1000),
     tap((maybeFile) => {
       if (typeof maybeFile === "string") {
         console.log(`Restart because file changed: ${maybeFile}`);

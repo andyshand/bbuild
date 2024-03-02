@@ -9,10 +9,7 @@ interface WebsocketProviderOptions {
   WebSocketPolyfill?: typeof WebSocket
 }
 
-export function initializeYjsSyncProvider(
-  entityId: string,
-  yDoc: Y.Doc
-): WebsocketProvider {
+export function initializeYjsSyncProvider(entityId: string, yDoc: Y.Doc): WebsocketProvider {
   let wsProviderOptions: WebsocketProviderOptions = {}
 
   if (typeof window === 'undefined') {

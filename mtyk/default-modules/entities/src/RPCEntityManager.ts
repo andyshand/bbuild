@@ -152,9 +152,9 @@ export class RPCEntityManager extends RemoteEntityManager {
   async find(entityType: string, query: any): Promise<any> {
     const ids = (await this.obsToPromise(
       this.client.findIds({ args: [entityType, query] })
-    )) as [{ _id: string }]
+    )) as [{ id: string }]
 
-    const newIds = ids.filter((e) => !this.instances.has(e._id)).map((e) => e._id)
+    const newIds = ids.filter((e) => !this.instances.has(e.id)).map((e) => e.id)
 
     if (newIds.length) {
       ;(await this.obsToPromise(
@@ -164,7 +164,7 @@ export class RPCEntityManager extends RemoteEntityManager {
 
     const entities = await Promise.all(
       (ids as any[]).map(async (result) => {
-        const id = result._id
+        const { id } = result
         if (!this.wsProviders.has(id)) {
           const entity = this.createEntityInstance(entityType, { id })
           const wsProvider = initializeYjsSyncProvider(id, entity.yDoc)

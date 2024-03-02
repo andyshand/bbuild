@@ -1,4 +1,5 @@
 import { beginBatch, endBatch, opaqueObject } from '@legendapp/state'
+import { useSelector } from '@legendapp/state/react'
 import { Entity, IEntityManager, entityType } from 'modules/entities'
 import { RPCEntityManager } from 'modules/entities/RPCEntityManager'
 import { UnknownEntity } from 'modules/entities/UnknownEntity'
@@ -188,7 +189,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
               }
 
               if (!globalInvalidationSubject) {
-                initializeGlobalInvalidate(newManagers)
+                // initializeGlobalInvalidate(newManagers)
               }
 
               setAllManagers(newManagers)
@@ -203,16 +204,16 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     return allManagers
   }
 
-  async function initializeGlobalInvalidate(managers: RPCEntityManager[]) {
-    for (const manager of managers) {
-      try {
-        globalInvalidationSubject = manager.invalidateSubject
-        globalInvalidationSubject.subscribe((e) => invalidate(e))
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  }
+  // async function initializeGlobalInvalidate(managers: RPCEntityManager[]) {
+  //   for (const manager of managers) {
+  //     try {
+  //       globalInvalidationSubject = manager.invalidateSubject
+  //       globalInvalidationSubject.subscribe((e) => invalidate(e))
+  //     } catch (e) {
+  //       console.error(e)
+  //     }
+  //   }
+  // }
 
   const useEntity = <T extends Entity<any>>(type: Constructor<T> | string, id: string) => {
     const { data, ...rest } = useEntities(type, { id })
@@ -220,8 +221,9 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   }
 
   const useLegendArr = (hookId: string) => {
-    const gotten = entityDataObservable[hookId].get()
-    return { array: gotten ?? [] }
+    const gotten = entityDataObservable[hookId]
+
+    return { array: gotten, legend: entityDataObservable[hookId].get() }
   }
 
   const propagateChangesToAllHooks = (
@@ -294,8 +296,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  const wrapEntityArr = (entities: { id; entity; type; entityObj }[], { hookId }) => {
-    return entities.map((e) => {
+  const wrapEntityArr = (entities: any, { hookId }) => {
+    // const length = entities?.length.get() ?? 0
+    // if (length === 0) return []
+    return (entities?.peek() ?? []).map((e) => {
       return new Proxy(e, {
         get(target, prop, receiver) {
           if (typeof e.entityObj[prop] === 'function') {
@@ -325,6 +329,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     const hookId = useId({})
     const allManagers = discoverManagers()
     const arr = useLegendArr(hookId)
+    const arr2 = useSelector(entityDataObservable[hookId])
 
     useEffect(() => {
       if (!allManagers.length) return
@@ -374,9 +379,6 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       }
     }, [allManagers, tt, JSON.stringify(query), hookId])
 
-    if (arr.array.filter((e) => e.type === tt).length !== arr.array.length) {
-      throw new Error('Entity type mismatch')
-    }
     return { data: wrapEntityArr(arr.array, { hookId }) as any as T[] }
   }
 

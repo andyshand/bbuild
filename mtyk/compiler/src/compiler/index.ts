@@ -1,7 +1,6 @@
 declare const GIT_COMMIT_HASH: string; // added by git-transformer
 import { execSync } from "child_process";
 import * as commander from "commander";
-import fs from "fs";
 import debounce from "lodash/debounce";
 import path from "path";
 import { exit } from "process";
@@ -12,7 +11,6 @@ import { clean } from "./processes/clean";
 import dev from "./processes/dev";
 import { prebuild } from "./processes/prebuild";
 import { watch } from "./processes/watch";
-const isAlex = fs.existsSync("/home/alex");
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 function monitorMemoryUsage(intervalSeconds = 5) {

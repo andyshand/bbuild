@@ -30,7 +30,7 @@ function callAuthed(
   userId: string | null,
   manager: IEntityManager
 ) {
-  if (method === 'find') {
+  if (method === 'find' || method === 'findIds') {
     let [entityType, query, opts] = args as Parameters<IEntityManager['find']>
 
     if (query.id === 'me') {
@@ -39,7 +39,7 @@ function callAuthed(
       query['$or'] = [{ owner: userId }, { collaborators: userId }]
     }
 
-    return manager.find(entityType, query, opts)
+    return manager[method](entityType, query, opts)
   } else if (method === 'read') {
     // Get the doc first, then check if the user is allowed to read it
     let [entityType, id] = args as Parameters<IEntityManager['read']>
@@ -90,7 +90,6 @@ export default function createManagerRPCServer(
             let result
 
             if (fetchUserIdFromAuthToken) {
-              debugger
               publicInvariant(payload.auth?.token, 'Auth token is required for this operation')
 
               // Fetch the user id associated with the auth_token
