@@ -1,6 +1,6 @@
 import watch from "node-watch";
-import { Observable, Subject } from "rxjs";
 import path from "path";
+import { Observable, Subject } from "rxjs";
 
 export function watchFiles(watchFiles = [], cwd = ".") {
   const subject = new Subject<string>();
@@ -17,11 +17,7 @@ export function watchFiles(watchFiles = [], cwd = ".") {
         recursive: true,
         filter: (f) => {
           // Exclude certain files or directories
-          return (
-            !f.includes("node_modules") &&
-            !f.endsWith(".map") &&
-            !f.endsWith(".d.ts")
-          );
+          return !f.endsWith(".map") && !f.endsWith(".d.ts");
         },
       },
       (evt, name) => {

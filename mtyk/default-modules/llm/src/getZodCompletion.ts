@@ -2,6 +2,7 @@ import { zodSchemaToTypeString } from 'modules/schema'
 import { globalDepContext, keyDep } from 'modules/deps'
 import { ParseMessage } from './ParseMessage'
 import { ZodSchema } from 'zod'
+import getChatCompletion from './engines/getChatCompletion'
 
 export async function getZodCompletion<T>(
   { schema, name }: { schema: ZodSchema<T>; name: string },
@@ -11,9 +12,6 @@ export async function getZodCompletion<T>(
   const type = zodSchemaToTypeString(schema, name)
   let tries = 0
   const maxtries = 3
-  const { getCompletion } = globalDepContext.provideSync({
-    getCompletion: keyDep('getCompletion'), // TODO fix type
-  })
   const amendedPrompt = `${prompt}
 
 Format your response as JSON conforming to the following type:
@@ -23,7 +21,7 @@ Do not include any explanation or other text in your response, only the JSON. No
 
   while (tries < maxtries) {
     tries++
-    const result = await getCompletion.call(this, amendedPrompt, ...rest)
+    const result = await getChatCompletion(amendedPrompt, ...rest)
 
     // try parse
     try {

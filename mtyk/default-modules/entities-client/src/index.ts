@@ -322,54 +322,66 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     type: Constructor<T> | string,
     query: any,
     opts?: { noWatch?: boolean }
-  ): { data: T[] } => {
+  ) => {
     const subscriptions = useRef<string[]>([])
     const tt = entityType(type)
     // const hookId = useId({ type, query })
     const hookId = useId({})
     const allManagers = discoverManagers()
+    const [status, setStatus] = useState<{
+      state: 'loading' | 'loaded' | 'error'
+    }>({
+      state: 'loading',
+    })
     const arr = useLegendArr(hookId)
-    const arr2 = useSelector(entityDataObservable[hookId])
+    useSelector(entityDataObservable[hookId])
 
     useEffect(() => {
       if (!allManagers.length) return
 
       const asyncStuff = async () => {
         // Find all entities that match the query
-        const allEntities = (
-          await Promise.all(
-            allManagers.map(async (manager) => {
-              try {
-                const entities = await manager.find(tt, query)
-                return entities
-              } catch (error) {
-                console.error('Error reading the entity:', error)
-              }
+        try {
+          const allEntities = (
+            await Promise.all(
+              allManagers.map(async (manager) => {
+                try {
+                  const entities = await manager.find(tt, query)
+                  return entities
+                } catch (error) {
+                  console.error('Error reading the entity:', error)
+                }
 
-              return []
-            })
-          )
-        ).flat()
+                return []
+              })
+            )
+          ).flat()
 
-        // Subscribe to all entities
-        for (const entity of allEntities) {
-          if (entityType(entity) !== tt) {
-            throw new Error('Entity type mismatch')
+          // Subscribe to all entities
+          for (const entity of allEntities) {
+            if (entityType(entity) !== tt) {
+              throw new Error('Entity type mismatch')
+            }
+            addEntitySubscription(entity)
+            // Make sure we keep track, so we can unsubscribe on unmount
+            subscriptions.current = uniq([...subscriptions.current, entity.id])
           }
-          addEntitySubscription(entity)
-          // Make sure we keep track, so we can unsubscribe on unmount
-          subscriptions.current = uniq([...subscriptions.current, entity.id])
-        }
 
-        // Need to populate the arr initially, but from that point on, YJS will automatically find all docs in the tree and update
-        propagateChangesToAllHooks(
-          allEntities.map((e) => ({ id: e.id, type: tt })),
-          hookId
-        )
+          // Need to populate the arr initially, but from that point on, YJS will automatically find all docs in the tree and update
+          propagateChangesToAllHooks(
+            allEntities.map((e) => ({ id: e.id, type: tt })),
+            hookId
+          )
+          setStatus({ state: 'loaded' })
+        } catch (error) {
+          console.error('Error finding entities:', error)
+          setStatus({ state: 'error' })
+        }
       }
 
       asyncStuff()
 
+      // console.log('hi')
       // Cleanup the subscription on unmount and entityDataObservable
       return () => {
         subscriptions.current.forEach((id) => {
@@ -379,7 +391,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       }
     }, [allManagers, tt, JSON.stringify(query), hookId])
 
-    return { data: wrapEntityArr(arr.array, { hookId }) as any as T[] }
+    return {
+      data: wrapEntityArr(arr.array, { hookId }) as any as T[],
+      isLoading: status.state === 'loading',
+    }
   }
 
   const useEntityRelation = <T extends Entity>(entity: T, relation: keyof T & string) => {

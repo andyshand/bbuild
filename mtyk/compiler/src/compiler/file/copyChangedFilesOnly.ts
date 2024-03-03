@@ -98,6 +98,7 @@ async function copyNonDirectoryFile(
   }
 
   if (!filePath.endsWith(".map") && convertModules) {
+    // console.log(`Copying+ to ${destinationFile}`);
     await modifyAndWrite(filePath, destinationFile, (src) => {
       return src
         .toString()
@@ -107,6 +108,7 @@ async function copyNonDirectoryFile(
         );
     });
   } else {
+    // console.log(`Copying to ${destinationFile}`);
     await fse.copyFile(filePath, destinationFile);
   }
 }

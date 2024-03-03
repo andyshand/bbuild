@@ -10,12 +10,15 @@ const getFallback = () => {
   }
 
   // Assume server-side, and no WS_URL means we're in dev mode?
-  return 'ws://localhost:8080'
+  if (process.env.NODE_ENV !== 'production') {
+    return 'ws://localhost:8080'
+  } else {
+    return 'ws://0.0.0.0:80'
+  }
 }
 
 const WS_URL = process.env.WS_URL || getFallback()
 
-console.log({ WS_URL })
 const client = new RPCClient(WS_URL + `/ws/central`)
 const pubSub = new ClientPubSub(client)
 
