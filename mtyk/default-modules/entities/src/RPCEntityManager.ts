@@ -1,5 +1,4 @@
 import RPCClient from 'modules/rpc-ws/client'
-import { getPortForName } from 'modules/transport'
 import { Constructor } from 'modules/types'
 import { Observable, Subject, firstValueFrom, share } from 'rxjs'
 import { WebsocketProvider } from 'y-websocket'
@@ -16,10 +15,17 @@ export class RPCEntityManager extends RemoteEntityManager {
   private wsProviders = new Map<string, WebsocketProvider>()
   public invalidateSubject: Subject<any>
 
-  constructor(protected entities: Constructor<Entity>[], protected name: string) {
+  constructor(protected entities: Constructor<Entity>[], protected path: string) {
     super(entities)
-    const port = getPortForName(name)
-    this.client = new RPCClient(`ws://localhost:${port}`)
+
+    // Assume we're on the client
+    if (typeof window === 'undefined') {
+      throw new Error('RPCEntityManager is only supported on the client')
+    }
+    const url = new URL(window.location.href)
+    const port = url.hostname === 'localhost' ? 8080 : 80
+
+    this.client = new RPCClient(`ws://${url.hostname}:${port}${path}`)
     this.initializeInvalidateSubject()
   }
 

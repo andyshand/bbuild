@@ -3,7 +3,10 @@ import { WebsocketProvider } from 'y-websocket'
 
 import Y from 'yjs'
 
-const YWS = 'ws://localhost:1234'
+const hostname =
+  typeof window === 'undefined' ? 'localhost' : new URL(window.location.href).hostname
+const port = typeof window !== 'undefined' && hostname !== 'localhost' ? 80 : 8080
+const YWS = `ws://${hostname}:${port}/ws/yjs`
 
 interface WebsocketProviderOptions {
   WebSocketPolyfill?: typeof WebSocket

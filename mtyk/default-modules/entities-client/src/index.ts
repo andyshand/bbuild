@@ -34,8 +34,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   const invalidateSubject = new Subject()
 
   const managers$ = pubSub.subscribe('entityManagersChannel').pipe(
-    cacheMap((name) => {
-      return new RPCEntityManager(entities, name)
+    cacheMap((path) => {
+      return new RPCEntityManager(entities, path)
     })
   )
   managers$.subscribe(subject)

@@ -49,6 +49,7 @@ export class RPCClient {
   }
 
   private connect() {
+    console.log(`RPCClient connecting to ${this.url}...`)
     this.socket = new WS(this.url)
     this.socket.onopen = () => {
       this.isConnected = true

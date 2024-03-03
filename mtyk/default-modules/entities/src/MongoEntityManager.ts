@@ -1,6 +1,8 @@
 import { invariant, publicInvariant } from 'modules/errors/index'
+import { addWSHandler } from 'modules/rpc-ws/server'
 import { Constructor } from 'modules/types'
 import { Collection, MongoClient, ObjectId } from 'mongodb'
+import net from 'net'
 import 'reflect-metadata'
 import { clone } from 'remeda'
 import { Observable, Subject } from 'rxjs'
@@ -28,6 +30,28 @@ async function runYJSServer() {
     console.error(e)
   }
 }
+
+addWSHandler('/ws/yjs', async (req, socket, head) => {
+  // Establish a connection to the target
+  const proxySocket = net.connect(1234, 'localhost', () => {
+    // Construct and send the HTTP request line and headers to the target
+    const requestLine = `GET ${req.url} HTTP/1.1\r\n`
+    const headers = Object.entries(req.headers)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\r\n')
+    proxySocket.write(requestLine + headers + '\r\n\r\n')
+    // Immediately write the head of the request to the target
+    proxySocket.write(head)
+    // Establish data flow between the client and the target
+    socket.pipe(proxySocket).pipe(socket)
+  })
+
+  proxySocket.on('error', (err) => {
+    console.error('Proxy socket error:', err)
+    // socket.end('HTTP/1.1 500 Internal Server Error\r\n\r\n');
+    socket.end()
+  })
+})
 
 setTimeout(runYJSServer, 1000)
 

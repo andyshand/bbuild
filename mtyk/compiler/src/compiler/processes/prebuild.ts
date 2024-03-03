@@ -69,11 +69,12 @@ export async function prebuild() {
     });
   });
 
-  const releases4Path = projectPath(".yarn/releases/yarn-4.0.0.cjs");
+  const yarnVersion = "4.1.0";
+  const releases4Path = projectPath(`.yarn/releases/yarn-${yarnVersion}.cjs`);
 
   if (!(await fse.pathExists(releases4Path))) {
     const assets = findParentFolder(__dirname, "assets");
-    const assetsPath = path.join(assets, "yarn-4.0.0.cjs");
+    const assetsPath = path.join(assets, `yarn-${yarnVersion}.cjs`);
 
     // Copy from assets folder
     await fse.copy(assetsPath, releases4Path);
@@ -88,7 +89,7 @@ enableGlobalCache: false
   
 nodeLinker: node-modules
 
-yarnPath: .yarn/releases/yarn-4.0.0.cjs`;
+yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
   await fse.writeFile(yarnrcPath, contents);
 
   // Ensure yarn.lock exists

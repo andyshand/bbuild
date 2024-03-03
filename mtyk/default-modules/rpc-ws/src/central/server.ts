@@ -3,7 +3,7 @@ import PubSub from '../ServerPubSub'
 
 console.log('Starting central server')
 
-const centralServer = createRPCServer(9050)
+const centralServer = createRPCServer('/ws/central')
 const pub = new PubSub(centralServer)
 
 console.log('Central server started')

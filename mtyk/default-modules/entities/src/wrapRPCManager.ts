@@ -116,10 +116,11 @@ export default function createManagerRPCServer(
     }
   }
 
-  const server = startWSServer(port, {
+  const path = `/ws/entities/${name}`
+  const server = startWSServer(path, {
     functions: fns,
   })
 
-  pubSub.provideValue('entityManagersChannel', name)
+  pubSub.provideValue('entityManagersChannel', path)
   return server
 }
