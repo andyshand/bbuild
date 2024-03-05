@@ -9,6 +9,7 @@ import { COLORS } from "../constants";
 import findFileImports from "../file/findFileImports";
 import { readJSON, writeJSON } from "../json";
 import { badPackages, safePackages } from "./safePackages";
+import barrelify from "../barrelify";
 export interface BaseModuleInfo {
   name: string;
   path: string;
@@ -47,6 +48,8 @@ export default async function getModuleInfo(
         }),
     };
   }
+
+  await barrelify(`${modulePath}/src`);
 
   const _requiredModules = await new Promise<string[][]>((resolve, rej) =>
     glob("./src/**/*.{ts,tsx}", { cwd: modulePath }, (err, files) => {

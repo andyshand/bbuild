@@ -1,5 +1,4 @@
 import { mapValues } from 'modules/dash'
-import util from 'util'
 import { profileAsync } from 'modules/profile'
 import { PromisifyIfNotPromise } from 'modules/types'
 import { DepType, GetProvidedDeps, TokenDepSpec } from './TokenDepSpec'
@@ -16,16 +15,20 @@ import { zodDep } from './zodDep'
 export type DepFn<T = any> = T & { __depFn: true }
 
 const getFnName = (fn) => {
-  return fn.name || fn.toString().match(/function\s*([^(]*)\(/)?.[1] || 'unknown'
+  return (
+    fn.name || fn.toString().match(/function\s*([^(]*)\(/)?.[1] || 'unknown'
+  )
 }
 
 export function depFn<
   T extends Record<string, DepType>,
-  F extends (opts: GetProvidedDeps<T>) => Promise<any> | any
+  F extends (opts: GetProvidedDeps<T>) => Promise<any> | any,
 >(
   deps: T,
   fn: F
-): (deps: Partial<GetProvidedDeps<T>>) => DepFn<PromisifyIfNotPromise<ReturnType<F>>> {
+): (
+  deps: Partial<GetProvidedDeps<T>>
+) => DepFn<PromisifyIfNotPromise<ReturnType<F>>> {
   const fnn = async function (input: Partial<GetProvidedDeps<T>>) {
     try {
       const wrapped = profileAsync(fn)

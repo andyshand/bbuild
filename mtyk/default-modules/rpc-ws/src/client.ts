@@ -49,6 +49,11 @@ export class RPCClient {
   }
 
   private connect() {
+    // If we're inside nextjs build, don't connect to the socket
+    if (typeof window === 'undefined') {
+      return
+    }
+
     console.log(`RPCClient connecting to ${this.url}...`)
     this.socket = new WS(this.url)
     this.socket.onopen = () => {

@@ -84,16 +84,22 @@ export function getHttpServer() {
 }
 
 const httpUpgraders: {
-  [key: string]: (request: http.IncomingMessage, socket: any, head: Buffer) => void
+  [key: string]: (
+    request: http.IncomingMessage,
+    socket: any,
+    head: Buffer
+  ) => void
 } = {}
 function tryUpgrade(request, socket, head, attempts = 3) {
-  console.log(`Received upgrade request for ${request.url}, attempt ${attempts}`) // Debugging message
+  console.log(
+    `Received upgrade request for ${request.url}, attempt ${attempts}`
+  ) // Debugging message
   const pathname = url.parse(request.url).pathname
 
   let handled = false
   const upgradeHandler = () => {
     for (const key in httpUpgraders) {
-      if (pathname.startsWith(key)) {
+      if (pathname?.startsWith(key)) {
         httpUpgraders[key](request, socket, head)
         handled = true
         break
@@ -116,12 +122,15 @@ httpServer.on('upgrade', (request, socket, head) => {
   tryUpgrade(request, socket, head)
 })
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : defaultPort
+const port = defaultPort
 httpServer.listen(port, () => {
   console.log(`HTTP server started on port ${port}`)
 })
 
-export function addWSHandler(prefix: string, handler: (typeof httpUpgraders)[string]) {
+export function addWSHandler(
+  prefix: string,
+  handler: (typeof httpUpgraders)[string]
+) {
   httpUpgraders[prefix] = handler
 }
 
@@ -197,11 +206,15 @@ export function addWSServer(
             },
             (error) => {
               console.error(`Observable '${key}' error: ${error.message}`) // Debugging message
-              socket.send(JSON.stringify({ id, error: error.message } as ResponseData))
+              socket.send(
+                JSON.stringify({ id, error: error.message } as ResponseData)
+              )
             },
             () => {
               console.debug(`Observable '${key}' completed`) // Debugging message
-              socket.send(JSON.stringify({ id, complete: true } as ResponseData))
+              socket.send(
+                JSON.stringify({ id, complete: true } as ResponseData)
+              )
               subscriptions.delete(id)
             }
           )
@@ -260,7 +273,8 @@ export function addWSServer(
 export type WSServer = ReturnType<typeof addWSServer>
 
 export function addWSFunction(...args: [string, any] | [DepFn]) {
-  const key = typeof args[0] === 'string' ? args[0] : args[0]._name ?? args[0].name
+  const key =
+    typeof args[0] === 'string' ? args[0] : args[0]._name ?? args[0].name
   invariant(!!key, 'Function must have a name')
   const func = typeof args[0] === 'string' ? args[1] : args[0]
 

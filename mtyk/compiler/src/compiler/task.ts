@@ -16,11 +16,13 @@ import getModuleInfo from "./module/getModuleInfo";
 import { projectPath } from "./path";
 import { spawnProcess } from "./process/spawn";
 import { spawnToObservable } from "./process/spawnToObservable";
-import { DevConfig, DevJSON } from "./processes/dev";
+import { DevConfig, DevJSON } from "./processes/DevConfig";
 import processFilesForBbuildImports from "./watch/findAllBbuildImports";
 
 export async function getTaskStream(
-  task: DevJSON["tasks"][0],
+  task: Omit<DevJSON["tasks"][0], "env"> & {
+    env: Record<string, string>;
+  },
   config: DevConfig
 ) {
   const { filter } = config;
@@ -44,7 +46,6 @@ export async function getTaskStream(
   let observables = [watchFilesObservable1, restartTrigger];
 
   const lastArg = args[args.length - 1];
-  console.log({ lastArg, hello: 2 });
 
   if (lastArg?.endsWith(".js")) {
     const modulesToWatchSet = new Set(

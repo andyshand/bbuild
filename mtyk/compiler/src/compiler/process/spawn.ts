@@ -1,6 +1,6 @@
 import execa, { ExecaChildProcess } from "execa";
 import { Logger } from "../logging";
-import { DevJSON } from "../processes/dev";
+import { DevJSON } from "../processes/DevConfig";
 import require from "../require";
 
 export function spawnProcess<PTY extends boolean>(

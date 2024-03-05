@@ -8,17 +8,20 @@ import { hasCacheChanged } from "./cache";
 
 function toCamelCase(
   str: string,
-  casing: "camel" | "pascal" | "kebab" | "snake"
+  casing: "camel" | "pascal" | "kebab" | "snake" | "start"
 ) {
   switch (casing) {
     case "camel":
-      return _.camelCase(str);
+      const out = _.startCase(str).replace(/\s(.)/g, (_, c) => c.toUpperCase());
+      return out[0].toLowerCase() + out.slice(1);
     case "pascal":
       return _.startCase(str).replace(/\s(.)/g, (_, c) => c.toUpperCase());
     case "kebab":
       return _.kebabCase(str);
     case "snake":
       return _.snakeCase(str);
+    case "start":
+      return _.startCase(str).replace(/\s/g, "");
     default:
       return _.camelCase(str); // default to camelCase if no match
   }
@@ -35,7 +38,7 @@ const barrelConf = z.object({
    */
   startCase: z.boolean().optional().default(false),
   casing: z
-    .enum(["camel", "pascal", "kebab", "snake"])
+    .enum(["camel", "pascal", "kebab", "snake", "start"])
     .optional()
     .default("camel"),
   all: z.boolean().optional().default(false),
@@ -95,7 +98,10 @@ function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
     if (fs.statSync(fullPath).isDirectory()) {
       continue;
     } else {
-      const exportName = toCamelCase(removeExtension(file), config.casing);
+      const exportName = toCamelCase(
+        removeExtension(file),
+        config.startCase ? "start" : config.casing
+      );
       barreled.push(exportName);
       if (config.array) {
         indexContent += `import ${exportName} from './${removeExtension(

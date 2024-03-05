@@ -16,7 +16,7 @@ import { cjs, esm, prebuild } from "./prebuild";
 export async function watch({
   onNeedsPrebuild,
 }: {
-  onNeedsPrebuild: () => Promise<void>;
+  onNeedsPrebuild?: () => Promise<void>;
 }): Promise<void> {
   const tsc = getBinLocation("tsc");
   assert(
@@ -149,7 +149,9 @@ export async function watch({
         watchState.moduleRebuild[moduleName].hash = currentHash;
         console.log("Rebuilding due to module change: ", moduleName);
         watchState.watcherHandle.pause();
-        await onNeedsPrebuild();
+        if (onNeedsPrebuild) {
+          await onNeedsPrebuild();
+        }
         watchState.watcherHandle.restart();
         return;
       }

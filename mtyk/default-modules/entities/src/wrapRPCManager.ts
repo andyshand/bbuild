@@ -44,6 +44,7 @@ function callAuthed(
     // Get the doc first, then check if the user is allowed to read it
     let [entityType, id] = args as Parameters<IEntityManager['read']>
     if (id === 'me') {
+      publicInvariant(userId, 'User id is required for this operation')
       id = userId
     }
     return manager.read(entityType, id).then((doc) => {
@@ -90,13 +91,23 @@ export default function createManagerRPCServer(
             let result
 
             if (fetchUserIdFromAuthToken) {
-              publicInvariant(payload.auth?.token, 'Auth token is required for this operation')
+              publicInvariant(
+                payload.auth?.token,
+                'Auth token is required for this operation'
+              )
 
               // Fetch the user id associated with the auth_token
-              const userIdOrNull = await fetchUserIdFromAuthToken(payload.auth.token)
+              const userIdOrNull = await fetchUserIdFromAuthToken(
+                payload.auth.token
+              )
 
               // Modify the arguments to include the user id in owner or collaborators
-              result = await callAuthed(key, payload.args, userIdOrNull, manager)
+              result = await callAuthed(
+                key,
+                payload.args,
+                userIdOrNull,
+                manager
+              )
             } else {
               result = await fn.call(manager, ...payload.args)
             }

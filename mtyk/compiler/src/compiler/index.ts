@@ -11,6 +11,7 @@ import { clean } from "./processes/clean";
 import dev from "./processes/dev";
 import { prebuild } from "./processes/prebuild";
 import { watch } from "./processes/watch";
+import docker from "./docker";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 function monitorMemoryUsage(intervalSeconds = 5) {
@@ -76,13 +77,21 @@ const main = async () => {
       try {
         await prebuild();
         console.log("Starting to build modules in build mode...");
-        await watch();
+        await watch({});
         console.log("Done.");
         exit(0);
       } catch (e) {
         console.log(e);
         exit(1);
       }
+    });
+
+  // Define the "build" command
+  program
+    .command("docker")
+    .description("Run docker")
+    .action(async (opts) => {
+      await docker();
     });
 
   // Define the "clean" command

@@ -1,5 +1,10 @@
 import { depFn, keyDep, typeDep } from 'modules/deps'
-import { Entity, EntityField, EntityFunction, EntityRelation } from 'modules/entities'
+import {
+  Entity,
+  EntityField,
+  EntityFunction,
+  EntityRelation,
+} from 'modules/entities'
 import { publicInvariant } from 'modules/errors/index'
 import type { getChatCompletion } from 'modules/llm'
 import { Deps, resolveEngine } from '../Deps'
@@ -14,6 +19,7 @@ import { DockerEntity } from '../docker/DockerEntity'
 import { ParseMessage } from '../formattings/parseMessage'
 import inputSyntax from '../input-syntax/parse'
 import createEnhancedMessage from '../messages/createEnhancedMessage'
+import { ActionMessageEntity } from './ActionMessageEntity'
 import { ChatActivity } from './ChatActivity'
 import { ChatConnection, ChatFile, ChatSettings } from './ChatConnection'
 import { ChatMessageQueueEntity } from './ChatMessageQueue'
@@ -23,8 +29,6 @@ import getSuggestions from './chat/getSuggestions'
 import runChatAction from './chat/runChatAction'
 import spawnThread from './chat/spawnThread'
 import updateFiles from './chat/updateFiles'
-import { ActionMessageEntity } from './ActionMessageEntity'
-import { throttleTime } from 'rxjs'
 
 export class ChatEntity extends Entity {
   @EntityField({ defaultValue: [] })
@@ -128,7 +132,7 @@ Please respond with a single message in the above format.`
 
       const response = await getCompletion(
         await this.getSlicedMessages({ message: prompt, engine: this.engine }),
-        { model: 'claude-2' },
+        { model: 'claude-2' }
       )
 
       const prompt2 = `Using the following information about this conversation, in what ways might the above message be veering away from what the user wants to achieve?
@@ -137,7 +141,7 @@ ${response}`
 
       const reponse2 = await getCompletion(
         await this.getSlicedMessages({ message: prompt2, engine: this.engine }),
-        { model: 'claude-2' },
+        { model: 'claude-2' }
       )
 
       this.sendMessage({
@@ -156,7 +160,7 @@ ${response}`
       //         { model: 'gpt-4' }
       //       )
       //       this.prediction = prediction
-    },
+    }
   )
 
   /**
@@ -192,7 +196,13 @@ ${response}`
 
     for (const attachment of this.newMessageAttachments) {
       // TODO support other kinds of attachment
-      msg += '\n' + attachment.label + '\n' + '```\n' + minifyAttachment(attachment) + '\n```'
+      msg +=
+        '\n' +
+        attachment.label +
+        '\n' +
+        '```\n' +
+        minifyAttachment(attachment) +
+        '\n```'
     }
 
     return msg
@@ -250,7 +260,9 @@ ${response}`
 
   getIdealResponseLength() {
     const e = this.engineImpl
-    return e.getMaxContentLength(this.engine) * (this.responseLengthFactor ?? 1 / 3)
+    return (
+      e.getMaxContentLength(this.engine) * (this.responseLengthFactor ?? 1 / 3)
+    )
   }
 
   @EntityFunction()
@@ -288,7 +300,7 @@ You also need to include the clipboard content in the autocompleted message body
         returnn = returnn.slice(0, -1)
       }
       return returnn
-    },
+    }
   )
 
   @EntityFunction()
@@ -307,7 +319,7 @@ The message is:\n\n${message}`
       })
 
       return completion
-    },
+    }
   )
 
   @EntityFunction()
@@ -320,7 +332,7 @@ The message is:\n\n${message}`
       if (newAttach) {
         this.update({ attachments: newAttach.attachments })
       }
-    },
+    }
   )
 
   @EntityFunction()
@@ -391,11 +403,15 @@ The message is:\n\n${message}`
               ],
               {
                 model: 'gpt-3.5-turbo',
-              },
+              }
             )
 
             // Remove double quotes from name if present
-            this.name = name.replace(/"/g, '').replace(/\.$/g, '').replace(/^.*: /, '').trim()
+            this.name = name
+              .replace(/"/g, '')
+              .replace(/\.$/g, '')
+              .replace(/^.*: /, '')
+              .trim()
           } catch (e) {
             console.error(e)
           }
@@ -428,7 +444,10 @@ The message is:\n\n${message}`
         let actionMessageEntity: ActionMessageEntity | undefined
 
         if (autocompleteAction) {
-          actionMessageEntity = await this.manager.read(ActionMessageEntity, ActionMessageId)
+          actionMessageEntity = await this.manager.read(
+            ActionMessageEntity,
+            ActionMessageId
+          )
         }
 
         await new Promise((resolve, reject) => {
@@ -477,7 +496,10 @@ The message is:\n\n${message}`
               complete: () => {
                 if (autocompleteAction)
                   this.update({
-                    actionHistory: [...(this.actionHistory || []), ActionMessageId],
+                    actionHistory: [
+                      ...(this.actionHistory || []),
+                      ActionMessageId,
+                    ],
                   })
                 this.update({
                   messages: this.messages.map((m) => {
@@ -537,7 +559,9 @@ The message is:\n\n${message}`
         // this.doStuff({})
 
         return {
-          message: this.messages.find((m) => m.id === newAssistantMessage.id) ?? {
+          message: this.messages.find(
+            (m) => m.id === newAssistantMessage.id
+          ) ?? {
             ...newAssistantMessage,
             content,
           },
@@ -557,7 +581,7 @@ The message is:\n\n${message}`
       } finally {
         this.status = 'idle'
       }
-    },
+    }
   )
 
   updateFiles = updateFiles
@@ -579,7 +603,7 @@ The message is:\n\n${message}`
       // that cause our message to exceed 8192 token limit of GPT4
       const engineLimit = 8192
       const thisMessageCount = tokenCounter(
-        JSON.stringify({ role: 'user' as const, content: message }),
+        JSON.stringify({ role: 'user' as const, content: message })
       )
 
       const messages = this.getRawMessages()
@@ -588,7 +612,9 @@ The message is:\n\n${message}`
       const idealResponseLength = this.getIdealResponseLength()
       while (
         messages.length > 0 &&
-        thisMessageCount + idealResponseLength + messages.reduce((a, b) => a + b) >=
+        thisMessageCount +
+          idealResponseLength +
+          messages.reduce((a, b) => a + b) >=
           engineLimit
       ) {
         // remove the earliest message
@@ -596,9 +622,12 @@ The message is:\n\n${message}`
       }
 
       const toInclude = this.getRawMessages().slice(messages.length * -1)
-      const allMessages = [...toInclude, { role: 'user' as const, content: message }]
+      const allMessages = [
+        ...toInclude,
+        { role: 'user' as const, content: message },
+      ]
       return allMessages
-    },
+    }
   )
 
   @EntityFunction()
@@ -626,7 +655,7 @@ The message is:\n\n${message}`
         this.messages = this.messages.slice(0, index)
         await this.sendMessage({ message: msg.content, json: msg.json })
       }
-    },
+    }
   )
 
   editMessageObj(index: number, editor) {
@@ -737,7 +766,7 @@ The message is:\n\n${message}`
       } catch (e) {
         console.error(e, gpt3)
       }
-    },
+    }
   )
 
   @EntityFunction()
@@ -746,12 +775,16 @@ The message is:\n\n${message}`
     return res
   }
 
-  async getQueue(): Promise<ChatMessageQueueEntity> {
+  async getQueue() {
     if (!this.messageQueue) {
-      this.messageQueue = (await this.manager.create('ChatMessageQueueEntity', {})).id
+      this.messageQueue = (
+        await this.manager.create('ChatMessageQueueEntity', {})
+      ).id
     }
 
-    return this.manager.read('ChatMessageQueueEntity', this.messageQueue)
+    return this.messageQueue
+      ? this.manager.read('ChatMessageQueueEntity', this.messageQueue)
+      : null
   }
 
   async getQueuedMessages() {
@@ -762,12 +795,14 @@ The message is:\n\n${message}`
   async maybeSendNextQueuedMessage(force?: boolean) {
     if (this.status === 'idle' || force) {
       const queue = await this.getQueue()
-      const msg = queue.takeMessage()
-      if (msg) {
-        this.sendMessage({
-          message: msg.message.content,
-          json: msg.message.json,
-        })
+      if (queue) {
+        const msg = queue.takeMessage()
+        if (msg) {
+          this.sendMessage({
+            message: msg.message.content,
+            json: msg.message.json,
+          })
+        }
       }
     }
   }
@@ -783,16 +818,19 @@ The message is:\n\n${message}`
   async autocompleteAction(
     msg: Pick<EnhancedMessage, 'content' | 'json'>,
     command: string,
-    query: string,
+    query: string
   ) {
     if (msg) {
       try {
-        const actionMessageEntity = (await this.manager.create('ActionMessageEntity', {
-          command,
-          query,
-          content: '',
-          createdAt: new Date(),
-        })) as unknown as ActionMessageEntity
+        const actionMessageEntity = (await this.manager.create(
+          'ActionMessageEntity',
+          {
+            command,
+            query,
+            content: '',
+            createdAt: new Date(),
+          }
+        )) as unknown as ActionMessageEntity
 
         this.sendMessage({
           message: msg.content,

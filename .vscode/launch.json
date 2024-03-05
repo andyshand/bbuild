@@ -25,5 +25,29 @@
       "type": "node",
       "args": ["dev"]
     },
+    {
+      "name": "Compiler Debug Dev (Relay)",
+      "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
+      "cwd": "/Volumes/SSD/Github/relay",
+      "request": "launch",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "preLaunchTask": "compiler:build",
+      "type": "node",
+      "args": ["dev"]
+    },
+    {
+      "name": "Docker Debug Dev (Relay)",
+      "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
+      "cwd": "/Volumes/SSD/Github/relay",
+      "request": "launch",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "preLaunchTask": "compiler:build",
+      "type": "node",
+      "args": ["docker"]
+    },
   ]
 }

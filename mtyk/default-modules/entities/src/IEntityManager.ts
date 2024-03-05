@@ -12,7 +12,7 @@ export type Id = string
 
 export interface IEntityManager {
   yDoc: any
-  create<T = any>(
+  create<T extends EntityType = any>(
     entityType: Constructor<T> | string,
     entity: Partial<T>
   ): Promise<CreatedEntity<T>>
@@ -20,7 +20,12 @@ export interface IEntityManager {
     entityType: Constructor<T> | string,
     id: Id
   ): Promise<CreatedEntity<T>>
-  update(entityType, id, updates, revisionNumber?: number): Promise<CreatedEntity>
+  update(
+    entityType,
+    id,
+    updates,
+    revisionNumber?: number
+  ): Promise<CreatedEntity>
   delete(entityType, id): Promise<any>
   find<T extends EntityType = any>(
     entityType: Constructor<T> | string,

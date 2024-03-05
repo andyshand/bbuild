@@ -11,6 +11,7 @@
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "decompress": "^4.2.1",
+    "dockerode": "^4.0.2",
     "dotenv-flow": "^3.2.0",
     "execa": "5.1.1",
     "filecompare": "^1.0.4",
