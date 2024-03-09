@@ -1,4 +1,5 @@
 import RPCClient from 'modules/rpc-ws/client'
+import { RPC_DEFAULT_PORT } from 'modules/rpc-ws/config'
 import { Constructor } from 'modules/types'
 import { Observable, Subject, firstValueFrom, share } from 'rxjs'
 import { WebsocketProvider } from 'y-websocket'
@@ -23,7 +24,7 @@ export class RPCEntityManager extends RemoteEntityManager {
       throw new Error('RPCEntityManager is only supported on the client')
     }
     const url = new URL(window.location.href)
-    const port = url.hostname === 'localhost' ? 8080 : 80
+    const port = url.hostname === 'localhost' ? RPC_DEFAULT_PORT : 80
 
     this.client = new RPCClient(`ws://${url.hostname}:${port}${path}`)
     this.initializeInvalidateSubject()

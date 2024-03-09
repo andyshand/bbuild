@@ -130,6 +130,7 @@ const CommandPrompt: React.FC<CommandPromptProps> = () => {
       }
     } else if (event.key === 'Enter' && !isLoading) {
       if (filteredOptions[selectedOption]) {
+        event.preventDefault()
         await handleSelectOption(filteredOptions[selectedOption])
       }
     }

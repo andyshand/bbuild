@@ -1,5 +1,4 @@
-import { css } from '@emotion/react'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const Input = React.forwardRef<HTMLInputElement, any>(
   ({ placeholders, onContentChange, ...props }, ref) => {
@@ -10,7 +9,22 @@ const Input = React.forwardRef<HTMLInputElement, any>(
       setContent(props.value || '')
     }, [props.value])
 
-    const handleContentEditableChange = () => {
+    // useEffect(() => {
+    //   // Attach keydown to preventdefault enter key
+    //   const handleKeyDown = (e: KeyboardEvent) => {
+    //     if (e.key === 'Enter') {
+    //       e.preventDefault()
+
+    //     }
+    //   }
+
+    //   contentRef.current?.addEventListener('keydown', handleKeyDown)
+    //   return () => {
+    //     contentRef.current?.removeEventListener('keydown', handleKeyDown)
+    //   }
+    // }, [contentRef.current])
+
+    const handleContentEditableChange = (e) => {
       const textContent = contentRef.current?.textContent || ''
       setContent(textContent)
       if (onContentChange) {

@@ -7,7 +7,7 @@ export type IEntityManagerFindOpts = {
 }
 
 export type EntityType = Record<string, any>
-export type CreatedEntity<T extends EntityType = any> = T & { id: string }
+export type CreatedEntity<T> = T & { id: string }
 export type Id = string
 
 export interface IEntityManager {
@@ -20,12 +20,12 @@ export interface IEntityManager {
     entityType: Constructor<T> | string,
     id: Id
   ): Promise<CreatedEntity<T>>
-  update(
-    entityType,
-    id,
+  update<T extends EntityType = any>(
+    entityType: Constructor<T> | string,
+    id: Id,
     updates,
     revisionNumber?: number
-  ): Promise<CreatedEntity>
+  ): Promise<CreatedEntity<T>>
   delete(entityType, id): Promise<any>
   find<T extends EntityType = any>(
     entityType: Constructor<T> | string,

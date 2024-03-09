@@ -59,7 +59,7 @@ export default async function makeModulePackage(
     dependencies: {
       ...packageJSON.dependencies,
       ..._(moduleInfo.requiredOneModules)
-        .map((mod) => [`${packageOrg}/${mod}`, `*`])
+        .map((mod) => [`${packageOrg}/${mod}`, `workspace:^`])
         .fromPairs()
         .value(),
     },
@@ -126,17 +126,25 @@ export default async function makeModulePackage(
 
   // Instead of running yarn again, manually copy over to node_modules
   {
-    const nodeModulesModulePath = path.join(
+    let nodeModulesModulePath = path.join(
       projectPath(),
       "node_modules",
       fullPackageName
     );
 
-    // Check if symlink, if so remove
+    // Check if symlink, if so, yarn has linked it elsewhere in the tree. Follow the link and copy files there, instead
+
     if (fse.existsSync(nodeModulesModulePath)) {
       const nodeModulesStats = await fse.lstat(nodeModulesModulePath);
       if (nodeModulesStats.isSymbolicLink()) {
-        await fse.unlink(nodeModulesModulePath);
+        const realPath = await fse.realpath(nodeModulesModulePath);
+        nodeModulesModulePath = realPath;
+        // Ensure real path is still inside the same node_modules root
+        if (!nodeModulesModulePath.startsWith(projectPath("node_modules"))) {
+          throw new Error(
+            `Real path of ${nodeModulesModulePath} is not inside node_modules?`
+          );
+        }
       }
     }
 

@@ -11,6 +11,7 @@ export async function clean() {
   await removeGlobAsync(projectPath("./modules/**/.prettierrc.yaml"));
   await removeGlobAsync(projectPath("./modules/**/tsconfig.json"));
   await removeGlobAsync(projectPath("./modules/**/tsconfig.*.json"));
+  await removeGlobAsync(projectPath("./modules/**/node_modules"));
   await removeGlobAsync(projectPath("./**/node_modules"));
   await removeGlobAsync(projectPath("./**/*.tsbuildinfo"));
   await removeGlobAsync(projectPath("./.universe/build"));

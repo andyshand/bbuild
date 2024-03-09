@@ -1,13 +1,6 @@
 {
-  "name": "@bbuild/entities",
+  "name": "@bbuild-src/entities",
   "version": "0.0.1",
-  "devDependencies": {
-    "@tsconfig/node16": "^1.0.3",
-    "@types/reflect-metadata": "^0.1.0",
-    "typescript": "4.9.5"
-  },
-  "main": "dist/cjs/index.js",
-  "module": "index.js",
   "exports": {
     ".": {
       "import": "./index.js",
@@ -159,7 +152,6 @@
       "require": "./dist/cjs/yjs/index.js"
     }
   },
-  "repository": "https://github.com/morethanyouknowltd/config",
   "dependencies": {
     "@trpc/server": "^10.14.0",
     "cors": "^2.8.5",
@@ -175,5 +167,12 @@
     "y-websocket": "^1.5.1",
     "yjs": "^13.6.10"
   },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/reflect-metadata": "^0.1.0",
+    "typescript": "4.9.5"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "index.js",
   "index": "dist/cjs/index.js"
 }

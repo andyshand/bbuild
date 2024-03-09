@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/vm",
+  "name": "@bbuild-src/vm",
   "version": "0.0.1",
   "exports": {
     ".": {

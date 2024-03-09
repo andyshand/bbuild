@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/context",
+  "name": "@bbuild-src/context",
   "version": "0.0.10",
   "exports": {
     ".": {
@@ -44,14 +44,14 @@
       "require": "./dist/cjs/useRegisterContext.js"
     }
   },
+  "dependencies": {
+    "react": "18.2.0"
+  },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
     "typescript": "4.9.5"
   },
   "main": "dist/cjs/index.js",
   "module": "index.js",
-  "dependencies": {
-    "react": "18.2.0"
-  },
   "index": "dist/cjs/index.js"
 }

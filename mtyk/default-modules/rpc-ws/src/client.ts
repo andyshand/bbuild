@@ -26,7 +26,7 @@ export class RPCClient {
     return null
   }
 
-  constructor(url: string = 'ws://localhost:9090') {
+  constructor(url: string) {
     this.url = url
     this.listeners = new Map<string, Observer<any> & { hasCompleted: boolean }>()
     this.requestCounter =

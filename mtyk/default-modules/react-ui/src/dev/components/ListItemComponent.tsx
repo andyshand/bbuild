@@ -44,7 +44,12 @@ export function ListItemComponent({
           </div>
         </div>
       )}
-      {isLoading && <LoadingIndicator />}
+      {isLoading && (
+        <div>
+          loading
+          <LoadingIndicator />
+        </div>
+      )}
     </ListItem>
   )
 }

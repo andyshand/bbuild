@@ -1,7 +1,6 @@
 import { zodSchemaToTypeString } from 'modules/schema'
-import { globalDepContext, keyDep } from 'modules/deps'
-import { ParseMessage } from './ParseMessage'
 import { ZodSchema } from 'zod'
+import { ParseMessage } from './ParseMessage'
 import getChatCompletion from './engines/getChatCompletion'
 
 export async function getZodCompletion<T>(
@@ -21,7 +20,18 @@ Do not include any explanation or other text in your response, only the JSON. No
 
   while (tries < maxtries) {
     tries++
-    const result = await getChatCompletion(amendedPrompt, ...rest)
+    let modelSupportsJSONMode = false
+    const opts = {
+      ...(rest[0] ?? {}),
+      ...(modelSupportsJSONMode
+        ? { response_format: { type: 'json_object' } }
+        : {}),
+    }
+    const result = await getChatCompletion(
+      amendedPrompt,
+      opts,
+      ...(rest ?? []).slice(1)
+    )
 
     // try parse
     try {

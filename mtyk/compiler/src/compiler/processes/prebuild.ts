@@ -216,7 +216,7 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
   // Init .vscode/extensions.json
   const extensionsJSONPath = projectPath(".vscode/extensions.json");
   const extensionsJSON: { recommendations: string[] } = {
-    recommendations: ["biomejs.biome"],
+    recommendations: [],
   };
   await writeJSON(extensionsJSONPath, extensionsJSON);
 

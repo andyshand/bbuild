@@ -16,6 +16,8 @@ export const safePackages = {
   "react-dom": "18.2.0",
   nanoid: "3.3.7",
   zod: "3.22.4",
+  googleapis: "133.0.0",
+  cheerio: "1.0.0-rc.12",
 };
 
 export const badPackages = {} as const;

@@ -171,13 +171,20 @@ export default moduleDep
       delete config["ts-node"];
     },
     packageJSON: (json) => {
-      json.name = `${org}/${module.name}`;
+      json.name = `${org}-src/${module.name}`;
 
       for (const plugin of oneConfig.plugins) {
         if (plugin.name === "react") {
           // Add react types
           json.devDependencies["@types/react"] = "^18.0.0";
           json.devDependencies["@types/react-dom"] = "^18.0.0";
+        }
+      }
+
+      // Remove all @bbuild/* dependencies
+      for (const dep in json.dependencies) {
+        if (dep.startsWith("@bbuild")) {
+          delete json.dependencies[dep];
         }
       }
 

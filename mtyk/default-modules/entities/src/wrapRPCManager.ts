@@ -1,4 +1,4 @@
-import { pubSub } from 'modules/rpc-ws/central/client'
+import { serverPubSub } from 'modules/rpc-ws/central/server'
 import startWSServer, { FunctionMap } from 'modules/rpc-ws/server'
 import { getPortForName } from 'modules/transport/index'
 // import asyncLocalStorage from './asyncLocalStorage';
@@ -53,7 +53,12 @@ function callAuthed(
       }
       throw new Error('Not authorised to read this doc')
     })
+  } else if (method === 'create') {
+    console.log('ello')
+    let [entityType, doc] = args as Parameters<IEntityManager['create']>
+    return manager.create(entityType, { ...doc, owner: userId })
   }
+
   return manager[method](...args)
 }
 
@@ -91,23 +96,13 @@ export default function createManagerRPCServer(
             let result
 
             if (fetchUserIdFromAuthToken) {
-              publicInvariant(
-                payload.auth?.token,
-                'Auth token is required for this operation'
-              )
+              publicInvariant(payload.auth?.token, 'Auth token is required for this operation')
 
               // Fetch the user id associated with the auth_token
-              const userIdOrNull = await fetchUserIdFromAuthToken(
-                payload.auth.token
-              )
+              const userIdOrNull = await fetchUserIdFromAuthToken(payload.auth.token)
 
               // Modify the arguments to include the user id in owner or collaborators
-              result = await callAuthed(
-                key,
-                payload.args,
-                userIdOrNull,
-                manager
-              )
+              result = await callAuthed(key, payload.args, userIdOrNull, manager)
             } else {
               result = await fn.call(manager, ...payload.args)
             }
@@ -132,6 +127,8 @@ export default function createManagerRPCServer(
     functions: fns,
   })
 
-  pubSub.provideValue('entityManagersChannel', path)
+  // The pub sub was initialy designed to allow multiple clients to connect and publish their values,
+  // but for now this is overcomplicated. Just overwrite with our single value
+  serverPubSub.publish('entityManagersChannel', [path])
   return server
 }
