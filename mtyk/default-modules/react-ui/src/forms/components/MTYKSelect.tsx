@@ -1,18 +1,15 @@
-import Select from 'react-select'
 import { ComponentProps } from 'react'
+import Select from 'react-select'
 
 function flatten(arr) {
   return arr.reduce(
     (acc, val) =>
-      Array.isArray(val.options)
-        ? acc.concat(flatten(val.options))
-        : acc.concat(val),
+      Array.isArray(val.options) ? acc.concat(flatten(val.options)) : acc.concat(val),
     []
   )
 }
 const clean = (x) => x.trim()
-const toArray = (str) =>
-  Array.isArray(str) ? str : (str ?? '').split(',').map(clean)
+const toArray = (str) => (Array.isArray(str) ? str : (str ?? '').split(',').map(clean))
 
 function getValue(opts, val, getOptVal, isMulti) {
   if (val === undefined) return undefined
@@ -65,12 +62,7 @@ const MTYKSelect = <T = string,>({
     getOptionValue,
     isMulti
   )
-  const defaultValue = getValue(
-    fullOptions,
-    simpleDefault,
-    getOptionValue,
-    isMulti
-  )
+  const defaultValue = getValue(fullOptions, simpleDefault, getOptionValue, isMulti)
 
   const props = {
     defaultValue,
@@ -87,19 +79,11 @@ const MTYKSelect = <T = string,>({
       className={`my-react-select-container ${props.className ?? ''}`}
       classNamePrefix="my-react-select"
       components={{
-        // Menu: (propsInner) => (
-        //   <div
-        //     className={`bg-gray-800 ${menu?.className ?? ''}`}
-        //     onWheelCapture={(e) => {
-        //       e.stopPropagation()
-        //     }}
-        //   >
-        //     {propsInner.children}
-        //   </div>
-        // ),
-        MenuList: (propsInner) => (
+        Menu: (propsInner) => (
           <div
-            className={`bg-gray-800 overflow-y-auto ${menu?.className ?? ''}`}
+            // include default styles
+            style={{ ...propsInner.getStyles('menu', propsInner) } as any}
+            className={`bg-gray-800 dark:bg-gray-900 ${menu?.className ?? ''}`}
             onWheelCapture={(e) => {
               e.stopPropagation()
             }}
@@ -107,9 +91,60 @@ const MTYKSelect = <T = string,>({
             {propsInner.children}
           </div>
         ),
-        // Option: (props) => (
-        //   <div className="option-container">{props.children}</div>
-        // ),
+        MenuList: (propsInner) => (
+          <div
+            className={`bg-gray-800 overflow-y-auto dark:bg-gray-900 ${menu?.className ?? ''}`}
+            onWheelCapture={(e) => {
+              e.stopPropagation()
+            }}
+          >
+            {propsInner.children}
+          </div>
+        ),
+        Option: (props) => (
+          <div
+            className="text-black dark:text-white p-1 hover:bg-gray-700 cursor-pointer"
+            onClick={() => {
+              props.selectOption(props.data)
+            }}
+          >
+            {props.label}
+          </div>
+        ),
+        ValueContainer: (props) => (
+          <div
+            className="flex flex-wrap items-center gap-1 w-[10em] "
+            onClick={() => {
+              props.selectProps.onMenuOpen()
+            }}
+          >
+            {props.children}
+          </div>
+        ),
+        IndicatorSeparator: () => null,
+        Input: (props) => null,
+        SingleValue: (props) => (
+          <div
+            className="text-black dark:text-white truncate"
+            onClick={() => {
+              props.selectOption(props.data)
+            }}
+          >
+            {props.children}
+          </div>
+        ),
+        Control: (props) => (
+          <div
+            className="flex items-center bg-gray-800 dark:bg-gray-900 cursor-pointer rounded-md border border-gray-600 dark:border-gray-700 p-1 inline-flex"
+            {...props}
+            onClick={(e) => {
+              // open menu
+              props.selectProps.onMenuOpen()
+            }}
+          >
+            {props.children}
+          </div>
+        ),
       }}
       onChange={(selected) => {
         if (rest.onChange) {
@@ -130,16 +165,6 @@ const MTYKSelect = <T = string,>({
             rest.onSingleChange(getOptionValue(selected))
           }
         }
-      }}
-      styles={{
-        control(base, props) {
-          return {
-            ...base,
-            minWidth: 'max-content',
-            backgroundColor: '#F9FAFB',
-            minHeight: '42px',
-          }
-        },
       }}
     />
   )

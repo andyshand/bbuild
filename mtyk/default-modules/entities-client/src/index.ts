@@ -70,12 +70,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
         event.changes.keys.forEach((change, key) => {
           if (change.action === 'add' || change.action === 'update') {
             // entityDataObservable[id][key].set(entity.yMap.get(key))
-            updateEntityKey(
-              entityType(entity as any),
-              id,
-              key,
-              entity.yMap.get(key)
-            )
+            updateEntityKey(entityType(entity as any), id, key, entity.yMap.get(key))
           }
           if (change.action === 'delete') {
             // entityDataObservable[id][key].delete()
@@ -153,8 +148,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
       for (const manager of managers) {
         try {
           const entity = await manager.read(tt, id)
-          if (entity.yMap)
-            entity.yMap.unobserve(subscriptionInfo.observerFunction)
+          if (entity.yMap) entity.yMap.unobserve(subscriptionInfo.observerFunction)
           entitySubscriptions.delete(key)
           const legendObject = Object.keys(entityDataObservable[id])
           beginBatch()
@@ -169,10 +163,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  function invalidate<T extends Entity<any>>(
-    type: Constructor<T> | string,
-    id?: string
-  ) {
+  function invalidate<T extends Entity<any>>(type: Constructor<T> | string, id?: string) {
     const tt = entityType(type)
     invalidateSubject.next({ type: tt, id })
   }
@@ -191,9 +182,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
               if (allManagers.length === newManagers.length) {
                 if (
                   allManagers.every((managerA) => {
-                    return newManagers.some(
-                      (managerB) => managerA.id === managerB.id
-                    )
+                    return newManagers.some((managerB) => managerA.id === managerB.id)
                   })
                 )
                   return
@@ -226,10 +215,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   //   }
   // }
 
-  const useEntity = <T extends Entity<any>>(
-    type: Constructor<T> | string,
-    id: string
-  ) => {
+  const useEntity = <T extends Entity<any>>(type: Constructor<T> | string, id: string) => {
     const { data, ...rest } = useEntities(type, { id })
     return { data: data[0] as T | null, ...rest }
   }
@@ -280,8 +266,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
                       type: a.type,
                     })
                     return (
-                      !inIds.includes(a.id) &&
-                      !!globalEntityDataObservable[globalKey].peek()
+                      !inIds.includes(a.id) && !!globalEntityDataObservable[globalKey].peek()
                     )
                   })
                   .map((a) => {
@@ -292,10 +277,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
                     return {
                       id: a.id,
                       type: a.type,
-                      entity:
-                        globalEntityDataObservable[globalKey].peek().entity,
-                      entityObj:
-                        globalEntityDataObservable[globalKey].peek().entityObj,
+                      entity: globalEntityDataObservable[globalKey].peek().entity,
+                      entityObj: globalEntityDataObservable[globalKey].peek().entityObj,
                     }
                   })
           )
@@ -343,7 +326,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     const subscriptions = useRef<string[]>([])
     const tt = entityType(type)
     // const hookId = useId({ type, query })
-    const hookId = useId({})
+    const hookId = useId({ type, query })
     const allManagers = discoverManagers()
     const [status, setStatus] = useState<{
       state: 'loading' | 'loaded' | 'error'
@@ -414,13 +397,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  const useEntityRelation = <T extends Entity>(
-    entity: T,
-    relation: keyof T & string
-  ) => {
-    const type =
-      (entity ? entity.getRelationInfo(relation) : UnknownEntity) ??
-      UnknownEntity
+  const useEntityRelation = <T extends Entity>(entity: T, relation: keyof T & string) => {
+    const type = (entity ? entity.getRelationInfo(relation) : UnknownEntity) ?? UnknownEntity
     invariant(
       type !== UnknownEntity || !entity,
       `Unknown entity type for relation ${relation}. Are you missing an @EntityRelation decorator?`
@@ -432,18 +410,15 @@ export function createEntitiesClient<M extends IEntityManager[]>(
             $in: Array.isArray(entity[relation])
               ? entity[relation]
               : entity[relation]
-                ? [entity[relation]]
-                : [],
+              ? [entity[relation]]
+              : [],
           },
         }
 
     return useEntities(type as any, query)
   }
 
-  const createEntity = async <T extends Entity>(
-    type: Constructor<T> | string,
-    data: any
-  ) => {
+  const createEntity = async <T extends Entity>(type: Constructor<T> | string, data: any) => {
     const managers = [...(await getLatestValue(subject)), ...extraMan] as any
     let entity: T | undefined = undefined
     const tt = entityType(type)
@@ -461,10 +436,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     return entity
   }
 
-  const deleteEntity = async <T extends Entity>(
-    type: Constructor<T> | string,
-    id: string
-  ) => {
+  const deleteEntity = async <T extends Entity>(type: Constructor<T> | string, id: string) => {
     const managers = [...(await getLatestValue(subject)), ...extraMan]
     const tt = entityType(type)
     for (const manager of managers) {
@@ -485,7 +457,6 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     deleteEntity,
     useEntityRelation,
     _getManagers: () => getLatestValue(subject),
-    query: (type, query) =>
-      queryFromAllManagers(getLatestValue(subject), type, query),
+    query: (type, query) => queryFromAllManagers(getLatestValue(subject), type, query),
   }
 }

@@ -35,6 +35,10 @@
       "import": "./EntityField.js",
       "require": "./dist/cjs/EntityField.js"
     },
+    "./EntityFieldMetadata": {
+      "import": "./EntityFieldMetadata.js",
+      "require": "./dist/cjs/EntityFieldMetadata.js"
+    },
     "./EntityFunction": {
       "import": "./EntityFunction.js",
       "require": "./dist/cjs/EntityFunction.js"

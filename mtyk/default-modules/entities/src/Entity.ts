@@ -1,14 +1,14 @@
-import { uniq } from 'remeda'
 import { Constructor } from 'modules/types'
+import * as Y from 'yjs'
 import { EntityConfig } from './EntityConfig'
-import EntityField, { EntityFieldMetadata } from './EntityField'
+import EntityField, { getEntityFieldMetadata } from './EntityField'
+import { getEntityMetadata } from './EntityFieldMetadata'
+import { EntityTypable } from './EntityTypable'
 import type { IEntityManager } from './IEntityManager'
 import { MockEntityManager } from './MockEntityManager'
 import type { RPCEntityManager } from './RPCEntityManager'
 import { formatters } from './formatters'
 import { entityTypesEqual, getEntityTypeName } from './getEntityTypeName'
-import * as Y from 'yjs'
-import { EntityTypable } from './EntityTypable'
 
 if (typeof window !== 'undefined') {
   const w = window as any
@@ -20,6 +20,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   public yDoc: Y.Doc
   public yMap: Y.Map<any>
   static createdIds: string[] = []
+  static displayName: string = 'Entity'
 
   readonly id: string
   public revisionNumber: number = 0
@@ -163,11 +164,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
           return true
         }
 
-        const setter = Reflect.getMetadata(
-          EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET,
-          this,
-          property as string
-        )
+        const setter = getEntityFieldMetadata(this, property as string).entityFieldBeforeSet
         if (setter) {
           const newVal = setter.call(this, value, { entity: this })
           _value = newVal
@@ -182,8 +179,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
         const methodName = (target as any as Function).name
         const entityType = getEntityTypeName(this)
 
-        const isEntityFunction =
-          Reflect.getMetadata('entityFunction', this, methodName) !== undefined
+        const isEntityFunction = this.isEntityFunction(methodName)
 
         if ('isRPC' in this.manager && isEntityFunction) {
           const rpc = this.manager as RPCEntityManager
@@ -205,11 +201,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
 
         const isEntityField = this.isEntityField(property as string)
         if (isEntityField) {
-          const getter = Reflect.getMetadata(
-            EntityFieldMetadata.ENTITY_FIELD_GETTER,
-            this,
-            property as string
-          )
+          const getter = getEntityFieldMetadata(this, property as string).entityFieldGetter
           if (getter) {
             return getter.call(this, {
               value: this.yMap.get(property as string),
@@ -221,8 +213,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
 
         if (typeof value === 'function') {
           // If the method is a remote method, execute it remotely
-          const isEntityFn =
-            Reflect.getMetadata('entityFunction', this, property as string) !== undefined
+          const isEntityFn = this.isEntityFunction(property as string)
           if (isEntityFn) {
             if ('isRPC' in this.manager) {
               const man = this.manager as RPCEntityManager
@@ -285,21 +276,13 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   }
 
   isEntityFunction(name: string) {
-    return Reflect.getMetadata('entityFunction', this, name) !== undefined
+    return !!getEntityFieldMetadata(this, name).entityFunction
   }
 
   static staticFields = ['createdAt', 'updatedAt', 'owner', 'collaborators']
 
   getEntityFields() {
-    const properties = uniq([...Object.getOwnPropertyNames(this)])
-    return properties
-      .filter((prop) => {
-        return (
-          Reflect.getMetadata('entityField', this, prop) !== undefined ||
-          Reflect.getMetadata('entityRelation', this, prop) !== undefined
-        )
-      })
-      .concat(Entity.staticFields)
+    return (getEntityMetadata(this)?.fieldList ?? []).concat(Entity.staticFields)
   }
 
   // Add a new property to store the subscribers
@@ -367,7 +350,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   }
 
   async getRelation<T extends Entity>(relationName: string): Promise<Entity | null> {
-    const relation = Reflect.getMetadata('entityRelation', this, relationName)
+    const relation = this.getRelationInfo(relationName)
     if (!relation) {
       throw new Error(`No relation found for ${relationName}`)
     }
@@ -379,7 +362,7 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   }
 
   getRelationInfo(relationName: string) {
-    const relation = Reflect.getMetadata('entityRelation', this, relationName)
+    const relation = getEntityFieldMetadata(this, relationName).relation
     if (!relation) {
       throw new Error(`No relation found for ${relationName}`)
     }

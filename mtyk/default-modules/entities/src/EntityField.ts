@@ -1,10 +1,9 @@
 import { invariant } from 'modules/errors'
-export enum EntityFieldMetadata {
-  ENTITY_FIELD = 'entityField',
-  ENTITY_FIELD_GETTER = 'entityFieldGetter',
-  ENTITY_FIELD_BEFORE_SET = 'entityFieldSetter',
-  STREAMABLE_FIELD = 'streamableField',
-}
+import {
+  EntityFieldMetadata,
+  metadataStore,
+  setEntityFieldMetadata,
+} from './EntityFieldMetadata'
 
 function EntityField<T>(options?: {
   streamable?: boolean
@@ -13,36 +12,36 @@ function EntityField<T>(options?: {
   defaultValue?: T
 }) {
   return function (target: any, propertyKey: string) {
-    Reflect.defineMetadata(EntityFieldMetadata.ENTITY_FIELD, true, target, propertyKey)
+    setEntityFieldMetadata(target, EntityFieldMetadata.ENTITY_FIELD, propertyKey, true)
 
     if (options?.streamable) {
-      Reflect.defineMetadata(EntityFieldMetadata.STREAMABLE_FIELD, true, target, propertyKey)
+      setEntityFieldMetadata(target, EntityFieldMetadata.STREAMABLE_FIELD, propertyKey, true)
     }
 
     if (options?.get) {
       // Assert no default value, won't take effect
       invariant(!options.defaultValue, '`get` will override `defaultValue`')
-      Reflect.defineMetadata(
-        EntityFieldMetadata.ENTITY_FIELD_GETTER,
-        options.get,
+      setEntityFieldMetadata(
         target,
+        EntityFieldMetadata.ENTITY_FIELD_GETTER,
         propertyKey,
+        options.get
       )
     } else if (options?.defaultValue) {
-      Reflect.defineMetadata(
-        EntityFieldMetadata.ENTITY_FIELD_GETTER,
-        ({ value }) => value ?? options.defaultValue,
+      setEntityFieldMetadata(
         target,
+        EntityFieldMetadata.ENTITY_FIELD_GETTER,
         propertyKey,
+        () => options.defaultValue
       )
     }
 
     if (options?.beforeSet) {
-      Reflect.defineMetadata(
-        EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET,
-        options.beforeSet,
+      setEntityFieldMetadata(
         target,
+        EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET,
         propertyKey,
+        options.beforeSet
       )
     }
   }
@@ -52,39 +51,29 @@ function EntityField<T>(options?: {
 // including default value and type of the field if present
 export function getEntityFieldMetadata(
   target: any,
-  propertyKey: string,
+  propertyKey: string
 ): {
   entityField: boolean | undefined
   streamableField: boolean | undefined
   entityFieldGetter: (() => any) | undefined
   entityFieldBeforeSet: ((value: any, opts: { entity: any }) => void) | undefined
+  relation: string | undefined
   defaultValue: any | undefined
+  entityFunction: boolean | undefined
   type: any | undefined
 } {
+  const constructorName = target.constructor.name
+  const metadata = metadataStore[constructorName]?.[propertyKey]
+
   return {
-    entityField: Reflect.getMetadata(EntityFieldMetadata.ENTITY_FIELD, target, propertyKey),
-    streamableField: Reflect.getMetadata(
-      EntityFieldMetadata.STREAMABLE_FIELD,
-      target,
-      propertyKey,
-    ),
-    entityFieldGetter: Reflect.getMetadata(
-      EntityFieldMetadata.ENTITY_FIELD_GETTER,
-      target,
-      propertyKey,
-    ),
-    entityFieldBeforeSet: Reflect.getMetadata(
-      EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET,
-      target,
-      propertyKey,
-    ),
-    defaultValue: Reflect.getMetadata(
-      EntityFieldMetadata.ENTITY_FIELD_GETTER,
-      target,
-      propertyKey,
-    )?.defaultValue,
+    relation: metadata?.[EntityFieldMetadata.ENTITY_RELATION]?.relatedEntity,
+    entityField: metadata?.[EntityFieldMetadata.ENTITY_FIELD],
+    streamableField: metadata?.[EntityFieldMetadata.STREAMABLE_FIELD],
+    entityFieldGetter: metadata?.[EntityFieldMetadata.ENTITY_FIELD_GETTER],
+    entityFieldBeforeSet: metadata?.[EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET],
+    defaultValue: metadata?.[EntityFieldMetadata.ENTITY_FIELD_GETTER]?.defaultValue,
+    entityFunction: metadata?.[EntityFieldMetadata.ENTITY_FUNCTION],
     type: Reflect.getMetadata('design:type', target, propertyKey),
   }
 }
-
 export default EntityField

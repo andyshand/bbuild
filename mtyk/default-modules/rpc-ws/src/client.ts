@@ -15,8 +15,12 @@ export class RPCClient {
     return Array.from(RPCClient.clients.values()).filter((c) => !c.url.includes('9050'))[0]
   }
 
-  setToken(token: string) {
-    localStorage.setItem('auth_token', token)
+  setToken(token: string | null) {
+    if (token) {
+      localStorage.setItem('auth_token', token)
+    } else {
+      localStorage.removeItem('auth_token')
+    }
   }
 
   getToken() {
