@@ -59,7 +59,7 @@ export default async function makeExports(
           path.join(moduleFolder, srcDir),
           ""
         );
-        const esmRoot = ".";
+        const esmRoot = "./dist";
         const cjsRoot = "./dist/cjs";
 
         if (isDir) {
@@ -97,13 +97,13 @@ export default async function makeExports(
   Object.assign(distPackageJson, {
     main: `dist/cjs/index.js`,
     index: `dist/cjs/index.js`,
-    module: `index.js`,
+    module: `dist/index.js`,
   });
 
   Object.assign(distPackageJson, {
     exports: {
       ".": {
-        import: "./index.js",
+        import: "./dist/index.js",
         require: "./dist/cjs/index.js",
       },
       "./package.json": "./package.json",

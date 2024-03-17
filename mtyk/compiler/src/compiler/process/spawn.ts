@@ -1,70 +1,12 @@
-import execa, { ExecaChildProcess } from "execa";
+import execa from "execa";
 import { Logger } from "../logging";
-import { DevJSON } from "../processes/DevConfig";
-import require from "../require";
-
-export function spawnProcess<PTY extends boolean>(
-  cmd: string,
-  args: string[],
-  cwd: string,
-  watch: string[],
-  env: { [x: string]: string; TZ?: string },
-  name: string = cmd,
-  task: DevJSON["tasks"][0]
-): ExecaChildProcess {
-  console.log(
-    `Starting task "${cmd} ${args.join(" ")}" in ${cwd}, watching [${watch.join(
-      ","
-    )}]`
-  );
-
-  if (task?.config === true) {
-    // populate env using config module
-    try {
-      const resolved = require.resolve("@bbuild/config", {
-        paths: [cwd],
-      });
-      const config = require(resolved)._getEntireConfig();
-      env = { ...env, ...config };
-      console.log(
-        `Populated env for ${name} from config module: ${JSON.stringify(
-          config
-        )}`
-      );
-    } catch (e) {
-      console.log(`Error loading @bbuild/config module for ${name}`);
-    }
-  }
-
-  // Resize the terminal window if needed
-  process.stdout.write("\x1b[8;30;80t"); // Resize to 80 columns and 30 rows
-
-  const childProcess = execa(cmd, args, {
-    cwd,
-    env,
-    stdio: "pipe",
-    maxBuffer: 104857600,
-  });
-
-  childProcess.on("exit", (exitCode, signal) => {
-    console.log(
-      `Task "${name}" exited with code ${exitCode} and signal ${signal}`
-    );
-  });
-  childProcess
-    .then(() => {})
-    .catch((error) => {
-      console.error(error);
-    });
-
-  return childProcess;
-}
 
 interface SpawnStoppableProcessOptions extends execa.Options {
   label?: string;
   onFinish?: () => void;
 }
 
+/* used from watch.ts */
 export function spawnStoppableProcess(
   cmd: string,
   args: string[],

@@ -17,6 +17,7 @@ export default async function docker() {
   for (const d of dockerInfo) {
     const { args, name, image: _image, env, dockerfile } = d;
     const cwd = process.cwd();
+    const image = _image ?? name;
 
     if (!progressLogs[name]) {
       progressLogs[name] = { progress: 0, stop: () => {} };
@@ -60,7 +61,10 @@ export default async function docker() {
       try {
         childProcess = spawn(buildCmd[0], buildCmd.slice(1), {
           cwd,
-          env,
+          env: {
+            ...env,
+            // DOCKER_BUILDKIT: "1",
+          },
           stdio: "inherit",
         });
 

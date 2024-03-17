@@ -30,7 +30,9 @@ export class RPCClient {
     return null
   }
 
-  constructor(url: string) {
+  constructor(_url: string) {
+    const isWss = typeof window !== 'undefined' && window.location.protocol === 'https:'
+    const url = isWss ? _url.replace('ws:', 'wss:').replace(':80', '') : _url
     this.url = url
     this.listeners = new Map<string, Observer<any> & { hasCompleted: boolean }>()
     this.requestCounter =
@@ -40,7 +42,7 @@ export class RPCClient {
     this.pendingCalls = []
     this.isConnected = false
     this.connect()
-    RPCClient.clients.set(url, this)
+    RPCClient.clients.set(this.url, this)
 
     return new Proxy(this, {
       get: (target: RPCClient, key: string) => {
@@ -55,6 +57,14 @@ export class RPCClient {
   private connect() {
     // If we're inside nextjs build, don't connect to the socket
     if (typeof window === 'undefined') {
+      return
+    }
+
+    // Quick fix for DC
+    if (
+      window.location.href.includes('localhost:3009') ||
+      window.location.href.includes('designcloud.app')
+    ) {
       return
     }
 

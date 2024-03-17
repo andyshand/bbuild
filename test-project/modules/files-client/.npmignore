@@ -1,7 +1,0 @@
-node_modules
-src
-*.env
-*.env.*
-tsconfig.json
-tsconfig.*.json
-*.tsbuildinfo

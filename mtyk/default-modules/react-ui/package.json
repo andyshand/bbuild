@@ -159,6 +159,22 @@
       "import": "./index.js",
       "require": "./dist/cjs/index.js"
     },
+    "./json-editor/components/*": {
+      "import": "./json-editor/components/*.js",
+      "require": "./dist/cjs/json-editor/components/*.js"
+    },
+    "./json-editor/components": {
+      "import": "./json-editor/components/index.js",
+      "require": "./dist/cjs/json-editor/components/index.js"
+    },
+    "./json-editor/*": {
+      "import": "./json-editor/*.js",
+      "require": "./dist/cjs/json-editor/*.js"
+    },
+    "./json-editor": {
+      "import": "./json-editor/index.js",
+      "require": "./dist/cjs/json-editor/index.js"
+    },
     "./misc/components/*": {
       "import": "./misc/components/*.js",
       "require": "./dist/cjs/misc/components/*.js"
@@ -282,6 +298,7 @@
     "react-outside-click-handler": "1.3.0",
     "react-query": "^3.39.3",
     "react-select": "^5.7.3",
+    "zod": "3.22.4",
     "@tsconfig/node16": "^1.0.3",
     "typescript": "4.9.5"
   },

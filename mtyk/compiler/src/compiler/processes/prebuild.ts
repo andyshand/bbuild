@@ -3,7 +3,7 @@ import { projectPath } from "@/compiler/path";
 import { pick } from "@/util/dash";
 import { getFilesFromOptionalDirectory } from "@/util/directory";
 import fs from "fs";
-import fse from "fs-extra";
+import fse, { ensureDirSync } from "fs-extra";
 import path from "path";
 import { PackageJson } from "type-fest";
 import bash from "../bash";
@@ -13,6 +13,7 @@ import { getBuildContext } from "../context/buildContext";
 import { readJSON, writeJSON } from "../json";
 import { findModules } from "../module/findModules";
 import { BaseModuleInfo } from "../module/getModuleInfo";
+import { getAppInfo } from "../module/getAppInfo";
 import { initModule } from "../module/initModule";
 import { resolveModules } from "../module/resolveModules";
 import { safePackages } from "../module/safePackages";
@@ -117,6 +118,7 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
     },
   };
 
+  const appInfo = await getAppInfo();
   const existingOrNewPackageJSON = (await fse.pathExists(packageJSONPath))
     ? await fse.readJSON(packageJSONPath)
     : initialJSON;
@@ -125,6 +127,26 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
     target: existingOrNewPackageJSON,
     source: sourceJSON,
   });
+
+  for (const app of appInfo) {
+    const { packageJSON, packageJSONPath, importedModules } = app;
+
+    let updated = false;
+    // check for imported modules in dependencies obj. if not present, add safe version
+    for (const mod of importedModules) {
+      if (!packageJSON.dependencies[mod] && mod in safePackages) {
+        packageJSON.dependencies[mod] = safePackages[mod];
+        updated = true;
+      } else if (!packageJSON.dependencies[mod] && mod.startsWith("@bbuild")) {
+        packageJSON.dependencies[mod] = `workspace:^`;
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      await writeJSON(packageJSONPath, packageJSON);
+    }
+  }
 
   // If for some wacky reason dist/*.tsbuildinfo exist, and they're directories, delete them
   const distDir = projectPath("dist");
@@ -218,6 +240,7 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
   const extensionsJSON: { recommendations: string[] } = {
     recommendations: [],
   };
+  ensureDirSync(path.dirname(extensionsJSONPath));
   await writeJSON(extensionsJSONPath, extensionsJSON);
 
   // TODO Init .vscode/settings.json

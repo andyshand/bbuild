@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/deps-react",
+  "name": "@bbuild-src/deps-react",
   "version": "0.0.1",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",

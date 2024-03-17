@@ -1,7 +1,5 @@
 {
-  "files": [
-    "extra-types.d.ts"
-  ],
+  "files": [],
   "compilerOptions": {
     "lib": [
       "ESNext",
@@ -20,17 +18,7 @@
     "target": "ESNext",
     "preserveSymlinks": true,
     "outDir": "dist",
-    "plugins": [
-      {
-        "transform": "/Users/mariorodrigues/work/morethanyouknowltd/bbuild/test-project/.universe/build/transformers/entitiesTransformer.js"
-      },
-      {
-        "transform": "/Users/andrewshand/Documents/Github/build-2/test-project/.universe/build/transformers/entitiesTransformer.js"
-      },
-      {
-        "transform": "/Users/andrewshand/Documents/Github/build-2/test-project/.universe/build/transformers/classVarsTransformer.js"
-      }
-    ],
+    "plugins": [],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -47,12 +35,6 @@
   "reflection": true,
   "references": [
     {
-      "path": "./modules/ai-chat/tsconfig.json"
-    },
-    {
-      "path": "./modules/context/tsconfig.json"
-    },
-    {
       "path": "./modules/dash/tsconfig.json"
     },
     {
@@ -62,25 +44,19 @@
       "path": "./modules/entities/tsconfig.json"
     },
     {
-      "path": "./modules/entities-client/tsconfig.json"
+      "path": "./modules/errors/tsconfig.json"
     },
     {
-      "path": "./modules/errors/tsconfig.json"
+      "path": "./modules/files/tsconfig.json"
+    },
+    {
+      "path": "./modules/files-client/tsconfig.json"
     },
     {
       "path": "./modules/format-terminal/tsconfig.json"
     },
     {
-      "path": "./modules/llm/tsconfig.json"
-    },
-    {
-      "path": "./modules/misc/tsconfig.json"
-    },
-    {
-      "path": "./modules/open-ai/tsconfig.json"
-    },
-    {
-      "path": "./modules/react-ui/tsconfig.json"
+      "path": "./modules/profile/tsconfig.json"
     },
     {
       "path": "./modules/rpc-ws/tsconfig.json"
@@ -93,9 +69,6 @@
     },
     {
       "path": "./modules/types/tsconfig.json"
-    },
-    {
-      "path": "./modules/vm/tsconfig.json"
     }
   ]
 }

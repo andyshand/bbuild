@@ -2,19 +2,33 @@
   "configurations": [ 
 
     {
-      "name": "Compiler Debug Dev",
+      "name": "bbuild:dev (test-project)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
       "cwd": "${workspaceFolder}/test-project",
-      
+      "preLaunchTask": "compiler:build",
       "request": "launch",
       "runtimeArgs": ["--experimental-specifier-resolution=node"],
       "skipFiles": ["<node_internals>/**"],
       "restart": true,
       "type": "node",
-      "args": ["dev"]
+      "args": ["dev"],
+      "outputCapture": "std"
     },
     {
-      "name": "Compiler Debug Dev (Andy)",
+      "name": "bbuild:build (test-project)",
+      "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
+      "cwd": "${workspaceFolder}/test-project",
+      "request": "launch",
+      "preLaunchTask": "compiler:build",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "type": "node",
+      "args": ["build"],
+      "outputCapture": "std"
+    },
+    {
+      "name": "bbuild:dev (reeality)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
       "cwd": "/Users/andrewshand/Documents/Github/discord-thing",
       "request": "launch",
@@ -23,10 +37,11 @@
       "restart": true,
       "preLaunchTask": "compiler:build",
       "type": "node",
-      "args": ["dev"]
+      "args": ["dev"],
+      "outputCapture": "std"
     },
     {
-      "name": "Compiler Debug Dev (Relay)",
+      "name": "bbuild:dev (relay)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
       "cwd": "/Volumes/SSD/Github/relay",
       "request": "launch",
@@ -35,10 +50,11 @@
       "restart": true,
       "preLaunchTask": "compiler:build",
       "type": "node",
-      "args": ["dev"]
+      "args": ["dev"],
+      "outputCapture": "std"
     },
     {
-      "name": "Docker Debug Dev (Relay)",
+      "name": "bbuild:docker (relay)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
       "cwd": "/Volumes/SSD/Github/relay",
       "request": "launch",
@@ -47,7 +63,22 @@
       "restart": true,
       "preLaunchTask": "compiler:build",
       "type": "node",
-      "args": ["docker"]
+      "args": ["docker"],
+      "outputCapture": "std"
+    },
+    {
+      "name": "bbuild:docker (reeality)",
+      "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
+      "cwd": "/Users/andrewshand/Documents/Github/discord-thing",
+      "request": "launch",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "outputCapture": "std",
+      "restart": true,
+      "preLaunchTask": "compiler:build",
+      "type": "node",
+      "args": ["docker"],
+      "outputCapture": "std"
     },
   ]
 }

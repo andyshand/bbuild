@@ -1,4 +1,5 @@
 import watch from "node-watch";
+import fs from "fs";
 import path from "path";
 import { Observable, Subject } from "rxjs";
 
@@ -11,21 +12,29 @@ export function watchFiles(watchFiles = [], cwd = ".") {
 
   watchFiles.forEach((file) => {
     const resolvedFilePath = path.resolve(cwd, file);
-    watch(
-      resolvedFilePath,
-      {
-        recursive: true,
-        filter: (f) => {
-          // Exclude certain files or directories
-          return !f.endsWith(".map") && !f.endsWith(".d.ts");
-        },
-      },
-      (evt, name) => {
-        if (name) {
-          subject.next(name);
-        }
+    const exists = fs.existsSync(resolvedFilePath);
+    try {
+      if (!exists) {
+        throw new Error(`File does not exist: ${resolvedFilePath}`);
       }
-    );
+      watch(
+        resolvedFilePath,
+        {
+          recursive: true,
+          filter: (f) => {
+            // Exclude certain files or directories
+            return !f.endsWith(".map") && !f.endsWith(".d.ts");
+          },
+        },
+        (evt, name) => {
+          if (name) {
+            subject.next(name);
+          }
+        }
+      );
+    } catch (e) {
+      console.warn(`Failed to watch file: ${resolvedFilePath}`);
+    }
   });
 
   return subject.asObservable();

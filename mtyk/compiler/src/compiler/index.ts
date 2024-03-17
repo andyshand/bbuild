@@ -5,13 +5,13 @@ import debounce from "lodash/debounce";
 import path from "path";
 import { exit } from "process";
 import { BuildContext, setupBuildContext } from "./context/buildContext";
+import docker from "./docker";
 import "./logging/index";
 import { loadOneConfig } from "./one/loadOneConfig";
 import { clean } from "./processes/clean";
 import dev from "./processes/dev";
 import { prebuild } from "./processes/prebuild";
-import { watch } from "./processes/watch";
-import docker from "./docker";
+import { watchOrBuild } from "./processes/watch";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 function monitorMemoryUsage(intervalSeconds = 5) {
@@ -77,7 +77,7 @@ const main = async () => {
       try {
         await prebuild();
         console.log("Starting to build modules in build mode...");
-        await watch({});
+        await watchOrBuild({});
         console.log("Done.");
         exit(0);
       } catch (e) {
@@ -126,7 +126,7 @@ const main = async () => {
       let devHandle: Awaited<ReturnType<typeof dev>> | null = null;
       let alreadyPrebuildingAgain = false;
 
-      await watch({
+      await watchOrBuild({
         onNeedsPrebuild: debounce(async () => {
           if (alreadyPrebuildingAgain) {
             return;

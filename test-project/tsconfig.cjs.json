@@ -1,7 +1,5 @@
 {
-  "files": [
-    "extra-types.d.ts"
-  ],
+  "files": [],
   "compilerOptions": {
     "lib": [
       "ESNext",
@@ -20,17 +18,7 @@
     "target": "ESNext",
     "preserveSymlinks": true,
     "outDir": "dist",
-    "plugins": [
-      {
-        "transform": "/Users/mariorodrigues/work/morethanyouknowltd/bbuild/test-project/.universe/build/transformers/entitiesTransformer.js"
-      },
-      {
-        "transform": "/Users/andrewshand/Documents/Github/build-2/test-project/.universe/build/transformers/entitiesTransformer.js"
-      },
-      {
-        "transform": "/Users/andrewshand/Documents/Github/build-2/test-project/.universe/build/transformers/classVarsTransformer.js"
-      }
-    ],
+    "plugins": [],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -47,12 +35,6 @@
   "reflection": true,
   "references": [
     {
-      "path": "./modules/ai-chat/tsconfig.cjs.json"
-    },
-    {
-      "path": "./modules/context/tsconfig.cjs.json"
-    },
-    {
       "path": "./modules/dash/tsconfig.cjs.json"
     },
     {
@@ -62,25 +44,19 @@
       "path": "./modules/entities/tsconfig.cjs.json"
     },
     {
-      "path": "./modules/entities-client/tsconfig.cjs.json"
+      "path": "./modules/errors/tsconfig.cjs.json"
     },
     {
-      "path": "./modules/errors/tsconfig.cjs.json"
+      "path": "./modules/files/tsconfig.cjs.json"
+    },
+    {
+      "path": "./modules/files-client/tsconfig.cjs.json"
     },
     {
       "path": "./modules/format-terminal/tsconfig.cjs.json"
     },
     {
-      "path": "./modules/llm/tsconfig.cjs.json"
-    },
-    {
-      "path": "./modules/misc/tsconfig.cjs.json"
-    },
-    {
-      "path": "./modules/open-ai/tsconfig.cjs.json"
-    },
-    {
-      "path": "./modules/react-ui/tsconfig.cjs.json"
+      "path": "./modules/profile/tsconfig.cjs.json"
     },
     {
       "path": "./modules/rpc-ws/tsconfig.cjs.json"
@@ -93,9 +69,6 @@
     },
     {
       "path": "./modules/types/tsconfig.cjs.json"
-    },
-    {
-      "path": "./modules/vm/tsconfig.cjs.json"
     }
   ]
 }

@@ -14,7 +14,7 @@ import getUniverseConfig from "./config/universe";
 import { watchFiles } from "./file/watchFiles";
 import getModuleInfo from "./module/getModuleInfo";
 import { projectPath } from "./path";
-import { spawnProcess } from "./process/spawn";
+import { spawnProcess } from "./process/spawnProcess";
 import { spawnToObservable } from "./process/spawnToObservable";
 import { DevConfig, DevJSON } from "./processes/DevConfig";
 import processFilesForBbuildImports from "./watch/findAllBbuildImports";

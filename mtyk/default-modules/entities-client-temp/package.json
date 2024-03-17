@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/entities-client-temp",
+  "name": "@bbuild-src/entities-client-temp",
   "version": "0.0.1",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
@@ -23,5 +23,8 @@
     }
   },
   "repository": "https://github.com/morethanyouknowltd/ai-chat",
+  "dependencies": {
+    "rxjs": "7.8.1"
+  },
   "index": "dist/cjs/index.js"
 }

@@ -12,12 +12,16 @@ export const safePackages = {
   "@legendapp/state": "1.11.3",
   "gpt-tokenizer": "2.1.1",
   react: "18.2.0",
+  rxjs: "7.8.1",
   chokidar: "3.6.0",
   "react-dom": "18.2.0",
   nanoid: "3.3.7",
+  "react-no-ssr": "1.1.0",
+  "@babel/standalone": "7.24.0",
   zod: "3.22.4",
   googleapis: "133.0.0",
   cheerio: "1.0.0-rc.12",
+  pidusage: "3.0.2",
 };
 
 export const badPackages = {} as const;

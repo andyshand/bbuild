@@ -1,12 +1,6 @@
 /**
  * Temporary file, hardcoded for ai-chat stuff rn
  */
-import {
-  Entities,
-  ChatEntity,
-  Workflow,
-  WorkflowSession,
-} from 'modules/ai-chat'
 
 import { globalHooksDep } from 'modules/ai-chat/ui/config/deps'
 import { setGlobalHooks } from 'modules/ai-chat/ui/hooks/globalHooks'
@@ -16,7 +10,7 @@ import RPCClient from 'modules/rpc-ws/client'
 import { useQuery } from 'react-query'
 import { lastValueFrom } from 'rxjs'
 
-const client = createEntitiesClient([], Entities as any)
+const client = createEntitiesClient([], [])
 
 globalDepContext.add2(globalHooksDep, client)
 setGlobalHooks(client)
@@ -55,5 +49,3 @@ export function useWSAction(method: string) {
     (args: any) => lastValueFrom(rpcManager.callFunction(method, args)),
   ] as const
 }
-
-export { ChatEntity, Workflow, WorkflowSession }

@@ -8,7 +8,7 @@
   "hoistingLimits": "dependencies",
   "name": "test-project",
   "devDependencies": {
-    "typescript": "5.2.2"
+    "typescript": "5.3.2"
   },
   "resolutions": {
     "@bbuild/ai-chat": "file:./built-modules/ai-chat",
@@ -61,7 +61,13 @@
     "@bbuild/types": "file:./built-modules/types",
     "@bbuild/ui": "file:./built-modules/ui",
     "@bbuild/vm": "file:./built-modules/vm",
-    "@bbuild/yml": "file:./built-modules/yml"
+    "@bbuild/yml": "file:./built-modules/yml",
+    "@bbuild/client-modules": "file:./built-modules/client-modules",
+    "@bbuild/server-modules": "file:./built-modules/server-modules",
+    "nanoid": "3.3.7",
+    "@bbuild/files": "file:./built-modules/files",
+    "@bbuild/files-client": "file:./built-modules/files-client",
+    "@bbuild/profile": "file:./built-modules/profile"
   },
   "packageManager": "yarn@4.0.0"
 }

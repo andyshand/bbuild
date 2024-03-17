@@ -7,7 +7,10 @@ import Y from 'yjs'
 const hostname =
   typeof window === 'undefined' ? 'localhost' : new URL(window.location.href).hostname
 const port = typeof window !== 'undefined' && hostname !== 'localhost' ? 80 : RPC_DEFAULT_PORT
-const YWS = `ws://${hostname}:${port}/ws/yjs`
+
+const protocol =
+  typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws'
+const YWS = `${protocol}://${hostname}:${port}/ws/yjs`
 
 interface WebsocketProviderOptions {
   WebSocketPolyfill?: typeof WebSocket

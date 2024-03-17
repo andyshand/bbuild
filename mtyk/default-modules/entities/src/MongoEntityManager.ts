@@ -5,7 +5,7 @@ import { Collection, MongoClient, ObjectId } from 'mongodb'
 import net from 'net'
 import 'reflect-metadata'
 import { clone } from 'remeda'
-import { Observable, Subject } from 'rxjs'
+import { Observable, ReplaySubject, Subject } from 'rxjs'
 import { WebsocketProvider } from 'y-websocket'
 import { DbEntityManager } from './DBEntityManager'
 import Entity from './Entity'
@@ -25,6 +25,9 @@ async function runYJSServer() {
   try {
     await execa(process.execPath, [`${path}/node_modules/y-websocket/bin/server.js`], {
       cwd: path,
+      env: {
+        PORT: 1234,
+      },
     })
   } catch (e) {
     console.error(e)
@@ -69,6 +72,7 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
   private isProcessingMap: Record<string, boolean> = {}
   private wsProviders = new Map<string, WebsocketProvider>()
   private invalidateSubject = new Subject<any>()
+  private connectedSubject = new ReplaySubject<any>(1)
 
   batcher: ChangeStreamBatcher
 
@@ -104,7 +108,20 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     this.client = await connection.connect()
 
     console.log(`Connected to MongoDB at ${this.uri}/${this.dbName} (em ${this.id})`)
+
+    this.connectedSubject.next(this.id)
   }
+
+  awaitConnection() {
+    return new Promise<void>((resolve) => {
+      this.connectedSubject.subscribe((id) => {
+        if (id === this.id) {
+          resolve()
+        }
+      })
+    })
+  }
+
   async disconnect() {
     this.assertClientReady()
 

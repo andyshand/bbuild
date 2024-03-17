@@ -9,3 +9,4 @@ export {
   getJSONCompletionStream,
 } from './engines/getChatCompletion'
 export { getZodCompletion }
+export { getCodeCompletion } from './getCodeCompletion'

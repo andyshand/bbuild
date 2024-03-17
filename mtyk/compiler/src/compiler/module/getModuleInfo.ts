@@ -5,17 +5,17 @@ import isBuiltinModule from "is-builtin-module";
 import _ from "lodash";
 import uniq from "lodash/uniq";
 import path from "path";
+import barrelify from "../barrelify";
 import { COLORS } from "../constants";
 import findFileImports from "../file/findFileImports";
 import { readJSON, writeJSON } from "../json";
 import { badPackages, safePackages } from "./safePackages";
-import barrelify from "../barrelify";
 export interface BaseModuleInfo {
   name: string;
   path: string;
 }
 
-interface ModuleInfo {
+export interface ModuleInfo {
   info?: {
     requiredOneModules: string[];
     hasReact: boolean;
@@ -115,6 +115,16 @@ export default async function getModuleInfo(
         } else {
           notAdded.push(dep);
         }
+      }
+      if (dep.startsWith("@bbuild")) {
+        // Shouldn't import @bbuild from modules code, import modules/* instead
+        console.warn(
+          `Found import of @bbuild in ${COLORS.yellow}${moduleName}${
+            COLORS.reset
+          } module, change to import from modules/${dep
+            .split("/")
+            .slice(1)} instead.`
+        );
       }
     });
 

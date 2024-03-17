@@ -10,16 +10,8 @@ import { Deps } from '../../Deps'
 import zodSchemaToTypeString from '../../zodSchemaToTypeString'
 import { ChatEntity } from '../ChatEntity'
 import { EdgeSchema, WorkflowNodeInputOutput } from './BlockSchema'
-import {
-  CodeNode,
-  NodeSchemasForMagicGPT,
-  UINode,
-  WorkflowNode,
-} from './NodeTypes'
-import {
-  WorkflowContextProvider,
-  WorkflowNodeContextItem,
-} from './WorkflowContextProvider'
+import { CodeNode, NodeSchemasForMagicGPT, UINode, WorkflowNode } from './NodeTypes'
+import { WorkflowContextProvider, WorkflowNodeContextItem } from './WorkflowContextProvider'
 import vmDep from 'modules/vm/_deps'
 import runWorkflow from './actions/runWorkflow'
 import { Model } from 'modules/open-ai'
@@ -171,10 +163,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     publicInvariant(!!node, `Node not found: ${id}`)
 
     const inputOutput = node.data[inputOrOutput]
-    publicInvariant(
-      !!inputOutput,
-      `Input/Output not found: ${id} ${inputOrOutput}`
-    )
+    publicInvariant(!!inputOutput, `Input/Output not found: ${id} ${inputOrOutput}`)
 
     return inputOutput || 'string'
   }
@@ -326,8 +315,7 @@ ${input}`,
         const data = newOrChangedNode.data as UINode['data']
 
         if (metaSessionTransient.byNode[newOrChangedNode.id]?.ui?.handle) {
-          const { handle } =
-            metaSessionTransient.byNode[newOrChangedNode.id]?.ui!
+          const { handle } = metaSessionTransient.byNode[newOrChangedNode.id]?.ui!
           if (typeof handle.writeFiles === 'function') {
             handle.writeFiles({
               type: 'directory',
@@ -446,9 +434,7 @@ ${input}`,
               id: a.item.id,
             })
             const sourceNodeCtx = resolved.find(
-              (r) =>
-                (r as any).type === 'workflow-node' &&
-                (r as any).id === a.item.id
+              (r) => (r as any).type === 'workflow-node' && (r as any).id === a.item.id
             ) as WorkflowNodeContextItem | undefined
             if (sourceNodeCtx) {
               // Now that we have an edge, make sure we have an input that matches
@@ -456,10 +442,7 @@ ${input}`,
               const sourceNodeNode = this.nodes.find(
                 (n) => n.id === sourceNodeCtx.id
               ) as CodeNode
-              publicInvariant(
-                !!sourceNodeNode,
-                `Node not found: ${sourceNodeCtx.id}`
-              )
+              publicInvariant(!!sourceNodeNode, `Node not found: ${sourceNodeCtx.id}`)
 
               const existingEdge = this.edges.find(
                 (e) => e.source === sourceNodeCtx.id && e.target === node.id
@@ -535,10 +518,7 @@ ${input}`,
         fs: keyDep('node:fs'),
         path: keyDep('node:path'),
       })
-      const path = nodePath.join(
-        os.tmpdir(),
-        `/workflow-edit/${this.id}/nodes/${node.id}`
-      )
+      const path = nodePath.join(os.tmpdir(), `/workflow-edit/${this.id}/nodes/${node.id}`)
 
       // Make dir if not exists
       if (!fs.existsSync(path)) {
@@ -737,40 +717,36 @@ ContextProvider.addProvider(new WorkflowContextProvider())
 
 if (typeof window === 'undefined') {
   // If on server, watch tmp folder for workflows for changes and then update relevant code nodes
-  const watchTmpFolder = async () => {
-    const { chokidar } = globalDepContext.provideSync({
-      chokidar: keyDep('npm:chokidar'),
-    })
-    const { fs, path, os, entityManager } = globalDepContext.provideSync({
-      fs: keyDep('node:fs'),
-      path: keyDep('node:path'),
-      os: keyDep('node:os'),
-      entityManager: Deps.entityManagerDep,
-    })
-
-    const workflowEditDir = path.join(os.tmpdir(), 'workflow-edit')
-    const watcher = chokidar.watch(workflowEditDir, { persistent: true })
-
-    watcher.on('change', async (filePath) => {
-      const relativePath = path.relative(workflowEditDir, filePath)
-      const [workflowId, , nodeId] = relativePath.split(path.sep)
-
-      // Update the relevant node in the workflow
-      const workflow = (await entityManager.read('Workflow', workflowId)) as
-        | Workflow
-        | undefined
-      if (workflow) {
-        const node = workflow.nodes.find((n) => n.id === nodeId)
-        if (node && node.type === 'code') {
-          const newCode = fs.readFileSync(filePath, 'utf-8')
-          workflow.updateNode(nodeId, {
-            ...node,
-            data: { ...node.data, code: newCode },
-          })
-        }
-      }
-    })
-  }
-
-  setTimeout(watchTmpFolder, 1000)
+  // const watchTmpFolder = async () => {
+  //   const { chokidar } = globalDepContext.provideSync({
+  //     chokidar: keyDep('npm:chokidar'),
+  //   })
+  //   const { fs, path, os, entityManager } = globalDepContext.provideSync({
+  //     fs: keyDep('node:fs'),
+  //     path: keyDep('node:path'),
+  //     os: keyDep('node:os'),
+  //     entityManager: Deps.entityManagerDep,
+  //   })
+  //   const workflowEditDir = path.join(os.tmpdir(), 'workflow-edit')
+  //   const watcher = chokidar.watch(workflowEditDir, { persistent: true })
+  //   watcher.on('change', async (filePath) => {
+  //     const relativePath = path.relative(workflowEditDir, filePath)
+  //     const [workflowId, , nodeId] = relativePath.split(path.sep)
+  //     // Update the relevant node in the workflow
+  //     const workflow = (await entityManager.read('Workflow', workflowId)) as
+  //       | Workflow
+  //       | undefined
+  //     if (workflow) {
+  //       const node = workflow.nodes.find((n) => n.id === nodeId)
+  //       if (node && node.type === 'code') {
+  //         const newCode = fs.readFileSync(filePath, 'utf-8')
+  //         workflow.updateNode(nodeId, {
+  //           ...node,
+  //           data: { ...node.data, code: newCode },
+  //         })
+  //       }
+  //     }
+  //   })
+  // }
+  // setTimeout(watchTmpFolder, 1000)
 }

@@ -4,16 +4,40 @@ import { getBinLocation } from "../bin";
 import { removeGlobAsync } from "../file/glob";
 import { ModulesWatcher } from "../module/ModulesWatcher";
 import { findModules } from "../module/findModules";
-import getModuleInfo from "../module/getModuleInfo";
+import getModuleInfo, { ModuleInfo } from "../module/getModuleInfo";
 import watchModulesToPackage from "../module/watchModulesToPackage";
 import { projectPath } from "../path";
 import { spawnStoppableProcess } from "../process/spawn";
 import { cjs, esm, prebuild } from "./prebuild";
 
 /**
+ * Populates initial information for modules
+ */
+const createModuleHash = (info: ModuleInfo["info"]) =>
+  JSON.stringify({
+    requiredOneModules: info.requiredOneModules,
+    allDeps: info.allDeps ?? {},
+  });
+
+export type WatchState = {
+  esmSpawn: ReturnType<typeof spawnStoppableProcess> | null;
+  cjsSpawn: ReturnType<typeof spawnStoppableProcess> | null;
+  moduleWatcher: ModulesWatcher;
+  waitingForInitialSuccess: boolean;
+  initialRun: boolean;
+  watcherHandle: Awaited<ReturnType<typeof watchModulesToPackage>> | null;
+  restarting: boolean;
+  moduleRebuild: Record<
+    string,
+    {
+      hash: string;
+    }
+  >;
+};
+/**
  * Resolves once initial watch/compilation step has completed, then continues to run indefinitely
  */
-export async function watch({
+export async function watchOrBuild({
   onNeedsPrebuild,
 }: {
   onNeedsPrebuild?: () => Promise<void>;
@@ -38,18 +62,10 @@ export async function watch({
     const label = `tsc-${format}`;
     return spawnStoppableProcess(tsc, args, { label });
   };
+  await removeGlobAsync(projectPath("./.universe/build/packages"));
   await removeGlobAsync(projectPath("./node-modules/@bbuild"));
 
-  let watchState: {
-    esmSpawn: ReturnType<typeof spawnStoppableProcess> | null;
-    cjsSpawn: ReturnType<typeof spawnStoppableProcess> | null;
-    moduleWatcher: ModulesWatcher;
-    waitingForInitialSuccess: boolean;
-    initialRun: boolean;
-    watcherHandle: Awaited<ReturnType<typeof watchModulesToPackage>> | null;
-    restarting: boolean;
-    moduleRebuild: Record<string, { hash: string }>;
-  } = {
+  let watchState: WatchState = {
     esmSpawn: null,
     cjsSpawn: null,
     moduleWatcher: new ModulesWatcher(),
@@ -90,8 +106,7 @@ export async function watch({
       const message = data.toString();
       if (message.includes("Found 0 errors. Watching for file changes.")) {
         watchState.waitingForInitialSuccess = false;
-        restartPackageWatcher();
-        resolve();
+        resolve(restartPackageWatcher());
       }
     };
 
@@ -112,25 +127,7 @@ export async function watch({
       watchState.initialRun = false;
     };
 
-    /**
-     * Populates initial information for modules
-     */
-    const createModuleHash = (info) =>
-      JSON.stringify({
-        requiredOneModules: info.requiredOneModules,
-        allDeps: info.allDeps ?? {},
-      });
-
-    const populateInitialInfo = async () => {
-      for (const modulee of findModules()) {
-        const modulePath = projectPath("modules/" + modulee.name);
-        const info = await getModuleInfo(modulee.name, modulePath);
-
-        watchState.moduleRebuild[modulee.name] = {
-          hash: createModuleHash(info),
-        };
-      }
-    };
+    const populateInitialInfo = populateInitialInfo2(watchState);
 
     /**
      * Checks if a module requires a new prebuild based on changes
@@ -167,4 +164,16 @@ export async function watch({
 
     startTSC();
   });
+}
+function populateInitialInfo2(watchState: WatchState) {
+  return async () => {
+    for (const modulee of findModules()) {
+      const modulePath = projectPath("modules/" + modulee.name);
+      const info = await getModuleInfo(modulee.name, modulePath);
+
+      watchState.moduleRebuild[modulee.name] = {
+        hash: createModuleHash(info),
+      };
+    }
+  };
 }

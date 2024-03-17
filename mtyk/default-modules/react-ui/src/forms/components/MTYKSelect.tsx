@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 import Select from 'react-select'
-
+import { BsChevronDown } from 'react-icons/bs'
 function flatten(arr) {
   return arr.reduce(
     (acc, val) =>
@@ -82,8 +82,11 @@ const MTYKSelect = <T = string,>({
         Menu: (propsInner) => (
           <div
             // include default styles
-            style={{ ...propsInner.getStyles('menu', propsInner) } as any}
-            className={`bg-gray-800 dark:bg-gray-900 ${menu?.className ?? ''}`}
+            style={{
+              ...(propsInner.getStyles('menu', propsInner) as any),
+              backgroundColor: 'transparent',
+            }}
+            className={`${menu?.className ?? ''}`}
             onWheelCapture={(e) => {
               e.stopPropagation()
             }}
@@ -93,7 +96,7 @@ const MTYKSelect = <T = string,>({
         ),
         MenuList: (propsInner) => (
           <div
-            className={`bg-gray-800 overflow-y-auto dark:bg-gray-900 ${menu?.className ?? ''}`}
+            className={`overflow-y-auto ${menu?.className ?? ''}`}
             onWheelCapture={(e) => {
               e.stopPropagation()
             }}
@@ -103,7 +106,7 @@ const MTYKSelect = <T = string,>({
         ),
         Option: (props) => (
           <div
-            className="text-black dark:text-white p-1 hover:bg-gray-700 cursor-pointer"
+            className="text-black dark:text-white p-1 hover:bg-gray-700 cursor-pointer px-3 py-1 first:rounded-t-md last:rounded-b-md bg-gray-800 dark:bg-gray-900"
             onClick={() => {
               props.selectOption(props.data)
             }}
@@ -122,6 +125,27 @@ const MTYKSelect = <T = string,>({
           </div>
         ),
         IndicatorSeparator: () => null,
+        IndicatorsContainer: (props) => (
+          <div
+            className="pr-0"
+            onClick={() => {
+              props.selectProps.onMenuOpen()
+            }}
+          >
+            {props.children}
+          </div>
+        ),
+        DropdownIndicator: (props) => (
+          <div
+            className="cursor-pointer pr-0"
+            onClick={() => {
+              props.selectProps.onMenuOpen()
+            }}
+          >
+            <BsChevronDown />
+            {/* {props.children} */}
+          </div>
+        ),
         Input: (props) => null,
         SingleValue: (props) => (
           <div
@@ -135,7 +159,7 @@ const MTYKSelect = <T = string,>({
         ),
         Control: (props) => (
           <div
-            className="flex items-center bg-gray-800 dark:bg-gray-900 cursor-pointer rounded-md border border-gray-600 dark:border-gray-700 p-1 inline-flex"
+            className="flex items-center bg-gray-800 dark:bg-gray-900 cursor-pointer rounded-md border border-gray-600 dark:border-gray-700 py-1 px-3 inline-flex"
             {...props}
             onClick={(e) => {
               // open menu

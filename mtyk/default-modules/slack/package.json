@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/slack",
+  "name": "@bbuild-src/slack",
   "version": "0.0.1",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",

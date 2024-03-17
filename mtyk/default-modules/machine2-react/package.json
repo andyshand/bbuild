@@ -1,5 +1,5 @@
 {
-  "name": "@bbuild/machine2-react",
+  "name": "@bbuild-src/machine2-react",
   "version": "0.0.1",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",

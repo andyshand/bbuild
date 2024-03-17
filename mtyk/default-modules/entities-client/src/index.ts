@@ -1,4 +1,4 @@
-import { beginBatch, endBatch, opaqueObject } from '@legendapp/state'
+import { opaqueObject } from '@legendapp/state'
 import { useSelector } from '@legendapp/state/react'
 import { Entity, IEntityManager, entityType } from 'modules/entities'
 import { RPCEntityManager } from 'modules/entities/RPCEntityManager'
@@ -29,6 +29,9 @@ export function createEntitiesClient<M extends IEntityManager[]>(
   extraMan: M[],
   entities: Constructor<Entity>[] = []
 ) {
+  if (typeof ReplaySubject !== 'function') {
+    throw new Error(`Expected ReplaySubject to be a function, but got ${typeof ReplaySubject}`)
+  }
   const subject = new ReplaySubject<string[]>(1)
   let globalInvalidationSubject: Subject<any>
   const invalidateSubject = new Subject()
@@ -66,7 +69,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     })
     if (!subscriptionInfo || !subscriptionInfo.observerFunction) {
       const observerFunction = (event: Y.YMapEvent<any>) => {
-        beginBatch()
+        // beginBatch()
         event.changes.keys.forEach((change, key) => {
           if (change.action === 'add' || change.action === 'update') {
             // entityDataObservable[id][key].set(entity.yMap.get(key))
@@ -77,7 +80,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
             updateEntityKey(entityType(entity as any), id, key, undefined)
           }
         })
-        endBatch()
+        // endBatch()
       }
 
       // Update global obj with initial entity data
@@ -151,11 +154,11 @@ export function createEntitiesClient<M extends IEntityManager[]>(
           if (entity.yMap) entity.yMap.unobserve(subscriptionInfo.observerFunction)
           entitySubscriptions.delete(key)
           const legendObject = Object.keys(entityDataObservable[id])
-          beginBatch()
+          // beginBatch()
           for (const field of legendObject) {
             entityDataObservable[id][field].delete()
           }
-          endBatch()
+          // endBatch()
         } catch (e) {
           console.error(e)
         }
@@ -220,12 +223,6 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     return { data: data[0] as T | null, ...rest }
   }
 
-  const useLegendArr = (hookId: string) => {
-    const gotten = entityDataObservable[hookId]
-
-    return { array: gotten, legend: entityDataObservable[hookId].get() }
-  }
-
   const propagateChangesToAllHooks = (
     arr: { id: string; type: string }[],
     createForHookId?: string
@@ -249,7 +246,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
               return {
                 ...e,
                 ...inNewArr,
-                entity: latestD.entity,
+                entity: { ...latestD.entity },
                 entityObj: latestD.entityObj,
               }
             } else {
@@ -277,7 +274,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
                     return {
                       id: a.id,
                       type: a.type,
-                      entity: globalEntityDataObservable[globalKey].peek().entity,
+                      entity: { ...globalEntityDataObservable[globalKey].peek().entity },
                       entityObj: globalEntityDataObservable[globalKey].peek().entityObj,
                     }
                   })
@@ -296,10 +293,10 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }
   }
 
-  const wrapEntityArr = (entities: any, { hookId }) => {
+  const wrapEntityArr = (arr: any, { hookId }) => {
     // const length = entities?.length.get() ?? 0
     // if (length === 0) return []
-    return (entities?.peek() ?? []).map((e) => {
+    return (arr ?? []).map((e) => {
       return new Proxy(e, {
         get(target, prop, receiver) {
           if (typeof e.entityObj[prop] === 'function') {
@@ -333,8 +330,8 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }>({
       state: 'loading',
     })
-    const arr = useLegendArr(hookId)
-    useSelector(entityDataObservable[hookId])
+    // const arr = useLegendArr(hookId)
+    const arr = useSelector(entityDataObservable[hookId]) ?? []
 
     useEffect(() => {
       if (!allManagers.length) return
@@ -392,7 +389,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     }, [allManagers, tt, JSON.stringify(query), hookId])
 
     return {
-      data: wrapEntityArr(arr.array, { hookId }) as any as T[],
+      data: wrapEntityArr(arr, { hookId }) as any as T[],
       isLoading: status.state === 'loading',
     }
   }

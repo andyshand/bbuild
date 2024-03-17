@@ -5,6 +5,7 @@
     "@anthropic-ai/sdk": "^0.4.4",
     "gpt-tokenizer": "2.1.1",
     "openai-gpt-token-counter": "^1.0.3",
+    "rxjs": "7.8.1",
     "zod": "3.22.4"
   },
   "devDependencies": {
@@ -34,6 +35,10 @@
     "./engines": {
       "import": "./engines/index.js",
       "require": "./dist/cjs/engines/index.js"
+    },
+    "./getCodeCompletion": {
+      "import": "./getCodeCompletion.js",
+      "require": "./dist/cjs/getCodeCompletion.js"
     },
     "./getZodCompletion": {
       "import": "./getZodCompletion.js",

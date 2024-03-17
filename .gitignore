@@ -26,4 +26,6 @@ mtyk/default-modules/*/.gitignore
 **/.yarn/install-state.gz
 **/.next
 
+self-built
+
 .idea
