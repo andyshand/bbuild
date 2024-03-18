@@ -54,7 +54,6 @@ function callAuthed(
       throw new Error('Not authorised to read this doc')
     })
   } else if (method === 'create') {
-    console.log('ello')
     let [entityType, doc] = args as Parameters<IEntityManager['create']>
     return manager.create(entityType, { ...doc, owner: userId })
   }

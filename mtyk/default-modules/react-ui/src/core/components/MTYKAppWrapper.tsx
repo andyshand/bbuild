@@ -1,4 +1,5 @@
-import { observer } from '@legendapp/state/react'
+'use client'
+import { observer, useSelector } from '@legendapp/state/react'
 import { ComponentProps, createElement } from 'react'
 import { ContextMenuProvider } from '../../context-menu/components/ContextMenuProvider'
 import CommandMenuProvider from '../../dev/components/CommandMenuProvider'
@@ -7,7 +8,7 @@ import { ToastProvider } from '../../toasts/components/ToastProvider'
 import reactUIState$ from '../observables/reactUIState$'
 
 const ModalRenderer = observer(function ModalRenderer(props: {}) {
-  const { component, props: props2 } = reactUIState$.modal.get()
+  const { component, props: props2 } = useSelector(reactUIState$.modal)
 
   if (!component) {
     return null
@@ -23,27 +24,6 @@ const MTYKAppWrapper = observer(function MTYKAppWrapper({
   children: React.ReactNode
   whatsNewProps?: ComponentProps<typeof WhatsNew>
 }) {
-  // If staging.designcloud.app, redirect to staging2.designcloud.app
-  // if (location.hostname === 'staging.designcloud.app') {
-  // useEffect(() => {
-  //   const doIt = async () => {
-  //     try {
-  //       const d = await fetch(
-  //         `/api/error?url=${encodeURIComponent(location.href)}`
-  //       )
-  //       const json = await d.json()
-  //       const { webapp } = json as any
-
-  //       if (window.location.href !== webapp) {
-  //         window.location.href = webapp
-  //       }
-  //     } catch (e) {
-  //       /* no-op */
-  //     }
-  //   }
-  //   doIt()
-  // }, [])
-
   return (
     <>
       <CommandMenuProvider>

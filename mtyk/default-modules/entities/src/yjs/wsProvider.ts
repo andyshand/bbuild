@@ -11,6 +11,7 @@ const port = typeof window !== 'undefined' && hostname !== 'localhost' ? 80 : RP
 const protocol =
   typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws'
 const YWS = `${protocol}://${hostname}:${port}/ws/yjs`
+console.log({ YWS, hostname, port, protocol })
 
 interface WebsocketProviderOptions {
   WebSocketPolyfill?: typeof WebSocket

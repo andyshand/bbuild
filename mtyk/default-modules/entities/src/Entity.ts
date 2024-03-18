@@ -281,6 +281,11 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
 
   static staticFields = ['createdAt', 'updatedAt', 'owner', 'collaborators']
 
+  static getFields(type: EntityTypable) {
+    const fields = getEntityMetadata(type)?.fieldList ?? []
+    return fields
+  }
+
   getEntityFields() {
     return (getEntityMetadata(this)?.fieldList ?? []).concat(Entity.staticFields)
   }

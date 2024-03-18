@@ -1,7 +1,7 @@
 import { invariant } from 'modules/errors'
 import {
   EntityFieldMetadata,
-  metadataStore,
+  getMetadataStore,
   setEntityFieldMetadata,
 } from './EntityFieldMetadata'
 
@@ -63,7 +63,7 @@ export function getEntityFieldMetadata(
   type: any | undefined
 } {
   const constructorName = target.constructor.name
-  const metadata = metadataStore[constructorName]?.[propertyKey]
+  const metadata = getMetadataStore()[constructorName]?.[propertyKey]
 
   return {
     relation: metadata?.[EntityFieldMetadata.ENTITY_RELATION]?.relatedEntity,

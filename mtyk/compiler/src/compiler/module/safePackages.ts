@@ -11,6 +11,7 @@ export const safePackages = {
   "react-outside-click-handler": "1.3.0",
   "@legendapp/state": "1.11.3",
   "gpt-tokenizer": "2.1.1",
+  "framer-motion": "11.0.14",
   react: "18.2.0",
   rxjs: "7.8.1",
   chokidar: "3.6.0",

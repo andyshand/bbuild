@@ -1,6 +1,6 @@
-import { ListItem, LoadingIndicator } from './Container'
 import { BsLightningChargeFill } from 'react-icons/bs'
 import { IoReturnDownBackSharp } from 'react-icons/io5'
+import { ListItem, LoadingIndicator } from './Container'
 export function ListItemComponent({
   option,
   index,
@@ -25,9 +25,7 @@ export function ListItemComponent({
           <Icon />
         </div>
         <span className="truncate">{option.label}</span>
-        {option.provider && (
-          <span className="text-gray-700">{option.provider}</span>
-        )}
+        {option.provider && <span className="text-gray-700">{option.provider}</span>}
         <div className="flex-grow" />
         {option.shortcut ? (
           <div className="ml-2 text-gray-500 dark:text-gray-400 rounded-full px-2 py-0.5 bg-gray-300 dark:bg-gray-700 text-[.92em]">

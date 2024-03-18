@@ -425,6 +425,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
         // It's props ok if we don't keep track of subscription, unlikely client will create millions of these?
         const newEntity = (await manager.create(entityType(type), data)) as T
         addEntitySubscription(newEntity)
+        entity = newEntity
       } catch (e) {
         console.error(e)
       }
@@ -457,3 +458,15 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     query: (type, query) => queryFromAllManagers(getLatestValue(subject), type, query),
   }
 }
+
+// --- BEGIN INJECTED CODE ---
+
+// Inject some code to check if we've imported two different versions of any module. This is a common cause of bugs.
+const globalObject: any = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+const globalStore = globalObject?.__bbuild ?? {}
+if (globalStore["entities-client"]) {
+console.warn(`Duplicate module entities-client imported. This can lead to bugs.`);
+}
+globalStore["entities-client"] = true;
+ 
+// --- END INJECTED CODE ---

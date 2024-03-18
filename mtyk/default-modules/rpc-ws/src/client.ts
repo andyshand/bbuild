@@ -32,7 +32,7 @@ export class RPCClient {
 
   constructor(_url: string) {
     const isWss = typeof window !== 'undefined' && window.location.protocol === 'https:'
-    const url = isWss ? _url.replace('ws:', 'wss:').replace(':80', '') : _url
+    const url = (isWss ? _url.replace('ws:', 'wss:') : _url).replace(':80', '')
     this.url = url
     this.listeners = new Map<string, Observer<any> & { hasCompleted: boolean }>()
     this.requestCounter =

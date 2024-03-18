@@ -46,7 +46,18 @@ type MetadataForKey<T extends EntityFieldMetadata> = T extends EntityFieldMetada
   ? EntityRelation
   : never
 
-export const metadataStore: Record<string, Record<string, AllEntityFieldMetadata>> = {}
+let metadataStore: Record<string, Record<string, AllEntityFieldMetadata>> = {}
+const globalObj: any =
+  typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+if (globalObj.__entityFieldMetadata) {
+  metadataStore = globalObj.__entityFieldMetadata
+} else {
+  globalObj.__entityFieldMetadata = metadataStore
+}
+
+export function getMetadataStore() {
+  return metadataStore
+}
 
 export function getEntityTargetName(target: any) {
   return getEntityTypeName(target)

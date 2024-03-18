@@ -41,3 +41,15 @@ export function profileAsync(func, funcName = getFnName(func)) {
 export function getAllStats() {
   return profilingData
 }
+
+// --- BEGIN INJECTED CODE ---
+
+// Inject some code to check if we've imported two different versions of any module. This is a common cause of bugs.
+const globalObject: any = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+const globalStore = globalObject?.__bbuild ?? {}
+if (globalStore["profile"]) {
+console.warn(`Duplicate module profile imported. This can lead to bugs.`);
+}
+globalStore["profile"] = true;
+ 
+// --- END INJECTED CODE ---

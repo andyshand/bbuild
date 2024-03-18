@@ -1,6 +1,7 @@
-import { ComponentProps } from 'react'
-import Select from 'react-select'
+import React, { ComponentProps } from 'react'
 import { BsChevronDown } from 'react-icons/bs'
+import Select from 'react-select'
+import OutsideClickHandler from '../../misc/components/OutsideClickHandler'
 function flatten(arr) {
   return arr.reduce(
     (acc, val) =>
@@ -54,6 +55,7 @@ const MTYKSelect = <T = string,>({
     return option
   })
 
+  const [menuIsOpen, setMenuIsOpen] = React.useState(false)
   const value = getValue(
     fullOptions,
     (typeof singleValue !== 'undefined' && singleValue !== null
@@ -74,123 +76,136 @@ const MTYKSelect = <T = string,>({
   }
 
   return (
-    <Select
-      {...props}
-      className={`my-react-select-container ${props.className ?? ''}`}
-      classNamePrefix="my-react-select"
-      components={{
-        Menu: (propsInner) => (
-          <div
-            // include default styles
-            style={{
-              ...(propsInner.getStyles('menu', propsInner) as any),
-              backgroundColor: 'transparent',
-            }}
-            className={`${menu?.className ?? ''}`}
-            onWheelCapture={(e) => {
-              e.stopPropagation()
-            }}
-          >
-            {propsInner.children}
-          </div>
-        ),
-        MenuList: (propsInner) => (
-          <div
-            className={`overflow-y-auto ${menu?.className ?? ''}`}
-            onWheelCapture={(e) => {
-              e.stopPropagation()
-            }}
-          >
-            {propsInner.children}
-          </div>
-        ),
-        Option: (props) => (
-          <div
-            className="text-black dark:text-white p-1 hover:bg-gray-700 cursor-pointer px-3 py-1 first:rounded-t-md last:rounded-b-md bg-gray-800 dark:bg-gray-900"
-            onClick={() => {
-              props.selectOption(props.data)
-            }}
-          >
-            {props.label}
-          </div>
-        ),
-        ValueContainer: (props) => (
-          <div
-            className="flex flex-wrap items-center gap-1 w-[10em] "
-            onClick={() => {
-              props.selectProps.onMenuOpen()
-            }}
-          >
-            {props.children}
-          </div>
-        ),
-        IndicatorSeparator: () => null,
-        IndicatorsContainer: (props) => (
-          <div
-            className="pr-0"
-            onClick={() => {
-              props.selectProps.onMenuOpen()
-            }}
-          >
-            {props.children}
-          </div>
-        ),
-        DropdownIndicator: (props) => (
-          <div
-            className="cursor-pointer pr-0"
-            onClick={() => {
-              props.selectProps.onMenuOpen()
-            }}
-          >
-            <BsChevronDown />
-            {/* {props.children} */}
-          </div>
-        ),
-        Input: (props) => null,
-        SingleValue: (props) => (
-          <div
-            className="text-black dark:text-white truncate"
-            onClick={() => {
-              props.selectOption(props.data)
-            }}
-          >
-            {props.children}
-          </div>
-        ),
-        Control: (props) => (
-          <div
-            className="flex items-center bg-gray-800 dark:bg-gray-900 cursor-pointer rounded-md border border-gray-600 dark:border-gray-700 py-1 px-3 inline-flex"
-            {...props}
-            onClick={(e) => {
-              // open menu
-              props.selectProps.onMenuOpen()
-            }}
-          >
-            {props.children}
-          </div>
-        ),
+    <OutsideClickHandler
+      onOutsideClick={() => {
+        setMenuIsOpen(false)
       }}
-      onChange={(selected) => {
-        if (rest.onChange) {
-          if (isMulti) {
-            rest.onChange(selected.map(getOptionValue))
-          } else {
-            if (selected === null) {
-              rest.onChange([])
+    >
+      <Select
+        {...props}
+        className={`my-react-select-container ${props.className ?? ''}`}
+        classNamePrefix="my-react-select"
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => {
+          setMenuIsOpen(true)
+        }}
+        onMenuClose={() => {
+          setMenuIsOpen(false)
+        }}
+        components={{
+          Menu: (propsInner) => (
+            <div
+              // include default styles
+              style={{
+                ...(propsInner.getStyles('menu', propsInner) as any),
+                backgroundColor: 'transparent',
+              }}
+              className={`${menu?.className ?? ''}`}
+              onWheelCapture={(e) => {
+                e.stopPropagation()
+              }}
+            >
+              {propsInner.children}
+            </div>
+          ),
+          MenuList: (propsInner) => (
+            <div
+              className={`overflow-y-auto ${menu?.className ?? ''}`}
+              onWheelCapture={(e) => {
+                e.stopPropagation()
+              }}
+            >
+              {propsInner.children}
+            </div>
+          ),
+          Option: (props) => (
+            <div
+              className="text-black dark:text-white p-1 hover:bg-gray-700 cursor-pointer px-3 py-1 first:rounded-t-md last:rounded-b-md bg-gray-800 dark:bg-gray-900"
+              onClick={() => {
+                props.selectOption(props.data)
+              }}
+            >
+              {props.label}
+            </div>
+          ),
+          ValueContainer: (props) => (
+            <div
+              className="flex flex-wrap items-center gap-1 w-[10em] "
+              onClick={() => {
+                props.selectProps.onMenuOpen()
+              }}
+            >
+              {props.children}
+            </div>
+          ),
+          IndicatorSeparator: () => null,
+          IndicatorsContainer: (props) => (
+            <div
+              className="pr-0"
+              onClick={() => {
+                props.selectProps.onMenuOpen()
+              }}
+            >
+              {props.children}
+            </div>
+          ),
+          DropdownIndicator: (props) => (
+            <div
+              className="cursor-pointer pr-0"
+              onClick={() => {
+                props.selectProps.onMenuOpen()
+              }}
+            >
+              <BsChevronDown />
+              {/* {props.children} */}
+            </div>
+          ),
+          Input: (props) => null,
+          SingleValue: (props) => (
+            <div
+              className="text-black dark:text-white truncate"
+              onClick={() => {
+                props.selectOption(props.data)
+              }}
+            >
+              {props.children}
+            </div>
+          ),
+          Control: (props) => (
+            <div
+              className="flex items-center bg-gray-800 dark:bg-gray-900 cursor-pointer rounded-md border border-gray-600 dark:border-gray-700 py-1 px-3 inline-flex"
+              {...props}
+              onClick={(e) => {
+                // open menu
+                props.selectProps.onMenuOpen()
+              }}
+            >
+              {props.children}
+            </div>
+          ),
+        }}
+        onChange={(selected) => {
+          if (rest.onChange) {
+            if (isMulti) {
+              rest.onChange(selected.map(getOptionValue))
             } else {
-              rest.onChange([getOptionValue(selected)])
+              if (selected === null) {
+                rest.onChange([])
+              } else {
+                rest.onChange([getOptionValue(selected)])
+              }
             }
           }
-        }
-        if (rest.onSingleChange) {
-          if (selected === null) {
-            rest.onSingleChange(null)
-          } else {
-            rest.onSingleChange(getOptionValue(selected))
+          if (rest.onSingleChange) {
+            if (selected === null) {
+              rest.onSingleChange(null)
+            } else {
+              rest.onSingleChange(getOptionValue(selected))
+            }
           }
-        }
-      }}
-    />
+        }}
+      />
+    </OutsideClickHandler>
   )
 }
 

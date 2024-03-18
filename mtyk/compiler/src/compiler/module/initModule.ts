@@ -247,23 +247,52 @@ tsconfig.*.json
     );
   }
 
-  // if there isen't an index.ts or index.tsx, creat one exporting null value
-  const indexPath = path.join(realPath, "src/index.ts");
+  const injectedCodeStart = `// --- BEGIN INJECTED CODE ---`;
+  const injectedCodeEnd = `// --- END INJECTED CODE ---`;
+  const indexTsInject = `
+// Inject some code to check if we've imported two different versions of any module. This is a common cause of bugs.
+const globalObject: any = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+const globalStore = globalObject?.__bbuild ?? {}
+if (globalStore[${JSON.stringify(module.name)}]) {
+console.warn(\`Duplicate module ${
+    module.name
+  } imported. This can lead to bugs.\`);
+}
+globalStore[${JSON.stringify(module.name)}] = true;
+ `;
 
+  const indexPath = path.join(realPath, "src/index.tsx");
+  const indexTsPath = path.join(realPath, "src/index.ts");
+
+  let indexContents = "";
   if (fs.existsSync(indexPath)) {
-    const contents = fs.readFileSync(indexPath).toString();
-    if (!contents.trim()) {
-      // If index.ts exists, and it's blank, export default null to avoid `file is not a module` errors
-      const indexTs = `export default null`;
-      fs.writeFileSync(indexPath, indexTs);
-    }
-  } else {
-    // Otherwise if index.ts doesn't exist, create it
-    if (!fs.existsSync(indexPath) && !fs.existsSync(indexPath + "x")) {
-      fs.writeFileSync(indexPath, `export default null`);
-    }
+    indexContents = fs.readFileSync(indexPath).toString();
+  } else if (fs.existsSync(indexTsPath)) {
+    indexContents = fs.readFileSync(indexTsPath).toString();
   }
 
+  const injectedCode = `${injectedCodeStart}\n${indexTsInject}\n${injectedCodeEnd}`;
+  const injectedCodeStartIndex = indexContents.indexOf(injectedCodeStart);
+  const injectedCodeEndIndex = indexContents.indexOf(injectedCodeEnd);
+
+  if (injectedCodeStartIndex !== -1 && injectedCodeEndIndex !== -1) {
+    const indexContentsWithoutInjectedCode =
+      indexContents.slice(0, injectedCodeStartIndex) +
+      indexContents.slice(injectedCodeEndIndex + injectedCodeEnd.length);
+    const updatedContents = `${indexContentsWithoutInjectedCode.trim()}\n\n${injectedCode}`;
+    if (fs.existsSync(indexPath)) {
+      fs.writeFileSync(indexPath, updatedContents);
+    } else {
+      fs.writeFileSync(indexTsPath, updatedContents);
+    }
+  } else {
+    const updatedContents = `${indexContents.trim()}\n\n${injectedCode}`;
+    if (fs.existsSync(indexPath)) {
+      fs.writeFileSync(indexPath, updatedContents);
+    } else {
+      fs.writeFileSync(indexTsPath, updatedContents);
+    }
+  }
   // Get imports
   return oneConfig;
 }
