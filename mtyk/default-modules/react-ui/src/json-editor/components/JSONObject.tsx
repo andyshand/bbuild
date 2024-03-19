@@ -24,18 +24,23 @@ export function JSONObject(props: JSONObjectProps) {
   const realSchema = getRealSchema(schema)
   const shape = realSchema?.shape ?? {}
 
-  const [editingKey, setEditingKey] = useState(null)
+  const [editingKey, setEditingKey] = useState<string | null>(null)
   const [tempKey, setTempKey] = useState('')
-  const [expandedKeys, setExpandedKeys] = useState([])
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([])
 
   const handleAdd = () => {
     const newKey = genUniqueKey(value)
     try {
-      const newValue =
-        shape?.[newKey]?.parse() ??
-        ('valueType' in schema._def ? (schema._def.valueType as any)?.parse() : null) ??
-        Object.values(schema.parse({}))[0] ??
-        ''
+      let newValue = {}
+      if (schema) {
+        newValue =
+          shape?.[newKey]?.parse() ??
+          ('valueType' in (schema?._def ?? {})
+            ? ((schema?._def as any).valueType as any)?.parse()
+            : null) ??
+          Object.values(schema.parse({}))[0] ??
+          ''
+      }
       onChange(path, { ...value, [newKey]: newValue })
     } catch (e) {
       onChange(path, { ...value, [newKey]: {} })
@@ -91,13 +96,16 @@ export function JSONObject(props: JSONObjectProps) {
         const isOptional = schemaVal instanceof z.ZodOptional
 
         const valueSchema =
-          Object.keys(shape).length === 0
+          schema && Object.keys(shape).length === 0
             ? // it's a record, so use value from _def
-              (schema._def as any).valueType
+              (schema?._def as any).valueType
             : schemaVal
 
         return (
-          <div key={key} className="flex flex-row gap-2 items-start px-1 py-1 w-full">
+          <div
+            key={key}
+            className="flex flex-row gap-2 items-start px-1 py-1 w-full"
+          >
             <div>
               <div
                 className={`${
@@ -120,10 +128,13 @@ export function JSONObject(props: JSONObjectProps) {
                 ) : (
                   <span
                     className={` ${
-                      topLevel ? `font-medium text-[0.91em]` : `font-semibold text-[0.85em]`
+                      topLevel
+                        ? `font-medium text-[0.91em]`
+                        : `font-semibold text-[0.85em]`
                     }`}
                   >
-                    {startCase(key)} {!isOptional && <span className="text-red-500">*</span>}
+                    {startCase(key)}{' '}
+                    {!isOptional && <span className="text-red-500">*</span>}
                   </span>
                 )}
                 <SchemaHelp schema={valueSchema} />

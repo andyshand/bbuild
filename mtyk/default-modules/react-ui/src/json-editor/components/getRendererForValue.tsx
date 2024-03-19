@@ -10,8 +10,8 @@ import { JSONString } from './JSONString'
 import { JSONFile } from './JSONFile'
 import { JSONDate } from './JSONDate'
 
-export function getRendererForValue(value: any, schema) {
-  let component = null
+export function getRendererForValue(value: any, schema: any) {
+  let component: any = null
 
   if (schema) {
     if (schema._customId) {

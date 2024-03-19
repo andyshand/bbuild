@@ -5,6 +5,9 @@ import { JSONValueProps } from './JSONValue'
 
 export function JSONEnum({ value, path, diff, schema, multi }: JSONValueProps) {
   const { handleChange } = useJSONContext()
+  if (!schema) {
+    return <span>No schema</span>
+  }
   const opts = schema._def.values
   return (
     <MTYKSelect

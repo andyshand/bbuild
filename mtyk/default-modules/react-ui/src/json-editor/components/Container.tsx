@@ -20,7 +20,7 @@ export function Container({
   className?: string
   topLevel?: boolean
   children: ReactNode
-  setCollapsed: (collapsed: boolean) => void
+  setCollapsed?: (collapsed: boolean) => void
 }) {
   const pathErrors = usePathErrors(path)
   return (
@@ -47,10 +47,14 @@ export function Container({
           {/* <div className="text-xs text-gray-400 mr-2 px-1.5 py-[.3em] rounded-md bg-gray-300 ">
                       {type}
                     </div> */}
-          <div>{collapsed ? <BsFillCaretDownFill /> : <BsFillCaretUpFill />}</div>
+          <div>
+            {collapsed ? <BsFillCaretDownFill /> : <BsFillCaretUpFill />}
+          </div>
         </div>
       )}
-      {!collapsed && <div className="mt-2 mb-2 content px-2 py-1">{children}</div>}
+      {!collapsed && (
+        <div className="mt-2 mb-2 content px-2 py-1">{children}</div>
+      )}
     </div>
   )
 }

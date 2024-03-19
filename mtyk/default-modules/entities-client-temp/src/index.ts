@@ -49,3 +49,15 @@ export function useWSAction(method: string) {
     (args: any) => lastValueFrom(rpcManager.callFunction(method, args)),
   ] as const
 }
+
+// --- BEGIN INJECTED CODE ---
+
+// Inject some code to check if we've imported two different versions of any module. This is a common cause of bugs.
+const globalObject: any = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+const globalStore = globalObject?.__bbuild ?? {}
+if (globalStore["entities-client-temp"]) {
+console.warn(`Duplicate module entities-client-temp imported. This can lead to bugs.`);
+}
+globalStore["entities-client-temp"] = true;
+ 
+// --- END INJECTED CODE ---

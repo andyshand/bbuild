@@ -277,3 +277,15 @@ export function createClient(config: {
 }): SlackClient {
   return new SlackClient(config)
 }
+
+// --- BEGIN INJECTED CODE ---
+
+// Inject some code to check if we've imported two different versions of any module. This is a common cause of bugs.
+const globalObject: any = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {}
+const globalStore = globalObject?.__bbuild ?? {}
+if (globalStore["slack"]) {
+console.warn(`Duplicate module slack imported. This can lead to bugs.`);
+}
+globalStore["slack"] = true;
+ 
+// --- END INJECTED CODE ---

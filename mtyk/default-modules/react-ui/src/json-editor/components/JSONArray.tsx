@@ -5,23 +5,33 @@ import { JSONValueProps } from './JSONValue'
 import { getRendererForValue } from './getRendererForValue'
 
 interface JSONArrayProps extends JSONValueProps {
-  schema?: z.ZodArray<any>
+  schema?: any
 }
-export function JSONArray({ value, onChange, path, diff, schema }: JSONArrayProps) {
+export function JSONArray({
+  value,
+  onChange,
+  path,
+  diff,
+  schema,
+}: JSONArrayProps) {
   const handleAdd = () => {
     const newItem = schema?.element?.default()
-    onChange(path, [...value, newItem])
+    onChange?.(path, [...value, newItem])
   }
 
   const handleRemove = (index: number) => {
     const newValue = value.filter((_, i) => i !== index)
-    onChange(path, newValue)
+    onChange?.(path, newValue)
   }
 
   const innerType = schema?._def.type
   const realInner = getRealSchema(innerType)
   if (realInner instanceof z.ZodEnum) {
-    return <JSONEnum {...{ value, onChange, path, diff, schema: realInner, multi: true }} />
+    return (
+      <JSONEnum
+        {...{ value, onChange, path, diff, schema: realInner, multi: true }}
+      />
+    )
   }
 
   const arr = Array.isArray(value) ? value : []

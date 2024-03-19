@@ -7,7 +7,7 @@ export function DefaultValueButton({
   schema,
 }: {
   path: (string | number)[]
-  schema: z.ZodType<any, any>
+  schema: any
 }) {
   const defaultValue = schema?._def?.defaultValue
   const ctx = useJSONContext()
