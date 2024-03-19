@@ -54,8 +54,6 @@ export default async function makeModulePackage(
 
     // Make package/dist folder
     await fse.ensureDir(path.join(packageFolder, "dist/cjs"));
-    // await fse.ensureDir(path.join(packageFolder, "/cjs"));
-
     context.setMessage(`Creating package/dist/cjs`);
 
     const moduleInfo = await getModuleInfo(name, moduleFolder);

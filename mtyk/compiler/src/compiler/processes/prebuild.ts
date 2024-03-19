@@ -109,7 +109,6 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
   };
   const sourceJSON: PackageJson = {
     workspaces: ["modules/*", "apps/*"],
-    hoistingLimits: "dependencies",
     name: config.name,
     devDependencies: pick(safePackages, ["typescript"]),
     resolutions: {

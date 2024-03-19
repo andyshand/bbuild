@@ -66,6 +66,7 @@ export default async function makeExports(
           distPackageJson.exports["." + relativePath + "/*"] = {
             import: `${esmRoot}${relativeSubpath}/*.js`,
             require: `${cjsRoot}${relativeSubpath}/*.js`,
+            types: `${esmRoot}${relativeSubpath}/*.d.ts`,
           };
 
           // If it has an index.js
@@ -76,6 +77,7 @@ export default async function makeExports(
             distPackageJson.exports["." + relativePath] = {
               import: `${esmRoot}${relativeSubpath}/index.js`,
               require: `${cjsRoot}${relativeSubpath}/index.js`,
+              types: `${esmRoot}${relativeSubpath}/index.d.ts`,
             };
           }
         } else {
@@ -87,6 +89,7 @@ export default async function makeExports(
           ] = {
             import: `${esmRoot}${jsPath}`,
             require: `${cjsRoot}${jsPath}`,
+            types: `${esmRoot}${jsPath.replace(/\.js$/, ".d.ts")}`,
           };
         }
       }
@@ -105,6 +108,7 @@ export default async function makeExports(
       ".": {
         import: "./dist/index.js",
         require: "./dist/cjs/index.js",
+        types: "./dist/index.d.ts",
       },
       "./package.json": "./package.json",
     },

@@ -1,7 +1,6 @@
 {
   "private": true,
   "version": "1.0.21",
-  "hoistingLimits": "dependencies",
   "name": "@mtyk/bbuild",
   "dependencies": {
     "@mtyk/events": "^2.0.14",
