@@ -3,6 +3,7 @@ import {
   EntityFieldMetadata,
   getMetadataStore,
   setEntityFieldMetadata,
+  getEntityTargetName,
 } from './EntityFieldMetadata'
 
 function EntityField<T>(options?: {
@@ -32,7 +33,7 @@ function EntityField<T>(options?: {
         target,
         EntityFieldMetadata.ENTITY_FIELD_GETTER,
         propertyKey,
-        () => options.defaultValue
+        ({ value }) => value ?? options.defaultValue
       )
     }
 
@@ -62,7 +63,7 @@ export function getEntityFieldMetadata(
   entityFunction: boolean | undefined
   type: any | undefined
 } {
-  const constructorName = target.constructor.name
+  const constructorName = getEntityTargetName(target.constructor.name)
   const metadata = getMetadataStore()[constructorName]?.[propertyKey]
 
   return {

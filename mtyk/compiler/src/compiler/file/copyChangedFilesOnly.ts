@@ -69,7 +69,7 @@ async function copyFileTask(
 
 async function isNativeModule(filePath) {
   const nativeModulePatterns = [
-    /built-modules\/.*\/native/,
+    /built-modules\/@bbuild\/.*\/native/,
     /packages\/.*\/native/,
   ];
   return nativeModulePatterns.some((pattern) => pattern.test(filePath));

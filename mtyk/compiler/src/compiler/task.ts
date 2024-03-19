@@ -1,5 +1,3 @@
-import { ChildProcess } from "child_process";
-import { ExecaChildProcess } from "execa";
 import fs from "fs";
 import path from "path";
 import { EMPTY, merge, Observable, of, Subject } from "rxjs";
@@ -12,12 +10,10 @@ import {
 } from "rxjs/operators";
 import getUniverseConfig from "./config/universe";
 import { watchFiles } from "./file/watchFiles";
-import getModuleInfo from "./module/getModuleInfo";
 import { projectPath } from "./path";
 import { spawnProcess } from "./process/spawnProcess";
 import { spawnToObservable } from "./process/spawnToObservable";
 import { DevConfig, DevJSON } from "./processes/DevConfig";
-import processFilesForBbuildImports from "./watch/findAllBbuildImports";
 
 export async function getTaskStream(
   task: Omit<DevJSON["tasks"][0], "env"> & {
@@ -35,32 +31,37 @@ export async function getTaskStream(
   const env = { ...process.env, ...task.env };
 
   const color = getColorForTag(name ?? cmd);
-  let latestSpawnedChild: ExecaChildProcess | null;
-  const _spawnIt = () => {
-    latestSpawnedChild = spawnProcess(cmd, args, cwd, watch, env, name, task);
-    return latestSpawnedChild;
-  };
+  const latestSpawnedChild = spawnProcess(
+    cmd,
+    args,
+    cwd,
+    watch,
+    env,
+    name,
+    task
+  );
   const restartTrigger = new Subject<void>();
+
   const watchFilesObservable1 = watchFiles(watch, cwd) as Observable<any>;
 
   let observables = [watchFilesObservable1, restartTrigger];
 
-  const lastArg = args[args.length - 1];
+  // TODO this logic doesn't seem right?
+  // const lastArg = args[args.length - 1];
+  // if (lastArg?.endsWith(".js")) {
+  //   const modulesToWatchSet = new Set(
+  //     processFilesForBbuildImports(cwd, lastArg)
+  //   );
 
-  if (lastArg?.endsWith(".js")) {
-    const modulesToWatchSet = new Set(
-      processFilesForBbuildImports(cwd, lastArg)
-    );
+  //   for (const m of modulesToWatchSet) {
+  //     const result = await getModuleInfo(m, path.join(cwd, "modules", m));
+  //     result.requiredOneModules.forEach((r) => modulesToWatchSet.add(r));
+  //   }
 
-    for (const m of modulesToWatchSet) {
-      const result = await getModuleInfo(m, path.join(cwd, "modules", m));
-      result.requiredOneModules.forEach((r) => modulesToWatchSet.add(r));
-    }
-
-    const modulesToWatchArray = Array.from(modulesToWatchSet);
-    observables.push(watchFiles(modulesToWatchArray, "./built-modules"));
-    console.log(`Task ${name} is watching modules - ${modulesToWatchArray}`);
-  }
+  //   const modulesToWatchArray = Array.from(modulesToWatchSet);
+  //   observables.push(watchFiles(modulesToWatchArray, "./built-modules"));
+  //   console.log(`Task ${name} is watching modules - ${modulesToWatchArray}`);
+  // }
 
   const obs = merge(...observables).pipe(
     debounceTime(1000),
@@ -71,43 +72,29 @@ export async function getTaskStream(
     }),
     startWith(null),
     switchMap((_) => {
-      if (latestSpawnedChild && latestSpawnedChild.exitCode !== null) {
-        console.log(`Process ${name ?? cmd} has already exited.`);
-        // Process has already exited, no need to kill, directly spawn a new one
-        return of(_spawnIt());
-      } else if (latestSpawnedChild) {
-        // Process is still running, need to kill it first
-        return new Observable<ChildProcess>((observer) => {
-          latestSpawnedChild.on("exit", () => {
-            observer.next(_spawnIt()); // Respawn the process
-            observer.complete(); // Complete the observable
-          });
-          latestSpawnedChild.kill("SIGTERM");
-        });
-      } else {
-        // No child process exists, spawn a new one
-        return of(_spawnIt());
-      }
+      return of(latestSpawnedChild.killAndRestart());
     }),
     switchMap((newChild) => {
-      // console.log(`Spawning ${name ?? cmd}`);
+      if (newChild) {
+        // console.log(`Spawning ${name ?? cmd}`);
+        const childWithOnData = {
+          onData: (cb: (data: string) => void) => {
+            newChild.stdout?.on("data", (data) => {
+              cb(data.toString());
+            });
+          },
+        };
 
-      const childWithOnData = {
-        onData: (cb: (data: string) => void) => {
-          newChild.stdout?.on("data", (data) => {
-            cb(data.toString());
-          });
-        },
-      };
-
-      return spawnToObservable(
-        childWithOnData,
-        filter,
-        color,
-        name,
-        cmd,
-        task.quiet
-      );
+        return spawnToObservable(
+          childWithOnData,
+          filter,
+          color,
+          name,
+          cmd,
+          task.quiet
+        );
+      }
+      return EMPTY;
     }),
     catchError((error) => {
       console.error("Error in process stream:", error);

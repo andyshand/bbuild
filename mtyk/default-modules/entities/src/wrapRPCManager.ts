@@ -1,28 +1,9 @@
 import { serverPubSub } from 'modules/rpc-ws/central/server'
 import startWSServer, { FunctionMap } from 'modules/rpc-ws/server'
 import { getPortForName } from 'modules/transport/index'
-// import asyncLocalStorage from './asyncLocalStorage';
-import { Observable, map } from 'rxjs'
-
 import { publicInvariant } from 'modules/errors/index'
-import Entity from './Entity'
 import { IEntityManager } from './IEntityManager'
-import { getEntityTypeName } from './getEntityTypeName'
-
-const serialiseResult = (value: any) => {
-  if (value instanceof Entity) {
-    return {
-      ...value.getEntityFieldValues(),
-      revisionNumber: value.revisionNumber,
-      type: getEntityTypeName(value),
-    }
-  } else if (value instanceof Observable) {
-    // make sure we pipe serialised results
-    return value.pipe(map(serialiseResult))
-  } else {
-    return value
-  }
-}
+import { serialiseResult } from './serialiseResult'
 
 function callAuthed(
   method: string,

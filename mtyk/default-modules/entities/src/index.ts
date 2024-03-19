@@ -18,6 +18,7 @@ export type { IEntityManager } from './IEntityManager'
 export { MemoryEntityManager } from './MemoryEntityManager'
 export { RPCEntityManager } from './RPCEntityManager'
 export { RemoteEntityManager } from './RemoteEntityManager'
+export { serialiseResult } from './serialiseResult'
 
 export const upsert =
   (entityManager: IEntityManager) =>

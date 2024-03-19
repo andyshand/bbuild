@@ -9,7 +9,6 @@
    
       { "transform": "typescript-transform-paths" },
       { "transform": "typescript-transform-paths", "afterDeclarations": true },
-      { "transform": "./transformers/git-transformer.ts" }
     ],
     "paths": {
       "@/*": ["./src/*"]

@@ -12,8 +12,8 @@ import { getPackageOrg } from "../constants";
 import { getBuildContext } from "../context/buildContext";
 import { readJSON, writeJSON } from "../json";
 import { findModules } from "../module/findModules";
-import { BaseModuleInfo } from "../module/getModuleInfo";
 import { getAppInfo } from "../module/getAppInfo";
+import { BaseModuleInfo } from "../module/getModuleInfo";
 import { initModule } from "../module/initModule";
 import { resolveModules } from "../module/resolveModules";
 import { safePackages } from "../module/safePackages";
@@ -21,6 +21,7 @@ import { OneModuleConfig } from "../one/OneModuleConfig";
 import createOneModules from "../one/createOneModules";
 import { mergePackageJSON } from "../package/package";
 import { createBaseTSConfigs } from "../ts/tsconfig";
+import { BUILT_MODULES, getBuiltModulesPath } from "./paths";
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 function findParentFolder(pth: string, withSubFolder: string) {
@@ -112,8 +113,8 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
     name: config.name,
     devDependencies: pick(safePackages, ["typescript"]),
     resolutions: {
-      "@bbuild/client-modules": "file:./built-modules/client-modules",
-      "@bbuild/server-modules": "file:./built-modules/server-modules",
+      "@bbuild/client-modules": `file:./${BUILT_MODULES}/client-modules`,
+      "@bbuild/server-modules": `file:./${BUILT_MODULES}/server-modules`,
       ...pick(safePackages, ["nanoid"]),
     },
   };
@@ -216,10 +217,9 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
         version: "1.0.0",
         private: true,
       };
-      await fse.ensureDir(projectPath("built-modules", moduleDir));
-      const packageJSONPath = projectPath(
-        "built-modules",
-        moduleDir,
+      await fse.ensureDir(getBuiltModulesPath(moduleDir));
+      const packageJSONPath = path.join(
+        getBuiltModulesPath(moduleDir),
         "package.json"
       );
       if (!(await fse.pathExists(packageJSONPath))) {
@@ -227,7 +227,7 @@ yarnPath: .yarn/releases/yarn-${yarnVersion}.cjs`;
       }
       updateJSON["resolutions"] = {
         ...updateJSON["resolutions"],
-        [`${await getPackageOrg()}/${moduleDir}`]: `file:./built-modules/${moduleDir}`,
+        [`${await getPackageOrg()}/${moduleDir}`]: `file:./${BUILT_MODULES}/${moduleDir}`,
       };
     }
   }

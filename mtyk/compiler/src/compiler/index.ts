@@ -1,5 +1,4 @@
 declare const GIT_COMMIT_HASH: string; // added by git-transformer
-import { execSync } from "child_process";
 import * as commander from "commander";
 import debounce from "lodash/debounce";
 import path from "path";
@@ -31,30 +30,6 @@ function monitorMemoryUsage(intervalSeconds = 5) {
 
     previousUsage = currentUsage;
   }, intervalMilliseconds);
-}
-
-// if (isAlex) {
-//   monitorMemoryUsage(); // Monitor every 10 seconds
-// }
-
-const getGitHash = () => {
-  return execSync("git rev-parse HEAD", {
-    cwd: __dirname,
-  })
-    .toString()
-    .trim();
-};
-
-const hash = getGitHash();
-
-if (hash !== GIT_COMMIT_HASH) {
-  throw new Error(
-    `Git commit hash mismatch. You may need to compile mtyk/compiler (bbuild) again.
-    
-Compiled with: ${GIT_COMMIT_HASH}
-Current (@ ${__dirname}): ${hash}
-    `
-  );
 }
 
 const main = async () => {

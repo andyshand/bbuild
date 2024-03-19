@@ -1,6 +1,7 @@
 import path from "path";
 import { getPackageOrg } from "../constants";
 import { makeModule } from "./makeModule";
+import { BUILT_MODULES } from "../processes/paths";
 
 export async function makeImportModule(
   imports: string[],
@@ -10,7 +11,7 @@ export async function makeImportModule(
     isCjs?: boolean
   ) => string
 ) {
-  const modulePath = path.join("built-modules", moduleSubName);
+  const modulePath = path.join(BUILT_MODULES, moduleSubName);
   const packageJSON = {
     name: `${await getPackageOrg()}/${moduleSubName}`,
     version: "0.0.1",

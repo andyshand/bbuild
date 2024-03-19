@@ -135,6 +135,10 @@
       "import": "./saveDirtyEntities.js",
       "require": "./dist/cjs/saveDirtyEntities.js"
     },
+    "./serialiseResult": {
+      "import": "./serialiseResult.js",
+      "require": "./dist/cjs/serialiseResult.js"
+    },
     "./structs/*": {
       "import": "./structs/*.js",
       "require": "./dist/cjs/structs/*.js"

@@ -123,6 +123,10 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     return this._cachedEntityFields.includes(field)
   }
 
+  getEntityFunctions() {
+    return Object.getOwnPropertyNames(this).filter((name) => this.isEntityFunction(name))
+  }
+
   constructor(
     public readonly manager: IEntityManager,
     id?: string,

@@ -1,12 +1,12 @@
 import { opaqueObject } from '@legendapp/state'
 import { useSelector } from '@legendapp/state/react'
-import { Entity, IEntityManager, entityType } from 'modules/entities'
+import { Entity, IEntityManager, entityType, getEntityTypeName } from 'modules/entities'
 import { RPCEntityManager } from 'modules/entities/RPCEntityManager'
 import { UnknownEntity } from 'modules/entities/UnknownEntity'
 import { invariant } from 'modules/errors'
 import { pubSub } from 'modules/rpc-ws/central/client'
 import * as nano from 'nanoid'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { uniq } from 'remeda'
 import { ReplaySubject, Subject } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -16,6 +16,7 @@ import { queryFromAllManagers } from './allManagers'
 import { cacheMap } from './cacheMap'
 import { getLatestValue } from './getLatestValue'
 import entityDataObservable, { globalEntityDataObservable } from './store'
+import { useRegisterCommands } from 'modules/react-ui/dev/hooks/useRegisterCommands'
 
 const useId = (obj) => {
   const objKey = JSON.stringify(obj)
@@ -223,6 +224,25 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     return { data: data[0] as T | null, ...rest }
   }
 
+  const useEntityCommands = (entity: Entity<any>) => {
+    const commands = useMemo(() => {
+      return entity?.id
+        ? [
+            ...entity.getEntityFunctions().map((fn) => {
+              return {
+                action: async (ctx: any, params: any) => {
+                  await entity[fn](params)
+                },
+                id: `entity-${getEntityTypeName(entity)}-${entity.id}-${fn}`,
+                label: fn,
+              }
+            }),
+          ]
+        : []
+    }, [entity?.id])
+    return useRegisterCommands(commands)
+  }
+
   const propagateChangesToAllHooks = (
     arr: { id: string; type: string }[],
     createForHookId?: string
@@ -308,8 +328,15 @@ export function createEntitiesClient<M extends IEntityManager[]>(
             return e.entityObj[prop].bind(e.entityObj)
           }
 
-          // Use reflect.apply to call the function with the correct context
-          return Reflect.get(e.entity, prop, receiver)
+          // Do we need to do this so that legendstate keeps track? not sure
+          const _valueInStore = Reflect.get(e.entity, prop, receiver)
+
+          // Get from actual entity obj
+          return Reflect.get(e.entityObj, prop, receiver)
+        },
+        set(target, prop, value, receiver) {
+          // Call on actual entity obj
+          return Reflect.set(e.entityObj, prop, value, receiver)
         },
       })
     })
@@ -451,6 +478,7 @@ export function createEntitiesClient<M extends IEntityManager[]>(
     useEntity,
     invalidate,
     useEntities,
+    useEntityCommands,
     createEntity,
     deleteEntity,
     useEntityRelation,

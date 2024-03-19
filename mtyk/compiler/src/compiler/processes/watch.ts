@@ -94,16 +94,29 @@ export async function watchOrBuild({
   };
 
   return new Promise(async (resolve, reject) => {
+    const rePrebuild = async () => {
+      watchState.watcherHandle.pause();
+      if (onNeedsPrebuild) {
+        await onNeedsPrebuild();
+      }
+      watchState.watcherHandle.restart();
+    };
+
     /**
      * Handles data event from tsc process
      * @param {Buffer} data - Data received from tsc process
      */
     const onData = async (data) => {
+      const message = data.toString();
+      if (data.includes("Cannot find module 'modules/")) {
+        // we need to run prebuild again
+        await rePrebuild();
+      }
+
       if (!watchState.waitingForInitialSuccess) {
         return;
       }
 
-      const message = data.toString();
       if (message.includes("Found 0 errors. Watching for file changes.")) {
         watchState.waitingForInitialSuccess = false;
         resolve(restartPackageWatcher());
@@ -145,11 +158,7 @@ export async function watchOrBuild({
       ) {
         watchState.moduleRebuild[moduleName].hash = currentHash;
         console.log("Rebuilding due to module change: ", moduleName);
-        watchState.watcherHandle.pause();
-        if (onNeedsPrebuild) {
-          await onNeedsPrebuild();
-        }
-        watchState.watcherHandle.restart();
+        await rePrebuild();
         return;
       }
     };

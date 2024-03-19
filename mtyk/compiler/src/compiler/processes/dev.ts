@@ -63,10 +63,11 @@ export default async function dev(
         const task = tasks.find((t) => t.task.name === focused);
         const child = task?.stream.getLatestSpawnedChild();
 
-        if (child && child.stdin) {
-          child.stdin.write(buffer);
+        if (child && child.getChildProcess().stdin) {
+          const stdin = child.getChildProcess().stdin;
+          stdin.write(buffer);
           // Optionally, you can end the input stream
-          child.stdin.end();
+          stdin.end();
         }
       }
       buffer = "";
@@ -94,7 +95,7 @@ export default async function dev(
   return {
     stop: () => {
       for (const task of tasks) {
-        task.stream.getLatestSpawnedChild()?.kill("SIGTERM");
+        task.stream.getLatestSpawnedChild().kill();
       }
     },
   };

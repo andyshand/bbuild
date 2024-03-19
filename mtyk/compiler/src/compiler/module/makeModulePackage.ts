@@ -14,6 +14,7 @@ import { addSourceRootToMaps } from "../file/addSourceRootToMaps";
 import { copyChangedFilesOnly } from "../file/copyChangedFilesOnly";
 import { readJSON } from "../json";
 import makeExports from "../package/exports";
+import { getBuiltModulesPath } from "../processes/paths";
 import getModuleInfo from "./getModuleInfo";
 
 function copyFolderWithBash(from: string, to: string) {
@@ -87,8 +88,8 @@ export default async function makeModulePackage(
       throw new Error(`${name} - No dist folder available yet`);
     }
 
-    const builtModuleDir = projectPath("built-modules");
-    const builtModuleModulePath = path.join(builtModuleDir, name);
+    const builtModuleDir = getBuiltModulesPath();
+    const builtModuleModulePath = getBuiltModulesPath(name);
 
     // Copy all files from dist to package
     {
