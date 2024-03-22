@@ -10,7 +10,12 @@ import { WebsocketProvider } from 'y-websocket'
 import { DbEntityManager } from './DBEntityManager'
 import Entity from './Entity'
 import { EntityTypable } from './EntityTypable'
-import { IEntityManager, IEntityManagerFindOpts } from './IEntityManager'
+import {
+  CreatedEntity,
+  EntityType,
+  IEntityManager,
+  IEntityManagerFindOpts,
+} from './IEntityManager'
 import { getEntityTypeName } from './getEntityTypeName'
 import { ChangeStreamBatcher } from './mongo/ChangeStreamBatcher'
 import { Queue } from './structs'
@@ -322,12 +327,16 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     }
   }
 
-  async find(type: EntityTypable, qq: any, opts?: IEntityManagerFindOpts): Promise<any> {
+  async find<T extends EntityType = any>(
+    type: EntityTypable | Constructor<T>,
+    qq: any,
+    opts?: IEntityManagerFindOpts
+  ): Promise<CreatedEntity<T>[]> {
     this.assertClientReady()
     const { limit, skip } = opts ?? {}
 
     const entityType = getEntityTypeName(type)
-    const ids = await this.findIds(type, qq)
+    const ids = await this.findIds(entityType, qq)
 
     return Promise.all(ids.map((id) => this.read(entityType, id.id.toString())))
   }

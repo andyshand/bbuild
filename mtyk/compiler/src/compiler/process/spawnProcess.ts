@@ -82,7 +82,7 @@ export function spawnProcess<PTY extends boolean>(
       console.log(
         `Task "${name}" exited with code ${exitCode} and signal ${signal}`
       );
-      if (!weKilledIt) {
+      if (!killForGood) {
         restartTimeout = setTimeout(() => {
           spawnIt();
         }, 1000);
@@ -101,20 +101,24 @@ export function spawnProcess<PTY extends boolean>(
   };
 
   let weKilledIt = false;
+  let killForGood = false;
   const killAndRestart = () => {
-    if (childProcess && childProcess.exitCode === null) {
-      weKilledIt = true;
-      childProcess.kill("SIGTERM");
+    killForGood = false;
+    if (childProcess) {
+      if (childProcess.exitCode === null) {
+        weKilledIt = true;
+        childProcess.kill("SIGTERM");
+      }
+    } else {
+      spawnIt();
     }
-
-    return spawnIt();
   };
 
   return {
     getChildProcess: () => childProcess,
     killAndRestart,
     kill: () => {
-      weKilledIt = true;
+      killForGood = true;
       childProcess?.kill("SIGTERM");
     },
   };

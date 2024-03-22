@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs'
 import { Constructor } from 'modules/types'
+import { EntityTypable } from './EntityTypable'
 
 export type IEntityManagerFindOpts = {
   limit?: number
@@ -28,7 +29,7 @@ export interface IEntityManager {
   ): Promise<CreatedEntity<T>>
   delete(entityType, id): Promise<any>
   find<T extends EntityType = any>(
-    entityType: Constructor<T> | string,
+    entityType: Constructor<T> | EntityTypable,
     query,
     opts?: IEntityManagerFindOpts
   ): Promise<CreatedEntity<T>[]>

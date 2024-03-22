@@ -81,7 +81,8 @@ export class RPCClient {
           const listener = this.listeners.get(data?.id)
           if (listener) {
             if (data.error) {
-              throw new Error(data.error)
+              // throw new Error(data.error)
+              listener.error(new Error(data.error))
             } else {
               if (data.next || (data.complete && !listener.hasCompleted)) {
                 // Second condition ensure that observables always has some value, even if undefined.

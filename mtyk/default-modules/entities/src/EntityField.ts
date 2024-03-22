@@ -9,6 +9,7 @@ import {
 function EntityField<T>(options?: {
   streamable?: boolean
   get?: () => T
+  optional?: boolean
   beforeSet?: (value: T, opts: { entity: any }) => void
   defaultValue?: T
   unique?: boolean
@@ -18,6 +19,10 @@ function EntityField<T>(options?: {
 
     if (options?.streamable) {
       setEntityFieldMetadata(target, EntityFieldMetadata.STREAMABLE_FIELD, propertyKey, true)
+    }
+
+    if (options?.optional) {
+      setEntityFieldMetadata(target, EntityFieldMetadata.OPTIONAL, propertyKey, false)
     }
 
     if (options?.unique) {

@@ -8,9 +8,11 @@ export enum EntityFieldMetadata {
   ENTITY_FIELD = 'entityField',
   ENTITY_FIELD_GETTER = 'entityFieldGetter',
   ENTITY_RELATION = 'entityRelation',
+
   ENTITY_FIELD_BEFORE_SET = 'entityFieldSetter',
   STREAMABLE_FIELD = 'streamableField',
   ENTITY_FUNCTION = 'entityFunction',
+  OPTIONAL = 'optional',
   UNIQUE = 'unique',
 }
 

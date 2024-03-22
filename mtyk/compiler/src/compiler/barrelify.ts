@@ -52,6 +52,7 @@ const barrelConf = z.object({
     .optional()
     .default(false)
     .describe(`Export all files in the folder as an array`),
+  folders: z.boolean().optional().default(false),
 });
 
 function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
@@ -86,8 +87,8 @@ function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
       // Ignore files in exclude list
       continue;
     }
-    const matchesExtensions = config.extensions.some((ext) =>
-      file.endsWith(ext)
+    const matchesExtensions = config.extensions.some(
+      (ext) => file.endsWith(ext) || !file.includes(".") // directories
     );
     if (!matchesExtensions) {
       // Ignore files not in extensions list
@@ -96,6 +97,13 @@ function barrelifyDir(dir: string, config: z.infer<typeof barrelConf>) {
 
     const fullPath = path.join(dir, file);
     if (fs.statSync(fullPath).isDirectory()) {
+      if (
+        config.folders &&
+        (fs.existsSync(path.join(fullPath, "index.ts")) ||
+          fs.existsSync(path.join(fullPath, "index.tsx")))
+      ) {
+        indexContent += `export * from './${noExtension}'\n`;
+      }
       continue;
     } else {
       const exportName = toCamelCase(

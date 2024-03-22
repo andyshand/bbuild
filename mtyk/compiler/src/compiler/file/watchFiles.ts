@@ -29,11 +29,6 @@ export function watchFiles(watchFiles = [], cwd = ".") {
         (evt, name) => {
           if (name) {
             subject.next(name);
-
-            // Omit another one 1 second later since there's a bug atm where restart doesn't work properly?
-            setTimeout(() => {
-              subject.next(name);
-            }, 2500);
           }
         }
       );
