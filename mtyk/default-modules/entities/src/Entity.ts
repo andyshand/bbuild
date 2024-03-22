@@ -97,20 +97,17 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
   }
 
   updateObject(field: string, value: any) {
-    this[field] = { ...this[field], ...value }
+    this[field] = { ...(this[field] ?? {}), ...value }
   }
 
   updateArray(field: string, index: number | ((item: any) => boolean), value: any) {
+    const arr = this[field] ?? []
     if (typeof index === 'number') {
-      this[field] = [...this[field].slice(0, index), value, ...this[field].slice(index + 1)]
+      this[field] = [...arr.slice(0, index), value, ...arr.slice(index + 1)]
     } else {
-      const itemIndex = this[field].findIndex(index)
+      const itemIndex = arr.findIndex(index)
       if (itemIndex !== -1) {
-        this[field] = [
-          ...this[field].slice(0, itemIndex),
-          value,
-          ...this[field].slice(itemIndex + 1),
-        ]
+        this[field] = [...arr.slice(0, itemIndex), value, ...arr.slice(itemIndex + 1)]
       }
     }
   }
@@ -213,13 +210,37 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
         const isEntityField = this.isEntityField(property as string)
         if (isEntityField) {
           const getter = getEntityFieldMetadata(this, property as string).entityFieldGetter
-          if (getter) {
-            return getter.call(this, {
-              value: this.yMap.get(property as string),
-            })
+          const maybeWrapFurther = (val) => {
+            if (Array.isArray(val)) {
+              return new Proxy(val, {
+                get: (target, prop) => {
+                  if (prop === 'push') {
+                    return (val) => {
+                      this.updateArray.call(
+                        this._proxy,
+                        property as string,
+                        target.length,
+                        val
+                      )
+                    }
+                  }
+                  return target[prop]
+                },
+              })
+            }
+            return val
           }
 
-          return this.yMap.get(property as string)
+          if (getter) {
+            return maybeWrapFurther(
+              getter.call(this, {
+                value: this.yMap.get(property as string),
+              })
+            )
+          }
+
+          const value = this.yMap.get(property as string)
+          return maybeWrapFurther(value)
         }
 
         if (typeof value === 'function') {
