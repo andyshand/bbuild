@@ -12,12 +12,7 @@ export default abstract class BaseEntityManager implements IEntityManager {
   constructor(protected entities: Constructor<Entity>[]) {}
   abstract create(entityType: any, entity: any): Promise<any>
   abstract read(entityType: any, id: any): Promise<any>
-  abstract update(
-    entityType: any,
-    id: any,
-    updates: any,
-    revisionNumber?: number
-  )
+  abstract update(entityType: any, id: any, updates: any, revisionNumber?: number)
 
   abstract delete(entityType: any, id: any): Promise<any>
   abstract find(entityType: any, query: any): Promise<any>
@@ -30,8 +25,8 @@ export default abstract class BaseEntityManager implements IEntityManager {
     return this.entities.find((e) => entityTypesEqual(entityType, e))
   }
 
-  protected createEntityInstance(entityType: string, data: any): any {
-    let instance = this.instances.get(data.id)
+  protected createEntityInstance(entityType: string, data: any, transient = false): Entity {
+    let instance = transient ? null : this.instances.get(data.id)
     if (!instance) {
       const EntityClass = this.findEntityClass(entityType)
       if (!EntityClass) {
@@ -40,7 +35,9 @@ export default abstract class BaseEntityManager implements IEntityManager {
         instance = new EntityClass(this, data.id, data)
       }
     }
-    this.instances.set(data.id, instance!)
+    if (!transient) {
+      this.instances.set(data.id, instance!)
+    }
     return instance
   }
 }

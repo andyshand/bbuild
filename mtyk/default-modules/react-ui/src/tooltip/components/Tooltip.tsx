@@ -109,11 +109,7 @@ export function Tooltip({
   // This can accept any props as options, e.g. `placement`,
   // or other positioning options.
   const tooltip = useTooltip(options)
-  return (
-    <TooltipContext.Provider value={tooltip}>
-      {children}
-    </TooltipContext.Provider>
-  )
+  return <TooltipContext.Provider value={tooltip}>{children}</TooltipContext.Provider>
 }
 
 export const TooltipTrigger = React.forwardRef<
@@ -178,18 +174,20 @@ export const SimpleTooltip = ({
   onClick,
   triggerProps,
   tooltipProps,
+  contentProps,
   ...props
 }: {
   children: React.ReactNode
   content: React.ReactNode
+  contentProps?: React.ComponentProps<typeof TooltipContent>
   onClick?: () => void
   tooltipProps?: TooltipOptions
   triggerProps?: React.ComponentProps<typeof TooltipTrigger>
 }) => {
   return (
     <Tooltip {...tooltipProps}>
-      <TooltipTrigger {...triggerProps}>{children}</TooltipTrigger>
-      <TooltipContent>{content}</TooltipContent>
+      <TooltipTrigger {...(triggerProps ?? {})}>{children}</TooltipTrigger>
+      <TooltipContent {...(contentProps ?? {})}>{content}</TooltipContent>
     </Tooltip>
   )
 }

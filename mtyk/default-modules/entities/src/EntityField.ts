@@ -11,12 +11,17 @@ function EntityField<T>(options?: {
   get?: () => T
   beforeSet?: (value: T, opts: { entity: any }) => void
   defaultValue?: T
+  unique?: boolean
 }) {
   return function (target: any, propertyKey: string) {
     setEntityFieldMetadata(target, EntityFieldMetadata.ENTITY_FIELD, propertyKey, true)
 
     if (options?.streamable) {
       setEntityFieldMetadata(target, EntityFieldMetadata.STREAMABLE_FIELD, propertyKey, true)
+    }
+
+    if (options?.unique) {
+      setEntityFieldMetadata(target, EntityFieldMetadata.UNIQUE, propertyKey, true)
     }
 
     if (options?.get) {
@@ -62,6 +67,7 @@ export function getEntityFieldMetadata(
   defaultValue: any | undefined
   entityFunction: boolean | undefined
   type: any | undefined
+  unique: boolean | undefined
 } {
   const constructorName = getEntityTargetName(target.constructor.name)
   const metadata = getMetadataStore()[constructorName]?.[propertyKey]
@@ -69,6 +75,7 @@ export function getEntityFieldMetadata(
   return {
     relation: metadata?.[EntityFieldMetadata.ENTITY_RELATION]?.relatedEntity,
     entityField: metadata?.[EntityFieldMetadata.ENTITY_FIELD],
+    unique: metadata?.[EntityFieldMetadata.UNIQUE],
     streamableField: metadata?.[EntityFieldMetadata.STREAMABLE_FIELD],
     entityFieldGetter: metadata?.[EntityFieldMetadata.ENTITY_FIELD_GETTER],
     entityFieldBeforeSet: metadata?.[EntityFieldMetadata.ENTITY_FIELD_BEFORE_SET],

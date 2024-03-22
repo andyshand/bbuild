@@ -143,7 +143,6 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
   private prepareData(data: any): any {
     if (data.id) {
       data = { ...data, _id: new ObjectId(data.id), yMap: null }
-      delete data.id
     }
     return data
   }
@@ -162,11 +161,14 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
 
     const entityType = getEntityTypeName(type)
     const preparedData = this.prepareData(
-      this.applySerializableOptions(entity, entityType, 'onSave')
+      await this.applySerializableOptions(entity, entityType, 'onSave')
     )
     const collection = this.getCollection(entityType)
     const result = await collection.insertOne(preparedData)
     const newDoc = await collection.findOne({ _id: result.insertedId })
+
+    // Set id as str to simplify matching in superclass
+    await collection.updateOne({ _id: newDoc._id }, { $set: { id: newDoc._id.toString() } })
 
     invariant(newDoc, 'Failed to create entity')
     const id = newDoc._id.toString()
@@ -208,7 +210,7 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     const collection = this.getCollection(entityType)
     const data = await collection.findOne({ _id: new ObjectId(id) })
     const restoredData = this.restoreData(
-      this.applySerializableOptions(data, entityType, 'onLoad')
+      await this.applySerializableOptions(data, entityType, 'onLoad')
     )
     const newEntity = this.createEntityInstance(entityType, { id })
     try {
@@ -272,11 +274,21 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
 
     const entityType = getEntityTypeName(updateData.type)
     const collection = this.getCollection(entityType)
+    const existing = await this.read(updateData.type, updateData.id)
+    if (!existing) {
+      throw new Error('Entity not found')
+    }
+
+    const preparedData = await this.applySerializableOptions(
+      { ...updateData.updates, id: updateData.id },
+      entityType,
+      'onSave'
+    )
 
     try {
       const result = await collection.updateOne(
         { _id: new ObjectId(updateData.id) },
-        { $set: updateData.updates }
+        { $set: preparedData }
       )
 
       if (result.matchedCount === 0) {

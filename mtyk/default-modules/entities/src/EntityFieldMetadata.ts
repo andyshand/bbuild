@@ -11,6 +11,7 @@ export enum EntityFieldMetadata {
   ENTITY_FIELD_BEFORE_SET = 'entityFieldSetter',
   STREAMABLE_FIELD = 'streamableField',
   ENTITY_FUNCTION = 'entityFunction',
+  UNIQUE = 'unique',
 }
 
 type EntityFieldList = string[]

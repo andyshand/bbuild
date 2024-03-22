@@ -41,7 +41,6 @@ export async function getTaskStream(
     task
   );
   const restartTrigger = new Subject<void>();
-
   const watchFilesObservable1 = watchFiles(watch, cwd) as Observable<any>;
 
   let observables = [watchFilesObservable1, restartTrigger];

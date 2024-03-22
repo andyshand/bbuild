@@ -153,7 +153,14 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
           }
         })
 
-        this.manager.update(this.constructor.name, this.id, updates)
+        this.manager
+          .update(this.constructor.name, this.id, updates)
+          .then(() => {
+            /*noop*/
+          })
+          .catch((e) => {
+            console.error(e)
+          })
       })
     }
 

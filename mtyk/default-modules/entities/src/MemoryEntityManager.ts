@@ -46,18 +46,18 @@ export class MemoryEntityManager extends DbEntityManager implements IEntityManag
 
   async read<T extends EntityType = any>(
     entityType: EntityTypable<T>,
-    id: string,
+    id: string
   ): Promise<CreatedEntity<T>> {
     const type = getEntityTypeName(entityType)
     const store = this.getStore(type)
-    return this.createEntityInstance(type, store.get(id))
+    return this.createEntityInstance(type, store.get(id)) as any
   }
 
   async update(
     entityType: string,
     id: string,
     updates: any,
-    revisionNumber: number,
+    revisionNumber: number
   ): Promise<any> {
     const store = this.getStore(entityType)
     const currentData = store.get(id)
