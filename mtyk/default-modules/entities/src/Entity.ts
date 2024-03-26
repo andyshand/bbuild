@@ -139,6 +139,22 @@ export default abstract class Entity<Fields extends Record<string, any> = any> {
     this.yDoc = data?.yDoc || new Y.Doc()
     this.yMap = this.yDoc.getMap('entity')
 
+    if (data && !data.yDoc) {
+      try {
+        this.yDoc.transact(() => {
+          this.yMap.set('id', id)
+
+          delete data._id
+
+          Object.keys(data).forEach((key) => {
+            this.yMap.set(key, data[key])
+          })
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     if (this.manager.constructor.name === 'MongoEntityManager') {
       this.yMap.observe((event) => {
         let updates = {}

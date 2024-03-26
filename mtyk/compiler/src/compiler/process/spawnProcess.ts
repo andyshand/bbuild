@@ -1,9 +1,9 @@
 import execa, { ExecaChildProcess } from "execa";
-import pidusage from "pidusage";
+import { Subject } from "rxjs";
 import { DevJSON } from "../processes/DevConfig";
 import require from "../require";
 
-export function spawnProcess<PTY extends boolean>(
+export function spawnProcess(
   cmd: string,
   args: string[],
   cwd: string,
@@ -40,69 +40,70 @@ export function spawnProcess<PTY extends boolean>(
   process.stdout.write("\x1b[8;30;80t"); // Resize to 80 columns and 30 rows
 
   let childProcess: ExecaChildProcess;
+  let weKilledIt = false;
+  let killForGood = false;
+  const childProcessSubject = new Subject<ExecaChildProcess>();
 
   const spawnIt = () => {
     if (childProcess) {
       return;
     }
     childProcess = execa(cmd, args, {
+      stdio: "pipe",
       cwd,
       env,
-      stdio: "pipe",
       maxBuffer: 104857600,
     });
-    const monitorIntervalMS = 2000;
-    // Monitor CPU and RAM usage
-    const monitorInterval = setInterval(() => {
-      pidusage(childProcess.pid, (err, stats) => {
-        if (err) {
-          console.error(`Error getting process stats: ${err}`);
-          return;
-        }
+    childProcessSubject.next(childProcess);
 
-        // Log or handle high CPU/memory usage
-        const cpuThreshold = 80;
-        const memoryThreshold = 500 * 1024 * 1024;
+    // const monitorIntervalMS = 2000;
+    // // Monitor CPU and RAM usage
+    // const monitorInterval = setInterval(() => {
+    //   pidusage(childProcess.pid, (err, stats) => {
+    //     if (err) {
+    //       console.error(`Error getting process stats: ${err}`);
+    //       return;
+    //     }
 
-        if (stats.cpu > cpuThreshold) {
-          console.warn(`High CPU usage for ${name}: ${stats.cpu}%`);
-        }
-        if (stats.memory > memoryThreshold) {
-          console.warn(
-            `High memory usage for ${name}: ${stats.memory / 1024 / 1024} MB`
-          );
-        }
-      });
-    }, monitorIntervalMS); // Check every 2 seconds
+    //     // Log or handle high CPU/memory usage
+    //     const cpuThreshold = 80;
+    //     const memoryThreshold = 500 * 1024 * 1024;
+
+    //     if (stats.cpu > cpuThreshold) {
+    //       console.warn(`High CPU usage for ${name}: ${stats.cpu}%`);
+    //     }
+    //     if (stats.memory > memoryThreshold) {
+    //       console.warn(
+    //         `High memory usage for ${name}: ${stats.memory / 1024 / 1024} MB`
+    //       );
+    //     }
+    //   });
+    // }, monitorIntervalMS); // Check every 2 seconds
+
     let restartTimeout;
-    childProcess.on("exit", (exitCode, signal) => {
+    childProcess.on("exit", async (exitCode, signal) => {
       childProcess = null;
-      clearInterval(monitorInterval);
+      // clearInterval(monitorInterval);
       clearTimeout(restartTimeout);
       console.log(
         `Task "${name}" exited with code ${exitCode} and signal ${signal}`
       );
       if (!killForGood) {
-        restartTimeout = setTimeout(() => {
-          spawnIt();
+        restartTimeout = setTimeout(async () => {
+          await spawnIt();
         }, 1000);
       }
     });
 
-    childProcess
-      .then(() => {})
-      .catch((error) => {
-        console.error(error);
-      });
-
     weKilledIt = false;
-
-    return childProcess;
   };
 
-  let weKilledIt = false;
-  let killForGood = false;
-  const killAndRestart = () => {
+  // Initial start for task
+  setTimeout(() => {
+    spawnIt();
+  }, 1000);
+
+  const killAndRestart = async () => {
     killForGood = false;
     if (childProcess) {
       if (childProcess.exitCode === null) {
@@ -115,7 +116,7 @@ export function spawnProcess<PTY extends boolean>(
   };
 
   return {
-    getChildProcess: () => childProcess,
+    getChildProcessObs: () => childProcessSubject.asObservable(),
     killAndRestart,
     kill: () => {
       killForGood = true;

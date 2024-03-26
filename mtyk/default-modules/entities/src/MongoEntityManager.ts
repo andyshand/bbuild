@@ -28,14 +28,19 @@ async function runYJSServer() {
   const path = yWebsocket.split('/node_modules')[0]
 
   try {
-    await execa(process.execPath, [`${path}/node_modules/y-websocket/bin/server.js`], {
-      cwd: path,
-      env: {
-        PORT: 1234,
-      },
-    })
+    await execa(
+      process.execPath,
+      [`${path}/node_modules/y-websocket/bin/server.js`],
+      {
+        cwd: path,
+        env: {
+          PORT: 1234,
+        },
+      }
+    )
   } catch (e) {
     console.error(e)
+    process.exit(1)
   }
 }
 
@@ -69,7 +74,10 @@ interface UpdateData {
   updates: any
 }
 
-export class MongoEntityManager extends DbEntityManager implements IEntityManager {
+export class MongoEntityManager
+  extends DbEntityManager
+  implements IEntityManager
+{
   private client: MongoClient
   private collections: Map<string, Collection> = new Map()
   id: string = Math.random().toString(36)
@@ -81,7 +89,11 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
 
   batcher: ChangeStreamBatcher
 
-  constructor(private uri: string, private dbName: string, entities: Constructor<Entity>[]) {
+  constructor(
+    private uri: string,
+    private dbName: string,
+    entities: Constructor<Entity>[]
+  ) {
     super(entities)
     this.batcher = new ChangeStreamBatcher(this)
     this.connect()
@@ -103,7 +115,9 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     temporaryClient.close()
 
     console.log(`MongoDB replica set name: ${isMasterResult.setName ?? 'N/A'}`)
-    return isMasterResult.setName ? new MongoClient(this.uri) : new MongoClient(this.uri)
+    return isMasterResult.setName
+      ? new MongoClient(this.uri)
+      : new MongoClient(this.uri)
   }
 
   async connect() {
@@ -112,7 +126,9 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     const connection = await this.getDbConnection()
     this.client = await connection.connect()
 
-    console.log(`Connected to MongoDB at ${this.uri}/${this.dbName} (em ${this.id})`)
+    console.log(
+      `Connected to MongoDB at ${this.uri}/${this.dbName} (em ${this.id})`
+    )
 
     this.connectedSubject.next(this.id)
   }
@@ -171,30 +187,21 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     const collection = this.getCollection(entityType)
     const result = await collection.insertOne(preparedData)
     const newDoc = await collection.findOne({ _id: result.insertedId })
+    publicInvariant(!!newDoc, 'Failed to create entity')
 
     // Set id as str to simplify matching in superclass
-    await collection.updateOne({ _id: newDoc._id }, { $set: { id: newDoc._id.toString() } })
-
+    await collection.updateOne(
+      { _id: newDoc._id },
+      { $set: { id: newDoc._id.toString() } }
+    )
     invariant(newDoc, 'Failed to create entity')
     const id = newDoc._id.toString()
 
     const newEntity = this.createEntityInstance(entityType, {
       id,
+      ...preparedData,
     })
 
-    try {
-      newEntity.yDoc.transact(() => {
-        newEntity.yMap.set('id', id)
-
-        delete preparedData._id
-
-        Object.keys(preparedData).forEach((key) => {
-          newEntity.yMap.set(key, preparedData[key])
-        })
-      })
-    } catch (e) {
-      console.log(e)
-    }
     const wsProvider = initializeYjsSyncProvider(newEntity.id, newEntity.yDoc)
     this.wsProviders.set(newEntity.id, wsProvider)
 
@@ -234,7 +241,11 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     return newEntity
   }
 
-  public async update(type: EntityTypable, id: string, updates: any): Promise<any> {
+  public async update(
+    type: EntityTypable,
+    id: string,
+    updates: any
+  ): Promise<any> {
     this.assertClientReady()
 
     this.enqueueUpdate(type, id, updates)
@@ -355,7 +366,10 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
     if ('_id' in query) {
       // Convert strings to ObjectIds, quick fix
       if (typeof query._id === 'object' && query && '$in' in query._id) {
-        publicInvariant(Array.isArray(query._id.$in), 'query._id.$in must be an array')
+        publicInvariant(
+          Array.isArray(query._id.$in),
+          'query._id.$in must be an array'
+        )
         query._id.$in = query._id.$in.map((id) => new ObjectId(id))
       } else {
         if (Array.isArray(query._id)) {
@@ -368,7 +382,9 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
 
     const entityType = getEntityTypeName(type)
     const collection = this.getCollection(entityType)
-    return (await collection.find(query, { projection: { _id: 1 } }).toArray()).map((e) => ({
+    return (
+      await collection.find(query, { projection: { _id: 1 } }).toArray()
+    ).map((e) => ({
       id: e._id.toString(),
     }))
   }
@@ -387,7 +403,10 @@ export class MongoEntityManager extends DbEntityManager implements IEntityManage
   watch(type: EntityTypable, opts: { id: string }): Observable<any> {
     this.assertClientReady()
     const entityType = getEntityTypeName(type)
-    const changeStreamObs = this.batcher.getMongoDBChangeStream(entityType, opts)
+    const changeStreamObs = this.batcher.getMongoDBChangeStream(
+      entityType,
+      opts
+    )
     return changeStreamObs
   }
 

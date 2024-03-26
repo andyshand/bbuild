@@ -26,6 +26,7 @@ const CommandPrompt: React.FC<CommandPromptProps> = () => {
   const [query, setQuery] = useState('')
   const [selectedOption, setSelectedOption] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | string | null>(null)
   const [_actionParameters, setActionParameters] = useState<{
     [action: string]: any
   }>({})
@@ -138,9 +139,9 @@ const CommandPrompt: React.FC<CommandPromptProps> = () => {
 
   const handleSelectOption = (option: Option) => {
     if (option.parametersSchema) {
-      executeOption(option, _actionParameters[option.id] ?? {})
+      return executeOption(option, _actionParameters[option.id] ?? {})
     } else {
-      executeOption(option, {})
+      return executeOption(option, {})
     }
   }
 
@@ -154,19 +155,25 @@ const CommandPrompt: React.FC<CommandPromptProps> = () => {
   }
 
   const executeOption = async (option: Option, parameters: any) => {
-    setIsLoading(true)
-    const actionContext: ActionContext = {
-      repl: async (command: string) => {
-        // const res = await axios.post("/dev/repl", {
-        // cmd: command,
-        // });
-        // return res.data?.output;
-        return null as any
-      },
-    }
-    const res = await option.action(actionContext, parameters)
-    if (res) {
-      setResult(res)
+    try {
+      setError(null)
+      setIsLoading(true)
+      const actionContext: ActionContext = {
+        repl: async (command: string) => {
+          // const res = await axios.post("/dev/repl", {
+          // cmd: command,
+          // });
+          // return res.data?.output;
+          return null as any
+        },
+      }
+      const res = await option.action(actionContext, parameters)
+      if (res) {
+        setResult(res)
+      }
+    } catch (e) {
+      setError(e)
+      console.error(e)
     }
     setIsLoading(false)
     inputRef.current?.focus()
@@ -214,6 +221,11 @@ const CommandPrompt: React.FC<CommandPromptProps> = () => {
           )}
         </CommandContainer>
         <FormContainer>
+          {error && (
+            <div className="whitespace-pre-wrap bg-red-500 text-white text-sm p-2 rounded-md max-h-[10em] overflow-y-auto">
+              {typeof error === 'string' ? error : error.message}
+            </div>
+          )}
           {selectedOption > -1 && filteredOptions[selectedOption] && (
             <div>
               <div>{selectedd.label}</div>

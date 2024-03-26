@@ -41,6 +41,19 @@
       "outputCapture": "std"
     },
     {
+      "name": "bbuild:dev (design-cloud)",
+      "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
+      "cwd": "/Users/andrewshand/Documents/Github/design-cloud-github",
+      "request": "launch",
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "preLaunchTask": "compiler:build",
+      "type": "node",
+      "args": ["dev"],
+      "outputCapture": "std"
+    },
+    {
       "name": "bbuild:dev (relay)",
       "program": "${workspaceFolder}/mtyk/compiler/dist/esm/compiler/index.js",
       "cwd": "/Volumes/SSD/Github/relay",

@@ -34,6 +34,7 @@ export interface DevJSON {
     args: { [key: string]: string };
     env?: { [key: string]: string } | string;
     dockerfile?: string;
+    ports?: string[];
   }[];
 }
 

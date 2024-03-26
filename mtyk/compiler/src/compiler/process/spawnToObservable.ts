@@ -79,17 +79,9 @@ export function formatConsole(
 
   return [flatMapped.join("\n")];
 }
-export function spawnToObservable(
-  child: { onData: (cb: (data: string) => void) => void },
-  /**
-   * @deprecated are we using this?
-   */
-  filter: RegExp[] = [],
-  color: string,
-  name: string,
-  cmd: string,
-  quiet?: boolean
-) {
+export function observableFromSpawn(child: {
+  onData: (cb: (data: string) => void) => void;
+}) {
   return merge(
     IEventToObservable(child.onData).pipe(map((data) => data.split("\n")))
   );

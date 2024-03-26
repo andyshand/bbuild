@@ -15,7 +15,7 @@ export default async function docker() {
   > = {};
 
   for (const d of dockerInfo) {
-    const { args, name, image: _image, env, dockerfile } = d;
+    const { args, name, image: _image, env, dockerfile, ports } = d;
     const cwd = process.cwd();
     const image = _image ?? name;
 
@@ -104,7 +104,13 @@ export default async function docker() {
 
       // Start new container
       try {
-        await exec(`docker run --name ${imageName} -d ${image}`);
+        let portsMapping = "";
+        if (ports && ports.length > 0) {
+          portsMapping = ports.map((port) => `-p ${port}`).join(" ");
+        }
+        await exec(
+          `docker run --name ${imageName} -d ${portsMapping} ${image}`
+        );
       } catch (error) {
         console.error(`Failed to start container ${imageName}: ${error}`);
       }

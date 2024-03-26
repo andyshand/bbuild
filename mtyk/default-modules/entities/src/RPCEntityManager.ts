@@ -1,5 +1,4 @@
 import RPCClient from 'modules/rpc-ws/client'
-import { RPC_DEFAULT_PORT } from 'modules/rpc-ws/config'
 import { Constructor } from 'modules/types'
 import { Observable, Subject, firstValueFrom, share } from 'rxjs'
 import { WebsocketProvider } from 'y-websocket'
@@ -24,9 +23,9 @@ export class RPCEntityManager extends RemoteEntityManager {
       throw new Error('RPCEntityManager is only supported on the client')
     }
     const url = new URL(window.location.href)
-    const port = url.hostname === 'localhost' ? RPC_DEFAULT_PORT : 80
+    const currPort = url.port || 80
 
-    this.client = new RPCClient(`ws://${url.hostname}:${port}${path}`)
+    this.client = new RPCClient(`ws://${url.hostname}:${currPort}${path}`)
     this.initializeInvalidateSubject()
   }
 
@@ -53,8 +52,6 @@ export class RPCEntityManager extends RemoteEntityManager {
       } else {
         instance = new EntityClass(this, data.id, data)
       }
-    } else {
-      if (this.wsProviders.has(data.id)) return instance
     }
 
     this.instances.set(data.id, instance)
@@ -103,39 +100,21 @@ export class RPCEntityManager extends RemoteEntityManager {
   }
 
   async read(entityType: string, id: string): Promise<any> {
-    if (!this.instances.has(id)) {
-      this.client.read({ args: [entityType, id] })
+    if (this.instances.has(id)) {
+      return this.instances.get(id)
     }
 
-    try {
-      if (!this.wsProviders.has(id)) {
-        const entity = this.createEntityInstance(entityType, { id })
-        const wsProvider = initializeYjsSyncProvider(id, entity.yDoc)
-        this.wsProviders.set(id, wsProvider)
-        const syncPromise = new Promise<void>((resolve) => {
-          wsProvider.once('sync', () => {
-            resolve()
-          })
-        })
-
-        await syncPromise
-        return entity
-      } else {
-        const wsProvider = this.wsProviders.get(id)!
-        if (wsProvider.synced) return this.instances.get(id)
-
-        const syncPromise = new Promise<void>((resolve) => {
-          wsProvider.once('sync', () => {
-            resolve()
-          })
-        })
-
-        await syncPromise
-        return this.instances.get(id)
-      }
-    } catch (error) {
-      console.error('Error during synchronization:', error)
-    }
+    const data = (await this.obsToPromise(this.client.read({ args: [entityType, id] }))) as any
+    const entity = this.createEntityInstance(entityType, { id, ...data })
+    const wsProvider = initializeYjsSyncProvider(id, entity.yDoc)
+    this.wsProviders.set(id, wsProvider)
+    const syncPromise = new Promise<void>((resolve) => {
+      wsProvider.once('sync', () => {
+        resolve()
+      })
+    })
+    await syncPromise
+    return entity
   }
 
   async update(entityType: string, id: string, updates: any): Promise<any> {
@@ -161,46 +140,7 @@ export class RPCEntityManager extends RemoteEntityManager {
       this.client.findIds({ args: [entityType, query] })
     )) as [{ id: string }]
 
-    const newIds = ids.filter((e) => !this.instances.has(e.id)).map((e) => e.id)
-
-    if (newIds.length) {
-      ;(await this.obsToPromise(
-        this.client.readIds({ args: [entityType, newIds] })
-      )) as Entity[]
-    }
-
-    const entities = await Promise.all(
-      (ids as any[]).map(async (result) => {
-        const { id } = result
-        if (!this.wsProviders.has(id)) {
-          const entity = this.createEntityInstance(entityType, { id })
-          const wsProvider = initializeYjsSyncProvider(id, entity.yDoc)
-          this.wsProviders.set(id, wsProvider)
-          const syncPromise = new Promise<void>((resolve) => {
-            wsProvider.once('sync', () => {
-              resolve()
-            })
-          })
-
-          await syncPromise
-          return entity
-        } else {
-          const wsProvider = this.wsProviders.get(id)!
-          if (wsProvider.synced) return this.instances.get(id)
-
-          const syncPromise = new Promise<void>((resolve) => {
-            wsProvider.once('sync', () => {
-              resolve()
-            })
-          })
-
-          await syncPromise
-          return this.instances.get(id)
-        }
-      })
-    )
-
-    return entities
+    return Promise.all(ids.map(({ id }) => this.read(entityType, id)))
   }
 
   private observablesMap: Map<string, Subject<any>> = new Map()

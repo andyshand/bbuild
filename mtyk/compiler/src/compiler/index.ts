@@ -122,6 +122,11 @@ const main = async () => {
       });
 
       devHandle = await dev(opts);
+
+      // keep it running
+      return new Promise((res) => {
+        // never resolve
+      });
     });
 
   // Parse the command line arguments

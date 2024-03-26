@@ -1,18 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { EMPTY, merge, Observable, of, Subject } from "rxjs";
-import {
-  catchError,
-  debounceTime,
-  startWith,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import { merge, Observable, Subject } from "rxjs";
+import { debounceTime, map } from "rxjs/operators";
 import getUniverseConfig from "./config/universe";
 import { watchFiles } from "./file/watchFiles";
 import { projectPath } from "./path";
-import { spawnProcess } from "./process/spawnProcess";
-import { spawnToObservable } from "./process/spawnToObservable";
+import { spawnProcess as spawnRestartableProcess } from "./process/spawnProcess";
+import { observableFromSpawn } from "./process/spawnToObservable";
 import { DevConfig, DevJSON } from "./processes/DevConfig";
 
 export async function getTaskStream(
@@ -31,7 +25,7 @@ export async function getTaskStream(
   const env = { ...process.env, ...task.env };
 
   const color = getColorForTag(name ?? cmd);
-  const latestSpawnedChild = spawnProcess(
+  const childHandle = spawnRestartableProcess(
     cmd,
     args,
     cwd,
@@ -43,66 +37,34 @@ export async function getTaskStream(
   const restartTrigger = new Subject<void>();
   const watchFilesObservable1 = watchFiles(watch, cwd) as Observable<any>;
 
+  const childObs = childHandle.getChildProcessObs();
   let observables = [watchFilesObservable1, restartTrigger];
 
-  // TODO this logic doesn't seem right?
-  // const lastArg = args[args.length - 1];
-  // if (lastArg?.endsWith(".js")) {
-  //   const modulesToWatchSet = new Set(
-  //     processFilesForBbuildImports(cwd, lastArg)
-  //   );
-
-  //   for (const m of modulesToWatchSet) {
-  //     const result = await getModuleInfo(m, path.join(cwd, "modules", m));
-  //     result.requiredOneModules.forEach((r) => modulesToWatchSet.add(r));
-  //   }
-
-  //   const modulesToWatchArray = Array.from(modulesToWatchSet);
-  //   observables.push(watchFiles(modulesToWatchArray, "./built-modules"));
-  //   console.log(`Task ${name} is watching modules - ${modulesToWatchArray}`);
-  // }
-
-  const obs = merge(...observables).pipe(
-    debounceTime(1000),
-    tap((maybeFile) => {
+  const fileChangeListener = merge(...observables).pipe(debounceTime(1000));
+  fileChangeListener.subscribe({
+    next: (maybeFile) => {
       if (typeof maybeFile === "string") {
         console.log(`Restart because file changed: ${maybeFile}`);
+        childHandle.killAndRestart();
       }
-    }),
-    startWith(null),
-    switchMap((_) => {
-      return of(latestSpawnedChild.killAndRestart());
-    }),
-    switchMap((newChild) => {
-      if (newChild) {
-        // console.log(`Spawning ${name ?? cmd}`);
+    },
+  });
+
+  return {
+    childObs: childObs.pipe(
+      map((child) => {
         const childWithOnData = {
           onData: (cb: (data: string) => void) => {
-            newChild.stdout?.on("data", (data) => {
+            child.stdout?.on("data", (data) => {
               cb(data.toString());
             });
           },
         };
 
-        return spawnToObservable(
-          childWithOnData,
-          filter,
-          color,
-          name,
-          cmd,
-          task.quiet
-        );
-      }
-      return EMPTY;
-    }),
-    catchError((error) => {
-      console.error("Error in process stream:", error);
-      return EMPTY;
-    })
-  );
-  return {
-    obs,
-    getLatestSpawnedChild: () => latestSpawnedChild,
+        return observableFromSpawn(childWithOnData);
+      })
+    ),
+    getChildHandle: () => childHandle,
     restart: () => {
       restartTrigger.next();
     },

@@ -1,4 +1,3 @@
-import { RPC_DEFAULT_PORT } from 'modules/rpc-ws/config'
 import { WebSocket } from 'ws'
 import { WebsocketProvider } from 'y-websocket'
 
@@ -6,7 +5,7 @@ import Y from 'yjs'
 
 const hostname =
   typeof window === 'undefined' ? 'localhost' : new URL(window.location.href).hostname
-const port = typeof window !== 'undefined' && hostname !== 'localhost' ? 80 : RPC_DEFAULT_PORT
+const port = (typeof window !== 'undefined' ? new URL(window.location.href).port : null) ?? 80
 const protocol =
   typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws'
 const YWS = `${protocol}://${hostname}:${port}/ws/yjs`
